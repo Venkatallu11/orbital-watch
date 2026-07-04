@@ -43,90 +43,77 @@ together by hand:
   could come down in, instead of the single false-precision pin/time news
   coverage usually reports.
 
-## Status: what's tested vs. what isn't
+## Status: what's actually confirmed live vs. still unverified
 
-This was built in a sandboxed environment. Both direct network access
-(`celestrak.org`, `space-track.org`, `network.satnogs.org` all return 403 at
-the sandbox's network-policy level) and the harness's own page-fetch tool
-were tried — the latter revealed these three sites actively block automated
-fetches outright (403 on every path, including static files), which is a
-property of those sites, not the sandbox. So actual live *data* couldn't be
-pulled. What *did* work: fetching these services' own open-source code and
-documentation from GitHub/GitLab (not blocked), which let several format
-assumptions get checked against ground truth instead of staying guesses.
+This started out built in a network-sandboxed environment, then got run
+for real on GitHub Actions against live infrastructure (4 runs, 2026-07-04,
+Venkatallu11/orbital-watch). That surfaced and fixed real bugs no amount of
+offline testing would have caught — this section reflects that, not just
+"tests pass."
 
-**Confirmed correct against real source/docs (not just tested logic):**
-- **SatNOGS** (`satnogs.py`) — read the actual `satnogs-network` source on
-  GitLab (`serializers.py`, `filters.py`, `pagination.py`). This caught two
-  real bugs an earlier draft had: the field is `status` (values
-  `good`/`bad`/`failed`/`unknown`/`future`), not `vetted_status`, which
-  isn't a real field; and the filter query param is `norad_cat_id`, not
-  `satellite__norad_cat_id`. Pagination is a fixed `page_size=25` with no
-  client-adjustable limit, confirmed the same way. All fixed and tested.
-- **SATCAT** (`satcat.py`) — endpoint (`records.php?CATNR=...&FORMAT=CSV`)
-  and all 17 CSV columns confirmed verbatim against CelesTrak's own SATCAT
-  Format Documentation. This one was right from the start.
-- **CelesTrak GP/TLE data** (`tle_client.py`) — `FORMAT=tle` convention
-  confirmed against CelesTrak's GP data format documentation.
-- **SOCRATES** (`socrates.py`) — real endpoint is
-  `SOCRATES-Plus/table-socrates.php` (an earlier guess following SATCAT's
-  naming pattern, `SOCRATES/socrates.php`, was wrong), and real CSV columns
-  are `OBJECT_NAME_1`/`_2`, `TCA_RANGE`, `DSE_1`/`_2`,
-  `TCA_RELATIVE_SPEED`, `DILUTION` (an earlier guess had `NAME_1`/`_2` and
-  `MIN_RNG_KM`, both wrong). Both confirmed against multiple independently
-  quoted example URLs and CelesTrak's SOCRATES Format Documentation. `CATNR`
-  on that endpoint only accepts 1-2 catalog numbers (it's for "conjunctions
-  involving object A/between A and B", not a whole watchlist), which is why
-  `fetch_conjunctions` pulls the broad current result set and filters
-  client-side with `filter_to_watchlist` -- confirmed to match what
-  CelesTrak's own docs recommend for exactly this use case.
+**Confirmed working against live data, on a real GitHub Actions run:**
+- **SatNOGS** (`satnogs.py`) — real observation-health data came back for
+  all 10 watchlist satellites in one run (e.g. `NORAD 37849 (Suomi NPP):
+  0/25 recent vetted observations were good -- DEGRADED`). The `status`
+  field fix (not `vetted_status`) and `norad_cat_id` param fix (not
+  `satellite__norad_cat_id`), both made by reading satnogs-network's
+  actual source on GitLab, are confirmed correct by this real data.
+- **CelesTrak GP/TLE fetch** (`tle_client.py`) — confirmed the endpoint
+  and `FORMAT=tle` work, but also caught a real bug: a single comma-joined
+  `CATNR` query for multiple IDs returns 0 results (no error, just an
+  empty valid response) rather than fetching all of them. Fixed by
+  issuing one request per ID instead of one batched request.
+- **Packaging/CLI** (`pyproject.toml`, `cli.py`) — the `orbital-watch`
+  console command runs for real on a clean GitHub Actions runner; caught
+  and fixed a `ModuleNotFoundError` from an earlier install step that only
+  installed dependencies, not the package itself.
+- **State persistence** — `state.json` and `digest.md` are genuinely
+  created and committed back to the repo by the workflow after a run.
+- **SATCAT** (`satcat.py`) — the live fetch was actually attempted and
+  succeeded (confirmed indirectly: no fallback-failure warning was
+  printed when it ran with real network access).
+
+**Confirmed WRONG by a live 404, now fixed:**
+- **SOCRATES** (`socrates.py`) — the endpoint is `SOCRATES/table-socrates.php`.
+  An earlier "correction" (before any live run) changed this to
+  `SOCRATES-Plus/table-socrates.php` based on a search result that turned
+  out to be mistaken; a real run on 2026-07-04 got a 404 on that exact
+  path, proving it wrong. Reverted to `SOCRATES/`, the original, correct
+  value. Not yet re-confirmed with a real 200 response as of this writing
+  -- the columns/format documented here are still validated against
+  CelesTrak's docs, not a live response body.
 
 **Still a documented best-guess, flagged in code:**
-- The exact TCA date format inside the SOCRATES CSV specifically (the HTML
-  table shows human-readable text; the CSV doc emphasizes RFC 4180/easy
-  parsing, suggesting ISO 8601 instead). `_parse_tca` tries both.
+- The exact TCA date format inside the SOCRATES CSV specifically. `_parse_tca`
+  tries ISO 8601 first, falls back to the human-readable format.
+- Whether `FORMAT=csv` is the exactly right parameter for the SOCRATES
+  endpoint specifically (confirmed for other CelesTrak endpoints, not yet
+  re-confirmed for this one since the 404 happened before the format
+  parameter mattered).
 
-**Tested and passing (61 tests, all offline):**
-- SGP4 residual math (`propagate.py`) and per-object rolling baseline
-  (`baseline.py`), against real `sgp4` objects.
-- TLE, SATCAT, and SOCRATES text/CSV parsers, against fixtures now built
-  from confirmed real schemas (see above).
-- SatNOGS observation-health scoring logic, against the confirmed real
-  schema.
-- Reentry ground-track corridor math (`reentry.py`), using `skyfield` fully
-  offline (builtin timescale, no ephemeris download) against a real TLE.
-- The plain-English biography generator (`biography.py`).
-- The unified digest assembly (`digest.py`).
-- The Space-Track rate limiter (`ratelimit.py`), against a fake clock --
-  and confirmed to actually be *called* before every login/query, not just
-  constructed and ignored.
-- SATCAT owner-based auto-exclusion (`norad_ids_matching_owners`), so
-  entire noisy constellations (e.g. all Starlink) can be filtered out of a
-  watchlist by owner instead of hand-listing every noisy object.
-- **Full end-to-end CLI runs** for all three entry points
-  (`cli.py`, `biography_cli.py`, `reentry_cli.py`), using real TLE text
-  round-tripped through `sgp4`'s own exporter and monkeypatched network
-  calls where a live endpoint would otherwise be needed -- including one
-  test where the SATCAT fetch is genuinely, unmockedly attempted and fails
-  against this sandbox's blocked network, proving the fallback path for
-  real rather than by simulation.
+**A real, confirmed infrastructure constraint (not a code bug):**
+GitHub Actions runners share IP ranges across every workflow on GitHub
+worldwide, and CelesTrak's usage policy firewalls IPs that exceed its
+bandwidth limits — other projects report the same timeout. `cli.py`
+automatically falls back to Space-Track (authenticated, not subject to the
+same shared-IP congestion) when CelesTrak's fetch fails and Space-Track
+credentials are configured — see "Running it" below.
 
-**Still genuinely untested (the HTTP call itself, not the parsing logic):**
-`SpaceTrackClient`/`CelesTrakClient` (`tle_client.py`), `fetch_satcat`
-(`satcat.py`), `fetch_conjunctions` (`socrates.py`), `fetch_observations`
-(`satnogs.py`) — all of these actually reaching their live endpoint and
-getting back exactly the confirmed shape above. Run the self-test below
-before depending on any of it in production.
+**Tested and passing (64 tests, all offline):**
+SGP4 residual math and per-object rolling baseline, all parsers (against
+fixtures built from confirmed real schemas), the reentry corridor math
+(`skyfield`, fully offline), the biography generator, the unified digest,
+the Space-Track rate limiter (confirmed to actually be called, not just
+constructed), SATCAT owner-based auto-exclusion, the CelesTrak-to-Space-Track
+fallback logic, and full end-to-end CLI runs for all three entry points.
 
-Run this before relying on any of the above in production:
+Run the self-test below to sanity-check connectivity from wherever you're
+deploying this before turning on the schedule:
 ```bash
 pip install -r requirements.txt
 python -m orbital_watch.tle_client --selftest
 # Expect: "OK: fetched N TLEs (e.g. ISS should be in there)"
 ```
-If the SOCRATES/SATCAT/SatNOGS live calls turn out to need format
-adjustments, that's a small, isolated fix in each module — the parsing
-logic itself (the actual hard part) is already tested.
 
 ## What this deliberately does NOT do
 
@@ -157,7 +144,7 @@ Either install it as a package (gives you the `orbital-watch`,
 `orbital-watch-biography`, `orbital-watch-reentry` commands directly):
 ```bash
 pip install -e ".[dev]"
-pytest tests/ -v      # 61 tests, all offline, no network needed
+pytest tests/ -v      # 64 tests, all offline, no network needed
 orbital-watch --help
 ```
 Or just install dependencies and run modules directly with `python -m`:
@@ -277,7 +264,7 @@ src/orbital_watch/
   cli.py             Main scheduled entry point
   biography_cli.py   Satellite biography entry point
   reentry_cli.py     Reentry corridor entry point
-tests/               61 tests, fully offline
+tests/               64 tests, fully offline
 pyproject.toml       Packaging + console_scripts (orbital-watch, orbital-watch-biography, orbital-watch-reentry)
 .github/workflows/orbital-watch.yml   Scheduled run (see above)
 ```

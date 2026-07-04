@@ -94,13 +94,22 @@ class CelesTrakClient:
         return _parse_tle_text(resp.text)
 
     def fetch_by_norad_ids(self, norad_ids: list[int]) -> list[TleRecord]:
-        resp = self._session.get(
-            CELESTRAK_GP_URL,
-            params={"CATNR": ",".join(str(n) for n in norad_ids), "FORMAT": "tle"},
-            timeout=30,
-        )
-        resp.raise_for_status()
-        return _parse_tle_text(resp.text)
+        """Confirmed on a real run (2026-07-04): a single comma-joined
+        CATNR query for multiple IDs returns 0 results (no error -- just an
+        empty, valid response), even though that same pattern is
+        documented to work for SOCRATES with up to 2 IDs. GP's CATNR only
+        takes one catalog number at a time, so this fetches each ID with
+        its own request instead of a single batched one."""
+        records = []
+        for norad_id in norad_ids:
+            resp = self._session.get(
+                CELESTRAK_GP_URL,
+                params={"CATNR": norad_id, "FORMAT": "tle"},
+                timeout=30,
+            )
+            resp.raise_for_status()
+            records.extend(_parse_tle_text(resp.text))
+        return records
 
 
 def _parse_tle_text(text: str) -> list[TleRecord]:

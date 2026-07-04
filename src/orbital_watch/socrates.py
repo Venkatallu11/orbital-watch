@@ -8,26 +8,25 @@ reimplement conjunction analysis ourselves; we ingest their output and
 filter it to a watchlist, which is the actual missing piece (nothing
 currently subscribes you to it or filters it to objects you care about).
 
-NOTE ON TESTING: celestrak.org blocks automated fetches outright (403 on
-every path tried, including the static /pub/ files -- this isn't the
-sandbox's network policy, the site itself blocks bots). So this is built
-from CelesTrak's own SOCRATES Format Documentation (socrates-format.php)
-and real example URLs quoted across multiple independent searches, NOT a
-live fetch. This corrected real mistakes an earlier draft had:
+NOTE ON TESTING: a real GitHub Actions run (2026-07-04) confirmed and
+corrected the endpoint path -- see history below. celestrak.org blocks
+WebFetch/curl-style automated fetches outright, but the Python `requests`
+client running on a real GitHub Actions runner gets through fine (it's
+bot-detection on user-agent/fetch-pattern, not a wholesale block), which is
+how this got tested for real despite this module being written offline.
   - Real columns: NORAD_CAT_ID_1, OBJECT_NAME_1, DSE_1, NORAD_CAT_ID_2,
     OBJECT_NAME_2, DSE_2, TCA, TCA_RANGE, TCA_RELATIVE_SPEED, MAX_PROB,
-    DILUTION -- NOT the "NAME_1"/"NAME_2"/"MIN_RNG_KM" an earlier version
-    guessed.
+    DILUTION -- confirmed against CelesTrak's SOCRATES Format Documentation.
   - DSE_1/DSE_2 (days since [TLE] epoch) indicate how stale each object's
     TLE was when this conjunction was computed -- a large DSE means the
     prediction is less trustworthy. Surfaced but not yet acted on.
-  - DILUTION (dilution of the probability estimate) and
-    TCA_RELATIVE_SPEED are captured but not yet used in `generate_digest`.
-  - The real endpoint is `SOCRATES-Plus/table-socrates.php` (confirmed via
-    multiple quoted example URLs, e.g.
-    `.../SOCRATES-Plus/table-socrates.php?NAME=,&ORDER=MINRANGE&MAX=25&FORMAT=csv`)
-    -- NOT `SOCRATES/socrates.php`, an earlier guess following SATCAT's
-    naming pattern that turned out wrong.
+  - DILUTION and TCA_RELATIVE_SPEED are captured but not yet used in
+    `generate_digest`.
+  - The real endpoint is `SOCRATES/table-socrates.php`. An earlier draft
+    "corrected" this to `SOCRATES-Plus/table-socrates.php` based on a
+    search result that turned out to be wrong -- confirmed by a real 404
+    on that exact path on the 2026-07-04 run. Reverted back to `SOCRATES/`,
+    which is the original, correct path.
   - `CATNR` on that endpoint takes at most TWO catalog numbers (it's meant
     for "conjunctions involving object A", or "between object A and B" --
     not for passing an entire watchlist at once). That's why
@@ -37,11 +36,10 @@ live fetch. This corrected real mistakes an earlier draft had:
     what CelesTrak's own docs suggest ("download the latest raw CSV
     results to search and filter using your spreadsheet software") for
     anyone who wants more than one object's results at a time.
-Still genuinely unverified: the exact TCA date format in the CSV
-specifically (the HTML table shows "2026 Jul 05 03:14:22"-style text, but
-the CSV format doc emphasizes RFC 4180/easy parsing, which suggests ISO
-8601 instead -- `_parse_tca` tries ISO first and falls back to the human
-format).
+Still genuinely unverified (the 2026-07-04 run 404'd before reaching the
+CSV body, so these haven't been checked against a real response yet): the
+exact TCA date format in the CSV, and whether `FORMAT=csv` is really the
+right parameter name for this endpoint specifically.
 """
 from __future__ import annotations
 
@@ -52,7 +50,7 @@ from datetime import datetime
 
 import requests
 
-SOCRATES_URL = "https://celestrak.org/SOCRATES-Plus/table-socrates.php"
+SOCRATES_URL = "https://celestrak.org/SOCRATES/table-socrates.php"
 
 
 @dataclass
