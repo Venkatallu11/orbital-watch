@@ -60,7 +60,14 @@ def test_excluded_owner_object_is_never_fetched_or_processed(tmp_path, capsys):
     assert "Fetched 1 TLE(s) for 1 watched object(s)." in captured.out
 
 
-def test_satcat_fetch_failure_falls_back_to_unfiltered_watchlist(tmp_path, capsys):
+def test_satcat_fetch_failure_falls_back_to_unfiltered_watchlist(tmp_path, capsys, monkeypatch):
+    """Confirmed on a real GitHub Actions runner (2026-07-04) that
+    fetch_satcat's live endpoint actually works from normal internet --
+    this test originally relied on network being unavailable *in this
+    sandbox* as a stand-in for "the fetch failed," which is an
+    environment-dependent assumption that broke the moment it ran
+    somewhere with real internet access. Mocking the failure explicitly
+    is correct regardless of what environment runs this test."""
     watchlist_path = tmp_path / "watchlist.json"
     watchlist_path.write_text(json.dumps([NORAD_ID]))
 
@@ -71,8 +78,13 @@ def test_satcat_fetch_failure_falls_back_to_unfiltered_watchlist(tmp_path, capsy
     tle_path.write_text(f"{LINE1}\n{LINE2}\n")
     state_path = tmp_path / "state.json"
 
-    # No --satcat-file given, and no network in this environment -> the
-    # live fetch_satcat call fails; the run must still complete using the
+    def _raise(*args, **kwargs):
+        raise RuntimeError("simulated network failure")
+
+    monkeypatch.setattr("orbital_watch.satcat.fetch_satcat", _raise)
+
+    # No --satcat-file given -> _apply_owner_exclusions calls the (mocked,
+    # failing) live fetch_satcat; the run must still complete using the
     # unfiltered watchlist rather than crashing.
     exit_code = cli.main([
         "--watchlist", str(watchlist_path),
