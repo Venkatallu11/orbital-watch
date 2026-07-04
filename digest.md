@@ -11,7 +11,7 @@ No conjunctions involving your watchlist in the current 7-day SOCRATES run.
 - **NORAD 25544**: not enough vetted observations yet to judge
 - **NORAD 25994**: not enough vetted observations yet to judge
 - **NORAD 27424**: only 1/3 recent vetted observations were good (33%) -- worth checking against the TLE-residual signal -- DEGRADED
-- **NORAD 33591**: 6/10 recent vetted observations were good (60%)
+- **NORAD 33591**: 4/5 recent vetted observations were good (80%)
 - **NORAD 37849**: only 0/25 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal -- DEGRADED
 - **NORAD 39084**: only 1/3 recent vetted observations were good (33%) -- worth checking against the TLE-residual signal -- DEGRADED
 - **NORAD 43013**: only 0/10 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal -- DEGRADED
