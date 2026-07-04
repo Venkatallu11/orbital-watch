@@ -125,7 +125,28 @@ def main(argv=None) -> int:
     maneuver_events: dict = store.get("maneuver_events", {})
 
     if args.source == "celestrak":
-        records = CelesTrakClient().fetch_by_norad_ids(sorted(watchlist))
+        try:
+            records = CelesTrakClient().fetch_by_norad_ids(sorted(watchlist))
+        except Exception as exc:  # noqa: BLE001 - see comment below
+            # Confirmed on a real run (2026-07-04): celestrak.org timed out
+            # from GitHub Actions' shared runner IP range. This is a known,
+            # documented issue -- CelesTrak's usage policy firewalls IPs
+            # that exceed its bandwidth limits, and GitHub Actions runners
+            # share IP ranges across every workflow on GitHub, so this can
+            # happen even on a well-behaved, low-frequency schedule. A
+            # longer timeout or retry won't help a genuinely blocked IP, so
+            # fall back to Space-Track (authenticated, not subject to the
+            # same shared-IP congestion) if credentials are available.
+            if os.environ.get("SPACETRACK_USER") and os.environ.get("SPACETRACK_PASS"):
+                print(f"Warning: CelesTrak fetch failed ({exc}); falling back to Space-Track.")
+                records = SpaceTrackClient().fetch_tles(sorted(watchlist))
+            else:
+                print(
+                    f"CelesTrak fetch failed ({exc}) and no Space-Track credentials are set "
+                    "to fall back to. Sign up for a free Space-Track account and set "
+                    "SPACETRACK_USER/SPACETRACK_PASS to make this run reliably."
+                )
+                return 1
     elif args.source == "spacetrack":
         records = SpaceTrackClient().fetch_tles(sorted(watchlist))
     else:
