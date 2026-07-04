@@ -99,16 +99,25 @@ class CelesTrakClient:
         empty, valid response), even though that same pattern is
         documented to work for SOCRATES with up to 2 IDs. GP's CATNR only
         takes one catalog number at a time, so this fetches each ID with
-        its own request instead of a single batched one."""
+        its own request instead of a single batched one.
+
+        Also confirmed on a real run: an individual ID can 404 (e.g. a
+        Starlink launched in 2020 that has since deorbited and dropped out
+        of the active catalog) -- routine and expected to keep happening
+        as satellites decay. One bad ID skips with a warning rather than
+        discarding every other ID's already-fetched TLE."""
         records = []
         for norad_id in norad_ids:
-            resp = self._session.get(
-                CELESTRAK_GP_URL,
-                params={"CATNR": norad_id, "FORMAT": "tle"},
-                timeout=30,
-            )
-            resp.raise_for_status()
-            records.extend(_parse_tle_text(resp.text))
+            try:
+                resp = self._session.get(
+                    CELESTRAK_GP_URL,
+                    params={"CATNR": norad_id, "FORMAT": "tle"},
+                    timeout=30,
+                )
+                resp.raise_for_status()
+                records.extend(_parse_tle_text(resp.text))
+            except requests.exceptions.HTTPError as exc:
+                print(f"Warning: CelesTrak fetch failed for NORAD {norad_id} ({exc}), skipping.")
         return records
 
 
