@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# state.json, watchlist.json, and digest.md are intentionally NOT ignored:
+# the scheduled GitHub Actions workflow (.github/workflows/orbital-watch.yml)
+# commits them back to the repo so state persists between ephemeral runs.
+# If you want a private local watchlist instead, use a different filename
+# (e.g. my-watchlist.json) and pass it to --watchlist directly -- it won't
+# be picked up by the scheduled workflow, which looks for watchlist.json.

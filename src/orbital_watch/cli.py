@@ -1,0 +1,203 @@
+"""
+Entry point, meant to be run on a schedule (cron / GitHub Actions), e.g.
+hourly. Each run:
+  1. Loads the watchlist (NORAD IDs) and last-seen TLE + baseline state.
+  2. Fetches current TLEs for the watchlist, computes SGP4 residuals against
+     each object's own rolling baseline.
+  3. Optionally pulls CelesTrak SOCRATES (conjunction/collision risk) and
+     SatNOGS (observation health) for the same watchlist.
+  4. Combines all of that into ONE digest instead of three separate manual
+     checks, alerts (console + optional webhook) on anything anomalous, and
+     persists maneuver events for the biography page (see biography_cli.py).
+
+Usage:
+    python -m orbital_watch.cli --watchlist watchlist.json --state state.json
+    python -m orbital_watch.cli --watchlist watchlist.json --state state.json --source celestrak
+    python -m orbital_watch.cli --watchlist watchlist.json --state state.json --source file --tle-file sample.tle
+    python -m orbital_watch.cli --watchlist watchlist.json --state state.json --include-socrates --include-satnogs --digest-out digest.md
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+from datetime import datetime, timezone
+
+from sgp4.api import Satrec
+
+from orbital_watch.alert import format_alert, send_console, send_webhook
+from orbital_watch.baseline import PerObjectBaseline
+from orbital_watch.digest import ManeuverAlert, generate_digest
+from orbital_watch.propagate import compute_residual
+from orbital_watch.store import JsonStore
+from orbital_watch.tle_client import CelesTrakClient, SpaceTrackClient, load_tles_from_file
+
+
+def build_satrec(record) -> Satrec:
+    return Satrec.twoline2rv(record.line1, record.line2)
+
+
+def _fetch_conjunctions_safely(watchlist: set[int]) -> list:
+    """SOCRATES ingestion is best-effort and untested against the live
+    endpoint (see socrates.py) -- a failure here shouldn't take down the
+    whole run, just skip that section of the digest."""
+    from orbital_watch.socrates import fetch_conjunctions, filter_to_watchlist
+
+    try:
+        return filter_to_watchlist(fetch_conjunctions(), watchlist)
+    except Exception as exc:  # noqa: BLE001 - deliberately broad, see docstring
+        print(f"Warning: SOCRATES fetch failed ({exc}), skipping conjunction section.")
+        return []
+
+
+def _fetch_satnogs_health_safely(watchlist: set[int]) -> list:
+    """Same reasoning as _fetch_conjunctions_safely -- SatNOGS API schema
+    assumptions are untested here (see satnogs.py)."""
+    from orbital_watch.satnogs import fetch_observations, summarize_observations
+
+    healths = []
+    for norad_id in sorted(watchlist):
+        try:
+            observations = fetch_observations(norad_id)
+            healths.append(summarize_observations(norad_id, observations))
+        except Exception as exc:  # noqa: BLE001 - deliberately broad, see docstring
+            print(f"Warning: SatNOGS fetch failed for NORAD {norad_id} ({exc}), skipping.")
+    return healths
+
+
+def _apply_owner_exclusions(watchlist: set[int], owners: set[str], satcat_file: str | None) -> set[int]:
+    """Auto-exclude noisy constellations (e.g. Starlink) by SATCAT owner
+    instead of requiring every noisy object to be hand-listed. Failure here
+    (SATCAT fetch is untested live, see satcat.py) falls back to the
+    unfiltered watchlist rather than aborting the whole run."""
+    from orbital_watch.satcat import fetch_satcat, norad_ids_matching_owners, parse_satcat_csv
+
+    try:
+        if satcat_file:
+            with open(satcat_file) as f:
+                records = parse_satcat_csv(f.read())
+        else:
+            records = fetch_satcat(sorted(watchlist))
+        excluded = norad_ids_matching_owners(records, owners)
+        if excluded:
+            print(f"Excluding {len(excluded)} object(s) owned by {sorted(owners)}: {sorted(excluded)}")
+        return watchlist - excluded
+    except Exception as exc:  # noqa: BLE001 - deliberately broad, see docstring
+        print(f"Warning: owner-exclusion SATCAT fetch failed ({exc}), using unfiltered watchlist.")
+        return watchlist
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description="Watch a satellite watchlist for unexplained maneuvers.")
+    parser.add_argument("--watchlist", required=True, help="JSON file: list of NORAD IDs")
+    parser.add_argument("--state", required=True, help="JSON file used to persist state between runs")
+    parser.add_argument("--source", choices=["celestrak", "spacetrack", "file"], default="celestrak")
+    parser.add_argument("--tle-file", help="Required when --source file")
+    parser.add_argument("--webhook-url", default=os.environ.get("ALERT_WEBHOOK_URL"))
+    parser.add_argument("--z-threshold", type=float, default=3.0)
+    parser.add_argument("--include-socrates", action="store_true", help="Fetch CelesTrak SOCRATES conjunction data")
+    parser.add_argument("--include-satnogs", action="store_true", help="Fetch SatNOGS observation health")
+    parser.add_argument("--object-names", help="Optional JSON file: {\"norad_id\": \"friendly name\"} for the digest")
+    parser.add_argument("--digest-out", help="Optional path to write the combined digest as markdown")
+    parser.add_argument("--exclude-owners-file", help="Optional JSON file: [\"owner\", ...] to auto-exclude by SATCAT owner")
+    parser.add_argument("--satcat-file", help="Optional local SATCAT CSV for --exclude-owners-file (offline mode); omit to fetch live")
+    args = parser.parse_args(argv)
+
+    with open(args.watchlist) as f:
+        watchlist = set(json.load(f))
+
+    if args.exclude_owners_file:
+        with open(args.exclude_owners_file) as f:
+            owners = set(json.load(f))
+        watchlist = _apply_owner_exclusions(watchlist, owners, args.satcat_file)
+
+    object_names: dict[int, str] = {}
+    if args.object_names:
+        with open(args.object_names) as f:
+            object_names = {int(k): v for k, v in json.load(f).items()}
+
+    store = JsonStore(args.state)
+    baseline = PerObjectBaseline.from_dict(
+        store.get("baseline_history", {}), z_threshold=args.z_threshold
+    )
+    previous_tles: dict = store.get("previous_tles", {})
+    maneuver_events: dict = store.get("maneuver_events", {})
+
+    if args.source == "celestrak":
+        records = CelesTrakClient().fetch_by_norad_ids(sorted(watchlist))
+    elif args.source == "spacetrack":
+        records = SpaceTrackClient().fetch_tles(sorted(watchlist))
+    else:
+        if not args.tle_file:
+            parser.error("--tle-file is required when --source file")
+        records = load_tles_from_file(args.tle_file)
+
+    records = [r for r in records if r.norad_id in watchlist]
+    print(f"Fetched {len(records)} TLE(s) for {len(watchlist)} watched object(s).")
+
+    maneuver_alerts: list[ManeuverAlert] = []
+    for record in records:
+        norad_key = str(record.norad_id)
+        after_satrec = build_satrec(record)
+
+        prev = previous_tles.get(norad_key)
+        if prev is not None:
+            before_satrec = Satrec.twoline2rv(prev["line1"], prev["line2"])
+            if before_satrec.jdsatepoch + before_satrec.jdsatepochF < (
+                after_satrec.jdsatepoch + after_satrec.jdsatepochF
+            ):
+                residual = compute_residual(before_satrec, after_satrec)
+                verdict = baseline.evaluate(record.norad_id, residual.position_error_km)
+
+                if verdict.is_anomalous:
+                    message = format_alert(verdict, residual)
+                    send_console(message)
+                    if args.webhook_url:
+                        send_webhook(args.webhook_url, message)
+
+                    alert = ManeuverAlert(
+                        norad_id=record.norad_id,
+                        residual_km=residual.position_error_km,
+                        z_score=verdict.z_score,
+                        reason=verdict.reason,
+                    )
+                    maneuver_alerts.append(alert)
+
+                    events = maneuver_events.setdefault(norad_key, [])
+                    events.append(
+                        {
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                            "residual_km": residual.position_error_km,
+                            "z_score": verdict.z_score,
+                            "reason": verdict.reason,
+                        }
+                    )
+            else:
+                print(f"NORAD {record.norad_id}: no newer TLE since last run, skipping.")
+        else:
+            print(f"NORAD {record.norad_id}: first time seen, no baseline yet.")
+
+        previous_tles[norad_key] = {"line1": record.line1, "line2": record.line2}
+
+    conjunctions = _fetch_conjunctions_safely(watchlist) if args.include_socrates else []
+    satnogs_healths = _fetch_satnogs_health_safely(watchlist) if args.include_satnogs else []
+
+    if args.include_socrates or args.include_satnogs:
+        digest = generate_digest(object_names, maneuver_alerts, conjunctions, satnogs_healths)
+        print("\n" + digest + "\n")
+        if args.digest_out:
+            with open(args.digest_out, "w") as f:
+                f.write(digest)
+
+    store.set("previous_tles", previous_tles)
+    store.set("baseline_history", baseline.to_dict())
+    store.set("maneuver_events", maneuver_events)
+    store.save()
+
+    print(f"Done. {len(maneuver_alerts)} alert(s) sent.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

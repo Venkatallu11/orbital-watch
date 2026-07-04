@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orbital-watch"
+version = "0.1.0"
+description = "Free, open satellite maneuver/conjunction/observation-health watchdog built on public TLE data"
+requires-python = ">=3.10"
+dependencies = [
+    "sgp4>=2.23",
+    "requests>=2.28",
+    "skyfield>=1.45",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+orbital-watch = "orbital_watch.cli:main"
+orbital-watch-biography = "orbital_watch.biography_cli:main"
+orbital-watch-reentry = "orbital_watch.reentry_cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

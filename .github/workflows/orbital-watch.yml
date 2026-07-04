@@ -1,0 +1,82 @@
+name: orbital-watch scheduled run
+
+# Runs the maneuver/conjunction/observation-health watch on a schedule,
+# since GitHub Actions runners are ephemeral: state.json (last-seen TLEs +
+# baseline history + maneuver events) is committed back to the repo after
+# each run so the next run picks up where this one left off.
+#
+# Before this workflow can do anything useful:
+#   1. Copy watchlist.example.json to watchlist.json, edit it with the
+#      NORAD IDs you care about, and commit it -- it's gitignored by
+#      default so local users don't clutter the repo with a personal
+#      watchlist, but the scheduled workflow needs a real one committed
+#      to have anything to watch. (One is already committed here as a
+#      starting point -- edit it to taste.)
+#   2. (Optional) Add repo secrets SPACETRACK_USER / SPACETRACK_PASS and
+#      change `--source celestrak` to `--source spacetrack` below for the
+#      richer/faster-updated catalog.
+#   3. (Optional) Add repo secret ALERT_WEBHOOK_URL for Discord/Slack alerts.
+#
+# NOTE: this workflow file is written to spec but hasn't been run for real
+# (no live GitHub Actions execution happened while building this) -- the
+# underlying `orbital-watch.cli` command it invokes has 61 passing offline
+# tests, but the live network calls (Space-Track/CelesTrak/SOCRATES/SatNOGS)
+# are untested here for the same reason documented in README.md.
+#
+# ALSO NOTE: GitHub only fires `schedule` triggers for a workflow file as it
+# exists on the repository's DEFAULT branch. If this lands on a
+# non-default branch first, the schedule won't fire until it's on the
+# default branch -- use the "Run workflow" button (workflow_dispatch, below)
+# to test it manually in the meantime.
+
+on:
+  schedule:
+    - cron: "0 * * * *"  # hourly
+  workflow_dispatch: {}  # allows manual triggering from the Actions tab
+
+permissions:
+  contents: write  # needed to commit state.json back
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run offline test suite (sanity check before touching live data)
+        run: pip install pytest && pytest tests/ -q
+
+      - name: Check watchlist.json exists
+        run: |
+          if [ ! -f watchlist.json ]; then
+            echo "::error::watchlist.json not found. Copy watchlist.example.json to watchlist.json, edit it, and commit it -- see this workflow's header comment."
+            exit 1
+          fi
+
+      - name: Run orbital-watch
+        env:
+          SPACETRACK_USER: ${{ secrets.SPACETRACK_USER }}
+          SPACETRACK_PASS: ${{ secrets.SPACETRACK_PASS }}
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+        run: |
+          python -m orbital_watch.cli \
+            --watchlist watchlist.json \
+            --state state.json \
+            --source celestrak \
+            --include-socrates --include-satnogs \
+            --digest-out digest.md
+
+      - name: Commit updated state and digest
+        run: |
+          git config user.name "orbital-watch-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add state.json digest.md
+          git diff --cached --quiet || git commit -m "orbital-watch: update state and digest [skip ci]"
+          git push
