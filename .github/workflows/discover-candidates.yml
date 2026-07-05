@@ -1,0 +1,39 @@
+name: discover satellite candidates
+
+# Manual-only helper for curating watchlist.json/names.json/categories.json:
+# lists real, currently-active satellites per CelesTrak GROUP so you can
+# pick real NORAD IDs instead of guessing. Not part of the hourly pipeline
+# -- run it from the Actions tab whenever you want to expand the watchlist.
+# (celestrak.org isn't reachable from every dev sandbox, so this runs the
+# fetch on a real GitHub-hosted runner and prints the results to the log.)
+
+on:
+  workflow_dispatch:
+    inputs:
+      groups:
+        description: "Comma-separated CelesTrak GROUP names"
+        required: true
+        default: "stations,weather,noaa,goes,science,gps-ops,starlink,oneweb,iridium-NEXT,geo,amateur"
+      limit_per_group:
+        description: "How many entries to show per group"
+        required: true
+        default: "20"
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install orbital-watch
+        run: pip install -e .
+
+      - name: Discover candidates
+        run: |
+          python -m orbital_watch.discover_cli \
+            --groups "${{ github.event.inputs.groups }}" \
+            --limit-per-group "${{ github.event.inputs.limit_per_group }}"
