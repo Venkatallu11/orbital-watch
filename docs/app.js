@@ -1,6 +1,6 @@
 /* orbital-watch website logic.
  *
- * No build step, no bundler -- plain script tags (Leaflet + satellite.js
+ * No build step, no bundler -- plain script tags (satellite.js + globe.gl
  * from CDN, see index.html) so GitHub Pages can serve this directory as-is.
  *
  * Position tracking runs entirely in the browser: satellite.js does the
@@ -12,11 +12,10 @@ const NASA_API_KEY = "DEMO_KEY"; // works out of the box, 30 req/hour --
 // get a free personal key at https://api.nasa.gov and replace this if you
 // hit that limit.
 
-let map;
-let marker;
-let groundTrackLine;
+let globeInstance;
 let updateTimer;
 let siteData;
+let historyData;
 
 function isoDateDaysAgo(days) {
   const d = new Date();
@@ -24,13 +23,38 @@ function isoDateDaysAgo(days) {
   return d.toISOString().slice(0, 10);
 }
 
-function initMap() {
-  map = L.map("map", { worldCopyJump: true }).setView([0, 0], 2);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap contributors",
-    maxZoom: 10,
-  }).addTo(map);
-  marker = L.circleMarker([0, 0], { radius: 6, color: "#58a6ff", fillOpacity: 0.9 }).addTo(map);
+// --- 3D globe (replaces the old flat 2D map) ---
+// globe.gl (built on three.js/WebGL) with real NASA/Copernicus-style Earth
+// imagery textures shipped in the three-globe package itself -- not a
+// screenshot or a fabricated image.
+function initGlobe() {
+  globeInstance = new Globe(document.getElementById("globe"))
+    .globeImageUrl("https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/earth-night.jpg")
+    .backgroundImageUrl("https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/night-sky.png")
+    .backgroundColor("rgba(0,0,0,0)")
+    .pointsData([])
+    .pointLat("lat")
+    .pointLng("lng")
+    .pointAltitude(0.02)
+    .pointRadius(0.6)
+    .pointColor(() => "#58a6ff")
+    .pathsData([])
+    .pathPoints("points")
+    .pathPointLat((p) => p[0])
+    .pathPointLng((p) => p[1])
+    .pathColor(() => "rgba(88, 166, 255, 0.7)")
+    .pathDashLength(0.02)
+    .pathDashGap(0.008)
+    .pathDashAnimateTime(0)
+    .pointOfView({ lat: 20, lng: 0, altitude: 2.4 }, 0);
+
+  globeInstance.controls().autoRotate = true;
+  globeInstance.controls().autoRotateSpeed = 0.35;
+
+  window.addEventListener("resize", () => {
+    globeInstance.width(document.getElementById("globe").clientWidth);
+    globeInstance.height(document.getElementById("globe").clientHeight);
+  });
 }
 
 function satrecFor(sat) {
@@ -45,43 +69,41 @@ function currentLatLon(satrec, date) {
   const geodetic = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
   return {
     lat: satellite.degreesLat(geodetic.latitude),
-    lon: satellite.degreesLong(geodetic.longitude),
+    lng: satellite.degreesLong(geodetic.longitude),
   };
 }
 
-function drawGroundTrack(satrec) {
-  if (groundTrackLine) map.removeLayer(groundTrackLine);
+function groundTrackPoints(satrec) {
   // One full orbital period, sampled at ~100 points -- mean motion (rev/day)
   // tells us the period; satrec.no is radians/minute.
   const periodMinutes = (2 * Math.PI) / satrec.no;
-  const points = [];
   const now = new Date();
+  const points = [];
   for (let i = 0; i <= 100; i++) {
     const t = new Date(now.getTime() + (i / 100) * periodMinutes * 60000);
     const pos = currentLatLon(satrec, t);
-    if (pos) points.push([pos.lat, pos.lon]);
+    if (pos) points.push([pos.lat, pos.lng]);
   }
-  groundTrackLine = L.polyline(points, { color: "#58a6ff", weight: 1, opacity: 0.5, dashArray: "4 4" }).addTo(map);
+  return points;
 }
 
 function startTracking(sat) {
   if (updateTimer) clearInterval(updateTimer);
   const satrec = satrecFor(sat);
   if (!satrec) {
-    marker.setLatLng([0, 0]);
+    globeInstance.pointsData([]).pathsData([]);
     return;
   }
 
   const tick = () => {
     const pos = currentLatLon(satrec, new Date());
     if (pos) {
-      marker.setLatLng([pos.lat, pos.lon]);
+      globeInstance.pointsData([pos]);
     }
   };
 
   tick();
-  map.setView(marker.getLatLng(), map.getZoom());
-  drawGroundTrack(satrec);
+  globeInstance.pathsData([{ points: groundTrackPoints(satrec) }]);
   updateTimer = setInterval(tick, 1000);
 }
 
@@ -164,32 +186,76 @@ function renderInstruments(sat) {
   el.innerHTML = rows.join("");
 }
 
+function gibsImageUrl(option) {
+  let date;
+  if (option.cadence === "annual") {
+    date = `${new Date().getUTCFullYear() - 1}-01-01`;
+  } else if (option.cadence === "realtime") {
+    date = isoDateDaysAgo(0); // today -- this product is near-real-time, not a daily composite
+  } else {
+    date = isoDateDaysAgo(1);
+  }
+  const url =
+    "https://wvs.earthdata.nasa.gov/api/v1/snapshot" +
+    `?REQUEST=GetSnapshot&LAYERS=${encodeURIComponent(option.layer)}` +
+    `&CRS=EPSG:4326&TIME=${date}&BBOX=-90,-180,90,180&FORMAT=image/jpeg&WIDTH=720&HEIGHT=360`;
+  let cadenceNote;
+  if (option.cadence === "annual") {
+    cadenceNote = `Annual "${option.label}" composite (Landsat doesn't have a daily global GIBS layer) -- not today's image.`;
+  } else if (option.cadence === "realtime") {
+    cadenceNote = `Real "${option.label}" data, refreshed every 30 min (NASA GIBS/IMERG), ${date}.`;
+  } else {
+    cadenceNote = `Real "${option.label}" from this satellite's instrument, ${date} (NASA GIBS).`;
+  }
+  return { url, cadenceNote, date };
+}
+
+function renderGibsOption(option) {
+  const el = document.getElementById("imagery-content");
+  const { url, cadenceNote } = gibsImageUrl(option);
+  const img = document.createElement("img");
+  img.alt = option.label;
+  img.src = url;
+  const caption = document.createElement("div");
+  caption.className = "caption";
+  caption.textContent = cadenceNote;
+  const body = el.querySelector(".imagery-body") || document.createElement("div");
+  body.className = "imagery-body";
+  body.innerHTML = "";
+  body.appendChild(img);
+  body.appendChild(caption);
+  if (!el.contains(body)) el.appendChild(body);
+}
+
 function renderImagery(sat) {
   const el = document.getElementById("imagery-content");
   el.innerHTML = "Loading...";
 
   if (sat.imagery.kind === "gibs") {
-    let date;
-    if (sat.imagery.cadence === "annual") {
-      date = `${new Date().getUTCFullYear() - 1}-01-01`;
-    } else if (sat.imagery.cadence === "realtime") {
-      date = isoDateDaysAgo(0); // today -- this product is near-real-time, not a daily composite
-    } else {
-      date = isoDateDaysAgo(1);
+    const options = sat.imagery.options;
+    el.innerHTML = "";
+
+    // Multiple real options (e.g. true-color vs. active-fire detection) get
+    // a small switcher instead of silently picking one for the visitor.
+    if (options.length > 1) {
+      const switcher = document.createElement("div");
+      switcher.className = "imagery-switcher";
+      options.forEach((option, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = option.label;
+        if (i === 0) btn.classList.add("active");
+        btn.addEventListener("click", () => {
+          switcher.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          renderGibsOption(option);
+        });
+        switcher.appendChild(btn);
+      });
+      el.appendChild(switcher);
     }
-    const url =
-      "https://wvs.earthdata.nasa.gov/api/v1/snapshot" +
-      `?REQUEST=GetSnapshot&LAYERS=${encodeURIComponent(sat.imagery.layer)}` +
-      `&CRS=EPSG:4326&TIME=${date}&BBOX=-90,-180,90,180&FORMAT=image/jpeg&WIDTH=720&HEIGHT=360`;
-    let cadenceNote;
-    if (sat.imagery.cadence === "annual") {
-      cadenceNote = "Annual composite (Landsat doesn't have a daily global GIBS layer) -- not today's image.";
-    } else if (sat.imagery.cadence === "realtime") {
-      cadenceNote = `Real global rain/snowfall-rate data, refreshed every 30 min (NASA GIBS/IMERG), ${date}.`;
-    } else {
-      cadenceNote = `Real imagery from this satellite's instrument, ${date} (NASA GIBS).`;
-    }
-    el.innerHTML = `<img src="${url}" alt="Satellite imagery"><div class="caption">${cadenceNote}</div>`;
+
+    renderGibsOption(options[0]);
     return;
   }
 
@@ -213,6 +279,79 @@ function renderImagery(sat) {
   }
 
   el.innerHTML = '<div class="no-imagery">No public imagery source available for this satellite.</div>';
+}
+
+function renderCollisionRisk(sat) {
+  const el = document.getElementById("collision-content");
+  if (!sat.conjunctions || sat.conjunctions.length === 0) {
+    el.innerHTML = '<div class="no-imagery">No close approaches involving this satellite in the current CelesTrak SOCRATES run.</div>';
+    return;
+  }
+
+  const rows = sat.conjunctions.map((c) => `
+    <div class="status-row">
+      <span class="badge badge-warn">CLOSE APPROACH</span> with <strong>${c.other_name}</strong> (NORAD ${c.other_norad_id})
+      <br><span class="label">Time of closest approach: ${c.time_of_closest_approach}</span>
+      <br><span class="label">Miss distance: ${c.min_range_km.toFixed(2)} km, max probability: ${c.max_probability}</span>
+    </div>
+  `);
+  el.innerHTML = rows.join("");
+}
+
+function renderCrew(sat) {
+  const panel = document.getElementById("crew-panel");
+  const el = document.getElementById("crew-content");
+
+  if (!sat.crew_aboard) {
+    panel.hidden = true;
+    return;
+  }
+
+  panel.hidden = false;
+  if (sat.crew_aboard.length === 0) {
+    el.innerHTML = '<div class="no-imagery">No crew data yet (run with --include-crew).</div>';
+    return;
+  }
+
+  el.innerHTML = `<p>${sat.crew_aboard.length} real astronaut(s)/taikonaut(s) currently aboard, per Open Notify:</p>
+    <ul>${sat.crew_aboard.map((name) => `<li>${name}</li>`).join("")}</ul>`;
+}
+
+function renderHistory(sat) {
+  const timeline = document.getElementById("history-timeline");
+  const toggle = document.getElementById("history-toggle");
+  timeline.hidden = true;
+  timeline.innerHTML = "";
+  toggle.textContent = "Show full history";
+  toggle.disabled = false;
+
+  toggle.onclick = () => {
+    if (!timeline.hidden) {
+      timeline.hidden = true;
+      toggle.textContent = "Show full history";
+      return;
+    }
+
+    const points = (historyData && historyData[String(sat.norad_id)]) || [];
+    if (points.length === 0) {
+      timeline.innerHTML = '<div class="no-imagery">No history yet -- this satellite hasn\'t been through enough scheduled runs.</div>';
+    } else {
+      // Most recent first, capped to the last 30 shown so the page stays
+      // readable -- the underlying history.json already caps at 200.
+      const rows = points.slice(-30).reverse().map((p) => {
+        const residual = p.latest_residual_km_per_day !== null && p.latest_residual_km_per_day !== undefined
+          ? `${p.latest_residual_km_per_day.toFixed(2)} km/day residual`
+          : "no residual yet";
+        const maneuverBit = p.new_maneuver_events.length > 0
+          ? p.new_maneuver_events.map((e) => `<br><span class="badge badge-danger">MANEUVER</span> ${e.reason}`).join("")
+          : "";
+        return `<div class="status-row"><span class="label">${new Date(p.commit_time).toLocaleString()}</span><br>${residual}${maneuverBit}</div>`;
+      });
+      timeline.innerHTML = rows.join("");
+    }
+    timeline.hidden = false;
+    toggle.textContent = "Hide full history";
+  };
 }
 
 // --- Rotating backdrop of real satellite-captured photos ---
@@ -320,6 +459,9 @@ function selectSatellite(noradId) {
   renderStatus(sat);
   renderInstruments(sat);
   renderImagery(sat);
+  renderCollisionRisk(sat);
+  renderCrew(sat);
+  renderHistory(sat);
 }
 
 function populateDropdown() {
@@ -360,10 +502,23 @@ function populateDropdown() {
   select.addEventListener("change", () => selectSatellite(Number(select.value)));
 }
 
-function loadData() {
-  fetch("data.json")
+function loadHistory() {
+  return fetch("history.json")
     .then((r) => r.json())
     .then((data) => {
+      historyData = data;
+    })
+    .catch(() => {
+      historyData = {}; // history.json missing/not generated yet -- "no history" is correct, not an error
+    });
+}
+
+function loadData() {
+  Promise.all([
+    fetch("data.json").then((r) => r.json()),
+    loadHistory(),
+  ])
+    .then(([data]) => {
       siteData = data;
       document.getElementById("generated-at").textContent = `Data as of ${new Date(data.generated_at).toLocaleString()}`;
       populateDropdown();
@@ -386,6 +541,6 @@ function loadData() {
     });
 }
 
-initMap();
+initGlobe();
 loadData();
 startBackdropRotation();

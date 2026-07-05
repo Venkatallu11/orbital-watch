@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>orbital-watch</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -27,7 +26,7 @@
     </section>
 
     <section class="panels">
-      <div id="map" class="map"></div>
+      <div id="globe" class="globe"></div>
 
       <div class="info-panels">
         <div class="panel" id="status-panel">
@@ -44,6 +43,24 @@
           <h2>Imagery</h2>
           <div id="imagery-content"></div>
         </div>
+
+        <div class="panel" id="collision-panel">
+          <h2>Collision Risk</h2>
+          <div id="collision-content"></div>
+        </div>
+
+        <div class="panel" id="crew-panel" hidden>
+          <h2>Who's Aboard Right Now</h2>
+          <div id="crew-content"></div>
+        </div>
+
+        <div class="panel" id="history-panel">
+          <h2>History</h2>
+          <div id="history-content">
+            <button id="history-toggle" type="button">Show full history</button>
+            <div id="history-timeline" hidden></div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -56,8 +73,8 @@
     </p>
   </footer>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/satellite.js@4.1.4/dist/satellite.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.46.1/dist/globe.gl.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
   --bg: #0d1117;
   --panel-bg: #161b22;
   --border: #30363d;
@@ -10,6 +10,11 @@
   --danger: #f85149;
   --ok: #3fb950;
 }
+
+/* This site is deliberately a fixed dark "space" theme, not adaptive to
+   the visitor's OS light/dark preference -- a light background would
+   wash out the real satellite-photo backdrop (see #backdrop below),
+   which is the whole point of it. */
 
 * {
   box-sizing: border-box;
@@ -25,10 +30,11 @@ body {
 }
 
 /* Rotating backdrop of real satellite-captured photos (EPIC/GOES/Hubble-JWST
-   -- see app.js's startBackdropRotation). Fixed behind everything, dimmed
-   so foreground text/panels stay readable; the panels themselves keep a
-   solid background so the photo is atmosphere, not something you have to
-   read through. */
+   -- see app.js's startBackdropRotation). Fixed behind everything. The
+   overlay is a light dimming only near the very bottom of the page (where
+   the footer text sits) -- the photo itself should stay clearly visible,
+   not hidden behind a near-opaque sheet. Panels keep their own solid
+   background so text stays readable regardless. */
 #backdrop {
   position: fixed;
   inset: 0;
@@ -43,13 +49,13 @@ body {
   background-size: cover;
   background-position: center;
   transition: opacity 1.5s ease-in-out, background-image 0.5s;
-  opacity: 0.55;
+  opacity: 0.85;
 }
 
 #backdrop-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(13, 17, 23, 0.55) 0%, rgba(13, 17, 23, 0.85) 70%, rgba(13, 17, 23, 0.97) 100%);
+  background: linear-gradient(180deg, rgba(13, 17, 23, 0.25) 0%, rgba(13, 17, 23, 0.35) 60%, rgba(13, 17, 23, 0.65) 100%);
 }
 
 #backdrop-caption {
@@ -70,16 +76,6 @@ body {
   display: block;
 }
 
-:root[data-theme="light"] #backdrop-overlay {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.88) 70%, rgba(255, 255, 255, 0.98) 100%);
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) #backdrop-overlay {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.88) 70%, rgba(255, 255, 255, 0.98) 100%);
-  }
-}
-
 header {
   padding: 1.5rem 1.5rem 0.5rem;
 }
@@ -87,6 +83,7 @@ header {
 header h1 {
   margin: 0;
   font-size: 1.6rem;
+  text-shadow: 0 0 20px rgba(88, 166, 255, 0.4);
 }
 
 .tagline {
@@ -135,10 +132,12 @@ main {
   }
 }
 
-.map {
-  height: 420px;
+.globe {
+  height: 480px;
   border-radius: 8px;
   border: 1px solid var(--border);
+  background: #000;
+  overflow: hidden;
 }
 
 .info-panels {
@@ -148,7 +147,8 @@ main {
 }
 
 .panel {
-  background: var(--panel-bg);
+  background: rgba(22, 27, 34, 0.9);
+  backdrop-filter: blur(6px);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1rem;
@@ -203,9 +203,55 @@ main {
   margin-top: 0.4rem;
 }
 
-#imagery-content .no-imagery {
+#imagery-content .no-imagery,
+#collision-content .no-imagery,
+#crew-content .no-imagery,
+#history-timeline .no-imagery {
   color: var(--text-dim);
   font-style: italic;
+}
+
+.imagery-switcher {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+
+.imagery-switcher button {
+  background: var(--panel-bg);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.imagery-switcher button.active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+#crew-content ul {
+  margin: 0.4rem 0 0;
+  padding-left: 1.2rem;
+}
+
+#history-toggle {
+  background: var(--panel-bg);
+  color: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+#history-timeline {
+  margin-top: 0.8rem;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 footer {
@@ -217,22 +263,4 @@ footer {
 
 footer a {
   color: var(--accent);
-}
-
-:root[data-theme="light"] {
-  --bg: #ffffff;
-  --panel-bg: #f6f8fa;
-  --border: #d0d7de;
-  --text: #1f2328;
-  --text-dim: #57606a;
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --bg: #ffffff;
-    --panel-bg: #f6f8fa;
-    --border: #d0d7de;
-    --text: #1f2328;
-    --text-dim: #57606a;
-  }
 }

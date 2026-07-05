@@ -54,6 +54,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history needed -- site_history_cli walks every past commit of state.json
 
       - uses: actions/setup-python@v5
         with:
@@ -82,7 +84,7 @@ jobs:
             --watchlist watchlist.json \
             --state state.json \
             --source celestrak \
-            --include-socrates --include-satnogs \
+            --include-socrates --include-satnogs --include-crew \
             --digest-out digest.md
 
       - name: Commit updated state and digest
@@ -102,6 +104,13 @@ jobs:
             --categories-file categories.json \
             --instruments-file instruments.json \
             --out docs/data.json
+
+      - name: Generate website history (docs/history.json)
+        run: |
+          orbital-watch-site-history \
+            --watchlist watchlist.json \
+            --repo . \
+            --out docs/history.json
 
       - name: Set up GitHub Pages
         uses: actions/configure-pages@v5

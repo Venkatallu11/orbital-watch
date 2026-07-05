@@ -91,6 +91,53 @@ def build_satellite_history(repo_path: str, norad_id: int, state_file: str = "st
     return points
 
 
+def build_all_satellites_history(
+    repo_path: str, norad_ids: list[int], state_file: str = "state.json", max_points: int = 200
+) -> dict[int, list[HistoryPoint]]:
+    """Same walk as build_satellite_history, but extracts every requested
+    object's history in ONE pass over the commits instead of calling
+    build_satellite_history once per satellite (which would re-run `git
+    show` on every commit once per satellite -- fine for one object on
+    demand, wasteful for precomputing all ~50 objects' history every
+    scheduled run). `max_points` keeps only the most recent N points per
+    object, since this runs hourly and the commit list only grows."""
+    commits = list_commits(repo_path, state_file)
+    norad_keys = [str(n) for n in norad_ids]
+    points_by_id: dict[int, list[HistoryPoint]] = {n: [] for n in norad_ids}
+    previous_event_counts: dict[str, int] = {k: 0 for k in norad_keys}
+
+    for commit_hash, commit_time in commits:
+        try:
+            state = get_file_at_commit(repo_path, commit_hash, state_file)
+        except (subprocess.CalledProcessError, json.JSONDecodeError):
+            continue
+
+        baseline_history = state.get("baseline_history", {})
+        maneuver_events = state.get("maneuver_events", {})
+
+        for norad_id, norad_key in zip(norad_ids, norad_keys):
+            residual_history = baseline_history.get(norad_key, [])
+            latest_residual = residual_history[-1] if residual_history else None
+
+            events = maneuver_events.get(norad_key, [])
+            new_events = events[previous_event_counts[norad_key]:]
+            previous_event_counts[norad_key] = len(events)
+
+            points_by_id[norad_id].append(
+                HistoryPoint(
+                    commit_time=commit_time,
+                    commit_hash=commit_hash,
+                    latest_residual_km_per_day=latest_residual,
+                    cumulative_maneuver_count=len(events),
+                    new_maneuver_events=new_events,
+                )
+            )
+
+    if max_points:
+        points_by_id = {n: pts[-max_points:] for n, pts in points_by_id.items()}
+    return points_by_id
+
+
 def format_history(object_name: str, points: list[HistoryPoint]) -> str:
     lines = [f"# History for {object_name}", ""]
 

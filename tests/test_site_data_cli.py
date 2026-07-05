@@ -94,6 +94,34 @@ def test_instruments_file_attaches_instrument_info_per_satellite(tmp_path):
     assert data["satellites"][0]["instruments"]["description"] == "It's the ISS."
 
 
+def test_conjunctions_and_crew_are_read_from_state_json(tmp_path):
+    watchlist_path = tmp_path / "watchlist.json"
+    watchlist_path.write_text(json.dumps([NORAD_ID]))
+    state_path = tmp_path / "state.json"
+    state_path.write_text(json.dumps({
+        "previous_tles": {str(NORAD_ID): {"line1": LINE1, "line2": LINE2}},
+        "conjunctions": [{
+            "norad_id_1": NORAD_ID, "name_1": "ISS (ZARYA)",
+            "norad_id_2": 99999, "name_2": "RANDOM DEBRIS",
+            "time_of_closest_approach": "2026-07-10T00:00:00",
+            "min_range_km": 1.2, "max_probability": 0.001,
+        }],
+        "crew_by_craft": {"ISS": ["Jane Doe"]},
+    }))
+    out_path = tmp_path / "data.json"
+
+    site_data_cli.main([
+        "--watchlist", str(watchlist_path),
+        "--state", str(state_path),
+        "--out", str(out_path),
+    ])
+
+    data = json.loads(out_path.read_text())
+    sat = data["satellites"][0]
+    assert sat["conjunctions"][0]["other_name"] == "RANDOM DEBRIS"
+    assert sat["crew_aboard"] == ["Jane Doe"]
+
+
 def test_satellite_never_fetched_yet_still_appears_with_nulls(tmp_path):
     watchlist_path = tmp_path / "watchlist.json"
     watchlist_path.write_text(json.dumps([99999]))

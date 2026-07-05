@@ -10,7 +10,9 @@ __pycache__/
 # (e.g. my-watchlist.json) and pass it to --watchlist directly -- it won't
 # be picked up by the scheduled workflow, which looks for watchlist.json.
 
-# docs/data.json is generated fresh every run (see site_data_cli.py) and
-# deployed straight to GitHub Pages as a build artifact -- it's not
-# committed to git history to avoid an hourly commit on every run.
+# docs/data.json and docs/history.json are generated fresh every run (see
+# site_data_cli.py / site_history_cli.py) and deployed straight to GitHub
+# Pages as a build artifact -- not committed to git history to avoid an
+# hourly commit on every run.
 docs/data.json
+docs/history.json

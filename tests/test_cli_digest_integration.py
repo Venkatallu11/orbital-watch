@@ -13,6 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from orbital_watch import cli  # noqa: E402
+from orbital_watch.crew import CrewMember  # noqa: E402
 from orbital_watch.socrates import Conjunction  # noqa: E402
 
 LINE1 = "1 00005U 58002B   00179.78495062  .00000023  00000-0  28098-4 0  4753"
@@ -43,6 +44,10 @@ def test_digest_combines_socrates_and_satnogs_via_the_real_cli(tmp_path, monkeyp
         "orbital_watch.satnogs.fetch_observations",
         lambda norad_id: [{"status": "good"}] * 3 + [{"status": "bad"}] * 5,
     )
+    monkeypatch.setattr(
+        "orbital_watch.crew.fetch_crew",
+        lambda: [CrewMember(name="Jane Doe", craft="ISS")],
+    )
 
     cli.main([
         "--watchlist", str(watchlist_path),
@@ -52,6 +57,7 @@ def test_digest_combines_socrates_and_satnogs_via_the_real_cli(tmp_path, monkeyp
         "--object-names", str(names_path),
         "--include-socrates",
         "--include-satnogs",
+        "--include-crew",
         "--digest-out", str(digest_path),
     ])
 
@@ -69,3 +75,12 @@ def test_digest_combines_socrates_and_satnogs_via_the_real_cli(tmp_path, monkeyp
     state = json.loads(state_path.read_text())
     assert state["satnogs_health"][str(NORAD_ID)]["good_count"] == 3
     assert state["satnogs_health"][str(NORAD_ID)]["is_degraded"] is True
+
+    # Conjunctions must be persisted too (website's collision-risk panel
+    # depends on this, same reasoning as SatNOGS health above). The
+    # datetime field must survive as a JSON-serializable string.
+    assert state["conjunctions"][0]["name_2"] == "RANDOM DEBRIS"
+    assert state["conjunctions"][0]["time_of_closest_approach"] == "2026-07-10T00:00:00"
+
+    # Crew data persisted for the website's "who's aboard" feature.
+    assert state["crew_by_craft"]["ISS"] == ["Jane Doe"]

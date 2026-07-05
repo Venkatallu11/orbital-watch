@@ -14,7 +14,7 @@ Usage:
     python -m orbital_watch.cli --watchlist watchlist.json --state state.json
     python -m orbital_watch.cli --watchlist watchlist.json --state state.json --source celestrak
     python -m orbital_watch.cli --watchlist watchlist.json --state state.json --source file --tle-file sample.tle
-    python -m orbital_watch.cli --watchlist watchlist.json --state state.json --include-socrates --include-satnogs --digest-out digest.md
+    python -m orbital_watch.cli --watchlist watchlist.json --state state.json --include-socrates --include-satnogs --include-crew --digest-out digest.md
 """
 from __future__ import annotations
 
@@ -49,6 +49,19 @@ def _fetch_conjunctions_safely(watchlist: set[int]) -> list:
     except Exception as exc:  # noqa: BLE001 - deliberately broad, see docstring
         print(f"Warning: SOCRATES fetch failed ({exc}), skipping conjunction section.")
         return []
+
+
+def _fetch_crew_safely() -> dict[str, list[str]]:
+    """Open Notify's "people in space now" API, grouped by craft (ISS,
+    Tiangong). Best-effort like the other optional fetches -- a failure
+    here shouldn't take down the whole run."""
+    from orbital_watch.crew import crew_by_craft, fetch_crew
+
+    try:
+        return crew_by_craft(fetch_crew())
+    except Exception as exc:  # noqa: BLE001 - deliberately broad, see docstring
+        print(f"Warning: Open Notify crew fetch failed ({exc}), skipping.")
+        return {}
 
 
 def _fetch_satnogs_health_safely(watchlist: set[int]) -> list:
@@ -98,6 +111,7 @@ def main(argv=None) -> int:
     parser.add_argument("--z-threshold", type=float, default=3.0)
     parser.add_argument("--include-socrates", action="store_true", help="Fetch CelesTrak SOCRATES conjunction data")
     parser.add_argument("--include-satnogs", action="store_true", help="Fetch SatNOGS observation health")
+    parser.add_argument("--include-crew", action="store_true", help="Fetch Open Notify 'people in space now' data")
     parser.add_argument("--object-names", help="Optional JSON file: {\"norad_id\": \"friendly name\"} for the digest")
     parser.add_argument("--digest-out", help="Optional path to write the combined digest as markdown")
     parser.add_argument("--exclude-owners-file", help="Optional JSON file: [\"owner\", ...] to auto-exclude by SATCAT owner")
@@ -214,6 +228,7 @@ def main(argv=None) -> int:
 
     conjunctions = _fetch_conjunctions_safely(watchlist) if args.include_socrates else []
     satnogs_healths = _fetch_satnogs_health_safely(watchlist) if args.include_satnogs else []
+    crew_by_craft = _fetch_crew_safely() if args.include_crew else {}
 
     if args.include_socrates or args.include_satnogs:
         digest = generate_digest(object_names, maneuver_alerts, conjunctions, satnogs_healths, tle_ages_days)
@@ -233,6 +248,21 @@ def main(argv=None) -> int:
         for health in satnogs_healths:
             satnogs_health_state[str(health.norad_id)] = asdict(health)
         store.set("satnogs_health", satnogs_health_state)
+
+    # Persisted the same way -- website's collision-risk panel reads this
+    # from state.json rather than needing its own live SOCRATES fetch.
+    # datetime isn't JSON-serializable, so time_of_closest_approach is
+    # stored as its isoformat() string.
+    if conjunctions:
+        from dataclasses import asdict
+
+        store.set("conjunctions", [
+            {**asdict(c), "time_of_closest_approach": c.time_of_closest_approach.isoformat()}
+            for c in conjunctions
+        ])
+
+    if crew_by_craft:
+        store.set("crew_by_craft", crew_by_craft)
 
     store.set("previous_tles", previous_tles)
     store.set("baseline_history", baseline.to_dict())

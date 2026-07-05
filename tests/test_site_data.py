@@ -3,27 +3,34 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from orbital_watch.site_data import build_site_data, imagery_descriptor  # noqa: E402
+from orbital_watch.site_data import build_site_data, conjunctions_for, imagery_descriptor  # noqa: E402
 
 
 def test_gibs_satellites_get_the_confirmed_real_layer_names():
-    assert imagery_descriptor(25994) == {  # Terra
-        "kind": "gibs", "layer": "MODIS_Terra_CorrectedReflectance_TrueColor", "cadence": "daily",
-    }
-    assert imagery_descriptor(43013) == {  # NOAA-20
-        "kind": "gibs", "layer": "VIIRS_NOAA20_CorrectedReflectance_TrueColor", "cadence": "daily",
-    }
+    terra = imagery_descriptor(25994)
+    assert terra["kind"] == "gibs"
+    labels = {opt["label"] for opt in terra["options"]}
+    assert labels == {"True Color", "Active Fires & Thermal Anomalies"}
+    true_color = next(o for o in terra["options"] if o["label"] == "True Color")
+    assert true_color["layer"] == "MODIS_Terra_CorrectedReflectance_TrueColor"
+
+    noaa20 = imagery_descriptor(43013)
+    fire = next(o for o in noaa20["options"] if "Fire" in o["label"])
+    assert fire["layer"] == "VIIRS_NOAA20_Thermal_Anomalies_375m_Day"
 
 
 def test_landsat_is_honestly_labeled_annual_not_daily():
     result = imagery_descriptor(39084)  # Landsat 8
     assert result["kind"] == "gibs"
-    assert result["cadence"] == "annual"
+    assert result["options"][0]["cadence"] == "annual"
 
 
 def test_gpm_gets_the_real_imerg_rain_rate_layer_labeled_realtime():
     result = imagery_descriptor(39574)  # GPM Core Observatory
-    assert result == {"kind": "gibs", "layer": "IMERG_Precipitation_Rate_30min", "cadence": "realtime"}
+    assert result == {
+        "kind": "gibs",
+        "options": [{"label": "Rain/Snowfall Rate", "layer": "IMERG_Precipitation_Rate_30min", "cadence": "realtime"}],
+    }
 
 
 def test_hubble_gets_apod_not_a_fake_guarantee():
@@ -160,3 +167,65 @@ def test_category_labels_are_included_at_top_level():
         satnogs_healths_by_id={},
     )
     assert result["category_labels"]["space_stations"] == "Space Stations & Human Spaceflight"
+
+
+def test_conjunctions_for_finds_object_regardless_of_which_side_it_was_on():
+    all_conjunctions = [
+        {
+            "norad_id_1": 25544, "name_1": "ISS (ZARYA)",
+            "norad_id_2": 99999, "name_2": "RANDOM DEBRIS",
+            "time_of_closest_approach": "2026-07-10T00:00:00", "min_range_km": 1.2, "max_probability": 0.001,
+        },
+        {
+            "norad_id_1": 88888, "name_1": "OLD ROCKET BODY",
+            "norad_id_2": 25544, "name_2": "ISS (ZARYA)",
+            "time_of_closest_approach": "2026-07-11T00:00:00", "min_range_km": 3.4, "max_probability": 0.0002,
+        },
+        {
+            "norad_id_1": 1, "name_1": "UNRELATED A",
+            "norad_id_2": 2, "name_2": "UNRELATED B",
+            "time_of_closest_approach": "2026-07-12T00:00:00", "min_range_km": 5.0, "max_probability": 0.0001,
+        },
+    ]
+    results = conjunctions_for(25544, all_conjunctions)
+    assert len(results) == 2
+    assert results[0]["other_name"] == "RANDOM DEBRIS"
+    assert results[1]["other_name"] == "OLD ROCKET BODY"
+
+
+def test_conjunctions_are_attached_per_satellite_in_build_site_data():
+    all_conjunctions = [{
+        "norad_id_1": 25544, "name_1": "ISS (ZARYA)",
+        "norad_id_2": 99999, "name_2": "RANDOM DEBRIS",
+        "time_of_closest_approach": "2026-07-10T00:00:00", "min_range_km": 1.2, "max_probability": 0.001,
+    }]
+    result = build_site_data(
+        generated_at="x",
+        watchlist=[25544],
+        object_names={},
+        previous_tles={},
+        tle_ages_days={},
+        maneuver_events={},
+        satnogs_healths_by_id={},
+        conjunctions=all_conjunctions,
+    )
+    sat = result["satellites"][0]
+    assert len(sat["conjunctions"]) == 1
+    assert sat["conjunctions"][0]["other_name"] == "RANDOM DEBRIS"
+
+
+def test_crew_aboard_is_attached_for_space_station_modules():
+    result = build_site_data(
+        generated_at="x",
+        watchlist=[25544, 48274, 26407],  # ISS, Tiangong module, a GPS satellite
+        object_names={},
+        previous_tles={},
+        tle_ages_days={},
+        maneuver_events={},
+        satnogs_healths_by_id={},
+        crew_by_craft={"ISS": ["Jane Doe"], "Tiangong": ["Li Wei"]},
+    )
+    by_id = {s["norad_id"]: s for s in result["satellites"]}
+    assert by_id[25544]["crew_aboard"] == ["Jane Doe"]
+    assert by_id[48274]["crew_aboard"] == ["Li Wei"]
+    assert by_id[26407]["crew_aboard"] is None  # GPS satellite -- not a space station

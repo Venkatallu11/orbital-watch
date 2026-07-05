@@ -197,6 +197,17 @@
     ],
     "description": "BEESAT-1, built by TU Berlin students, tested a miniaturized reaction wheel for CubeSat attitude control -- a real flight technology demonstration, not an environmental sensor."
   },
+  "35951": {
+    "instruments": [
+      "SSMIS (Special Sensor Microwave Imager/Sounder)",
+      "OLS (Operational Linescan System)"
+    ],
+    "data_products": [
+      "passive-microwave rain-rate estimates (part of the GPM constellation)",
+      "visible/infrared imagery, including the famous city-lights-at-night composites"
+    ],
+    "description": "DMSP F18 is a US military weather satellite. Its SSMIS instrument is one of several passive-microwave sensors NASA blends together with GPM Core Observatory's own instruments for global rain-rate estimates -- a real supporting satellite in the same rain-measurement effort, not just GPM alone."
+  },
   "36086": {
     "instruments": [],
     "data_products": [

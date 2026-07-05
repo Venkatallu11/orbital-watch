@@ -64,27 +64,29 @@ A free static site, deployed on GitHub Pages, that turns the watchlist into
 something you can actually click through instead of reading JSON:
 **https://venkatallu11.github.io/orbital-watch/**
 
-- **Pick a satellite** from a dropdown of 51 real, currently-tracked
+- **Pick a satellite** from a dropdown of 52 real, currently-tracked
   objects, grouped by category so the list stays browsable instead of one
   giant flat list:
   - **Earth Observation & Weather** (13) — Terra, Aqua, Suomi NPP, NOAA-19,
     NOAA-20, Landsat 8, GOES-16, GOES-18, Meteosat-11, Metop-B, Sentinel-3A,
     RADARSAT-2, Pleiades 1A
-  - **Precipitation & Rain/Snow Watch** (1) — GPM Core Observatory, the
-    real NASA/JAXA satellite whose GMI/DPR instruments produce the global
-    rain-rate map this site shows
+  - **Precipitation & Rain/Snow Watch** (2) — GPM Core Observatory (real
+    NASA/JAXA rain-rate satellite) and DMSP F18, a real passive-microwave
+    weather satellite that's part of the same GPM constellation
   - **Space Telescopes / Deep-Space & Solar Observers** (9) — Hubble,
     Chandra X-ray Observatory, XMM-Newton, Swift, Fermi (FGRST/GLAST), SDO,
     Hinode, NuSTAR, IXPE
   - **Asteroid & Near-Earth Object Watchers** (1) — NEOSSAT, Canada's actual
-    orbiting asteroid/comet-survey telescope
+    orbiting asteroid/comet-survey telescope. Honestly still just one: no
+    other dedicated Earth-orbiting NEO-survey satellite turned up in
+    CelesTrak's catalogs, and this isn't padded with a less-honest fit.
   - **Space Stations & Human Spaceflight** (6) — ISS (ZARYA + Poisk + Nauka
     modules), CSS (Tianhe + Wentian + Mengtian modules)
   - **Navigation (GNSS)** (9) — GPS, Galileo, BeiDou, GLONASS satellites
   - **Communications Megaconstellations** (7) — Starlink, OneWeb, Iridium
   - **Amateur Radio & CubeSats** (5) — including AO-7, still operating
     since 1974
-  - All 51 were pulled from CelesTrak's live GROUP/NAME catalogs (see
+  - All 52 were pulled from CelesTrak's live GROUP/NAME catalogs (see
     `discover.py`/the `discover-candidates` workflow below), not
     hand-guessed NORAD IDs.
   - **Not included: Venus/other-planet orbiters, or anything "watching for
@@ -96,11 +98,13 @@ something you can actually click through instead of reading JSON:
     Earth-orbiting space telescopes are the closest real equivalents to
     "watching interesting things far away," which is why those categories
     exist instead.
-- **Live position tracking** — the map marker moves every second and the
-  dashed ground track is drawn for a full orbit ahead, computed client-side
-  in the browser via `satellite.js` (the same SGP4 math the Python backend
-  uses) from the latest TLE already in `data.json`. No live server needed
-  for this part — it's just math running on data that's already there.
+- **Live 3D globe tracking** — a rotating 3D Earth (via `globe.gl`/three.js,
+  real night-lights + starfield textures, not a screenshot) with the
+  selected satellite's current position and dashed ground track, updated
+  every second client-side via `satellite.js` (the same SGP4 math the
+  Python backend uses) from the latest TLE already in `data.json`. No live
+  server needed for this part — it's just math running on data that's
+  already there.
 - **Status panel** — TLE age/freshness, the latest detected maneuver (if
   any), and SatNOGS observation health, straight from the same
   `state.json` the scheduled workflow maintains.
@@ -114,25 +118,41 @@ something you can actually click through instead of reading JSON:
   Starlink/OneWeb/Iridium relay communications) rather than inventing data
   that doesn't exist. Iridium NEXT's real Aireon ADS-B hosted payload
   (global aircraft tracking) is called out specifically.
+- **Collision Risk panel** — real CelesTrak SOCRATES conjunction data,
+  filtered to whichever satellite the "other object" in a close approach
+  involves, persisted from `state.json` (previously this only ever showed
+  up in `digest.md`, never on the site itself). Honestly shows "no close
+  approaches in the current run" rather than an empty gap when there's
+  nothing to report.
+- **"Who's Aboard Right Now" panel** — for ISS/Tiangong modules only: real
+  names of the people currently in space, from Open Notify's free public
+  API. Fetched server-side during the scheduled run (not client-side --
+  Open Notify has no HTTPS certificate, so a browser on this HTTPS site
+  would silently block a direct fetch to it as mixed content) and baked
+  into `data.json`.
+- **History panel** — a "Show full history" button that reconstructs the
+  satellite's residual/maneuver timeline from git's own commit history of
+  `state.json` (see `history.py`), precomputed into `docs/history.json`
+  every scheduled run so the site doesn't need a database.
 - **Imagery** — real pictures, not stock photos, matched honestly to what
-  each satellite can actually provide:
-  - Earth-observation satellites with a real GIBS layer (Terra, Aqua, Suomi
-    NPP, NOAA-20, Landsat 8) get their actual instrument's imagery from NASA
-    GIBS — yesterday's image for daily-composite instruments, clearly
-    labeled "annual composite, not today's image" for Landsat (which has no
-    daily global GIBS layer).
+  each satellite can actually provide, with a switcher when more than one
+  real view exists:
+  - Terra, Aqua, Suomi NPP, and NOAA-20 each offer **two** real GIBS
+    layers from their own instrument: true-color imagery and active
+    fire/thermal-anomaly detections — switchable, not just one picked for
+    you. Every layer identifier was live-verified to return a real image
+    (see `verify_imagery.py`/the `verify-gibs-layers` workflow) before
+    being hardcoded.
+  - Landsat 8: GIBS only has an annual composite (WELD product), labeled
+    as such rather than claimed to be "live."
   - GPM Core Observatory gets GIBS' real IMERG rain/snowfall-rate layer,
-    labeled "realtime" (refreshed every 30 min) rather than "daily", and
-    requested for today's date since the underlying product isn't a daily
-    composite.
+    labeled "realtime" (refreshed every 30 min) and requested for today's
+    date since the underlying product isn't a daily composite.
   - Hubble gets NASA's Astronomy Picture of the Day (APOD) — real deep-space
     imagery, honestly captioned as "may or may not be from Hubble
     specifically" since APOD isn't Hubble-exclusive.
   - Everything else honestly shows "No public imagery source available"
-    rather than faking a picture — no confirmed free/keyless daily-image
-    API was found for them. Extending the GIBS/APOD mapping to more of
-    these is a real candidate for future work, not done here to avoid
-    guessing at unconfirmed API endpoints.
+    rather than faking a picture.
 - **Rotating background of real satellite-captured photos** — cycles every
   60 seconds through a pool of real photos, none stock/fabricated:
   - **GOES-16/18 GeoColor** (NOAA/NESDIS): a fixed CDN URL that always
@@ -148,15 +168,19 @@ something you can actually click through instead of reading JSON:
     see the per-source cadences above). If every source is unreachable
     (network issue, ad-blocker, or a source down), the page falls back to
     a plain dark background rather than showing a broken image or retrying
-    forever.
+    forever -- a real bug found and fixed during testing (the original
+    error-fallback retried indefinitely instead of giving up after one
+    pass over the photo pool).
 
-`docs/data.json` is regenerated every hour by the same scheduled workflow
-(via `orbital-watch-site-data`, using `categories.json` for the group and
-`instruments.json` for the per-satellite instrument info) and deployed
-straight to Pages — the site always reflects the latest fetch, with no
-manual step. See the workflow file's header comment for the one-time
-"Settings → Pages → Source: GitHub Actions" toggle a repo owner has to
-flip once before deploys can succeed (already done for this repo).
+`docs/data.json` and `docs/history.json` are regenerated every hour by the
+same scheduled workflow (via `orbital-watch-site-data` /
+`orbital-watch-site-history`) and deployed straight to Pages — the site
+always reflects the latest fetch, with no manual step. See the workflow
+file's header comment for the one-time "Settings → Pages → Source: GitHub
+Actions" toggle a repo owner has to flip once before deploys can succeed
+(already done for this repo). The workflow's checkout step uses full git
+history (`fetch-depth: 0`) specifically so the history feature has commits
+to walk.
 
 **Curating the watchlist further:** `discover_cli.py` (run via the
 manual-only `discover-candidates` workflow, since celestrak.org isn't
@@ -164,7 +188,9 @@ reachable from every sandbox) lists real, currently-active satellites per
 CelesTrak GROUP (stations, weather, science, gps-ops, starlink, etc.) or by
 NAME search (e.g. `--names GPM`, used to confirm GPM Core Observatory's
 real NORAD ID 39574 before adding it) so new additions are always verified
-real objects, not guesses.
+real objects, not guesses. Similarly, `verify_imagery_cli.py` (via the
+manual-only `verify-gibs-layers` workflow) confirms a candidate NASA GIBS
+layer identifier actually returns a real image before it's hardcoded.
 
 ## Accuracy: what's a real fix vs. a hard ceiling
 
@@ -269,7 +295,7 @@ format inside the SOCRATES CSV specifically (not yet seen a real response
 body with an actual conjunction row to confirm against) — `_parse_tca`
 tries ISO 8601 first, falls back to the human-readable format.
 
-**Tested and passing (110 tests, all offline):**
+**Tested and passing (123 tests, all offline):**
 SGP4 residual math and per-object rolling baseline, all parsers (against
 fixtures built from confirmed real schemas), the reentry corridor math
 (`skyfield`, fully offline), the biography generator, the unified digest,
@@ -277,10 +303,13 @@ the Space-Track rate limiter (confirmed to actually be called, not just
 constructed), SATCAT owner-based auto-exclusion, the CelesTrak-to-Space-Track
 fallback logic (including the per-satellite-vs-connection-failure
 distinction above), git-history-based satellite timeline reconstruction
-(against real temporary git repos, not mocked), the website data-shaping
-layer (`site_data.py`, including honest imagery-source mapping, categories,
-and per-satellite instrument info), the CelesTrak GROUP/NAME discovery
-tool, and full end-to-end CLI runs for all entry points.
+(against real temporary git repos, not mocked, including the
+all-satellites-at-once precompute used for the website), the website
+data-shaping layer (`site_data.py`, including honest imagery-source
+mapping, categories, per-satellite instrument info, conjunctions, and
+crew), the CelesTrak GROUP/NAME discovery tool, the GIBS layer verification
+tool, the Open Notify crew fetcher, and full end-to-end CLI runs for all
+entry points.
 
 Run the self-test below to sanity-check connectivity from wherever you're
 deploying this before turning on the schedule:
@@ -450,6 +479,7 @@ src/orbital_watch/
   biography.py       Plain-English per-object report
   digest.py          Unified feed combining maneuvers + conjunctions + SatNOGS
   alert.py           Console + webhook alerting
+  crew.py            Open Notify "who's in space now" fetch (server-side -- HTTP-only API, see docstring)
   store.py           JSON state persistence between scheduled runs
   cli.py             Main scheduled entry point
   biography_cli.py   Satellite biography entry point
@@ -457,17 +487,21 @@ src/orbital_watch/
   history_cli.py     Satellite history entry point
   site_data.py       Shapes state.json + watchlist into docs/data.json (pure function, no I/O)
   site_data_cli.py   Website data-generation entry point
+  site_history_cli.py  Website history-generation entry point (docs/history.json)
   discover.py        CelesTrak GROUP/NAME catalog fetch, for finding real satellites to add
   discover_cli.py    Watchlist-curation entry point (prints candidates, doesn't modify anything)
-docs/                Static website (GitHub Pages): index.html, app.js, style.css, data.json (generated)
-watchlist.json       51 real NORAD IDs the scheduled workflow watches
+  verify_imagery.py     Confirms a candidate GIBS layer returns a real image
+  verify_imagery_cli.py Imagery-layer-verification entry point
+docs/                Static website (GitHub Pages): index.html, app.js, style.css, data.json + history.json (generated)
+watchlist.json       52 real NORAD IDs the scheduled workflow watches
 names.json           norad_id -> friendly display name
 categories.json      norad_id -> category key (see "Website" above), used for the site's optgroup dropdown
 instruments.json     norad_id -> real instrument/mission info (see "Website" above)
-tests/               110 tests, fully offline
-pyproject.toml       Packaging + console_scripts (orbital-watch, orbital-watch-biography, orbital-watch-reentry, orbital-watch-history, orbital-watch-site-data)
+tests/               123 tests, fully offline
+pyproject.toml       Packaging + console_scripts (orbital-watch, orbital-watch-biography, orbital-watch-reentry, orbital-watch-history, orbital-watch-site-data, orbital-watch-site-history, orbital-watch-discover, orbital-watch-verify-imagery)
 .github/workflows/orbital-watch.yml         Scheduled run + website deploy (see above)
 .github/workflows/discover-candidates.yml   Manual-only watchlist-curation helper (see "Website" above)
+.github/workflows/verify-gibs-layers.yml    Manual-only imagery-layer-verification helper (see "Website" above)
 ```
 
 ## License

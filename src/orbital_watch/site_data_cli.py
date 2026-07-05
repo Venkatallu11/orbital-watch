@@ -85,6 +85,11 @@ def main(argv=None) -> int:
         int(norad_id_str): health for norad_id_str, health in satnogs_health_state.items()
     }
 
+    # Same reasoning: persisted by --include-socrates/--include-crew,
+    # empty (not an error) if those flags weren't used on the last run.
+    conjunctions = store.get("conjunctions", [])
+    crew_by_craft = store.get("crew_by_craft", {})
+
     data = build_site_data(
         generated_at=datetime.now(timezone.utc).isoformat(),
         watchlist=watchlist,
@@ -96,6 +101,8 @@ def main(argv=None) -> int:
         object_types=object_types,
         categories=categories,
         instruments=instruments,
+        conjunctions=conjunctions,
+        crew_by_craft=crew_by_craft,
     )
 
     with open(args.out, "w") as f:

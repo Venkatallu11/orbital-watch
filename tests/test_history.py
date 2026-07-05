@@ -11,7 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from orbital_watch.history import build_satellite_history, format_history  # noqa: E402
+from orbital_watch.history import build_all_satellites_history, build_satellite_history, format_history  # noqa: E402
 
 NORAD_ID = 25544
 
@@ -114,6 +114,28 @@ def test_format_history_renders_maneuvers_and_residuals(tmp_path):
     assert "residual 1.00 km/day" in text
     assert "residual 50.00 km/day" in text
     assert "**MANEUVER**: big jump" in text
+
+
+def test_build_all_satellites_history_matches_per_satellite_calls(tmp_path):
+    repo = _init_repo(tmp_path)
+    _commit_state(repo, {"baseline_history": {"25544": [1.0], "20580": [2.0]}}, "hop 1")
+    _commit_state(repo, {"baseline_history": {"25544": [1.0, 1.2], "20580": [2.0, 2.5]}}, "hop 2")
+
+    all_points = build_all_satellites_history(str(repo), [25544, 20580])
+
+    assert [p.latest_residual_km_per_day for p in all_points[25544]] == [1.0, 1.2]
+    assert [p.latest_residual_km_per_day for p in all_points[20580]] == [2.0, 2.5]
+
+
+def test_build_all_satellites_history_caps_to_max_points(tmp_path):
+    repo = _init_repo(tmp_path)
+    for i in range(5):
+        _commit_state(repo, {"baseline_history": {"25544": [float(i)]}}, f"hop {i}")
+
+    all_points = build_all_satellites_history(str(repo), [25544], max_points=2)
+
+    assert len(all_points[25544]) == 2
+    assert all_points[25544][-1].latest_residual_km_per_day == 4.0  # most recent kept
 
 
 def test_empty_history_is_explained_not_blank(tmp_path):
