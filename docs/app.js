@@ -495,7 +495,12 @@ function startBackdropRotation() {
   Promise.all([fetchEpicPhotos(), fetchDeepSpacePhotos()]).then(([epic, deepSpace]) => {
     backdropPool = [...GOES_BACKDROPS, ...epic, ...deepSpace];
     if (backdropPool.length === 0) return; // all sources failed -- plain dark background, not broken
-    setBackdrop(backdropPool[0]);
+    // Start on a random photo, not always index 0 -- previously every page
+    // load began on the same GOES-16 image no matter when you visited, and
+    // only rotated from there, so "the picture that's already showing"
+    // never reflected which minute you actually opened the site.
+    backdropIndex = Math.floor(Math.random() * backdropPool.length);
+    setBackdrop(backdropPool[backdropIndex]);
     if (backdropTimer) clearInterval(backdropTimer);
     backdropTimer = setInterval(() => {
       backdropIndex = (backdropIndex + 1) % backdropPool.length;
