@@ -231,28 +231,48 @@ def test_crew_aboard_is_attached_for_space_station_modules():
     assert by_id[26407]["crew_aboard"] is None  # GPS satellite -- not a space station
 
 
-def test_deep_space_probes_are_a_separate_top_level_section_not_per_satellite():
+_FAKE_PROBE = {
+    "key": "voyager_1", "name": "Voyager 1", "pseudo_norad_id": -31,
+    "launched": "1977-09-05", "milestone_headline": "test headline", "milestone_detail": "test detail",
+    "instruments": ["MAG"], "data_products": ["magnetic field"], "description": "test description",
+    "epoch": "2026-Jul-05 00:00:00.0000", "distance_from_earth_km": 2.5e10,
+    "distance_from_earth_au": 167.0, "speed_km_s": 37.5,
+}
+
+
+def test_deep_space_probes_appear_as_real_selectable_satellites():
     result = build_site_data(
         generated_at="x",
-        watchlist=[25544],
+        watchlist=[25544],  # ISS -- a normal Earth-orbiting entry, for contrast
         object_names={},
         previous_tles={},
         tle_ages_days={},
         maneuver_events={},
         satnogs_healths_by_id={},
-        deep_space_probes=[{"key": "voyager_1", "name": "Voyager 1", "distance_from_earth_km": 2.5e10}],
+        deep_space_probes=[_FAKE_PROBE],
     )
-    assert result["deep_space_probes"] == [{"key": "voyager_1", "name": "Voyager 1", "distance_from_earth_km": 2.5e10}]
-    # not attached to any individual satellite -- these aren't Earth-orbiting
-    assert "deep_space_probes" not in result["satellites"][0]
+    by_id = {s["norad_id"]: s for s in result["satellites"]}
+    # appended as an ordinary satellite entry (same list ISS is in), not a
+    # separate top-level section -- so it shows up in the same picker/dropdown
+    assert -31 in by_id
+    probe = by_id[-31]
+    assert probe["name"] == "Voyager 1"
+    assert probe["category"] == "deep_space_probes"
+    assert probe["line1"] == "" and probe["line2"] == ""  # no TLE -- not Earth-orbiting
+    assert probe["achievement"] == {"headline": "test headline", "detail": "test detail"}
+    assert probe["instruments"]["description"] == "test description"
+    assert probe["deep_space_status"]["distance_from_earth_km"] == 2.5e10
+    # a normal satellite is unaffected and has no deep_space_status
+    assert by_id[25544]["deep_space_status"] is None
+    assert "deep_space_probes" in result["category_labels"]
 
 
-def test_deep_space_probes_default_to_empty_list_not_a_crash():
+def test_deep_space_probes_default_to_empty_not_a_crash():
     result = build_site_data(
-        generated_at="x", watchlist=[], object_names={}, previous_tles={},
+        generated_at="x", watchlist=[25544], object_names={}, previous_tles={},
         tle_ages_days={}, maneuver_events={}, satnogs_healths_by_id={},
     )
-    assert result["deep_space_probes"] == []
+    assert len(result["satellites"]) == 1  # no probes added when none are passed in
 
 
 def test_achievement_is_attached_only_for_satellites_that_have_one():

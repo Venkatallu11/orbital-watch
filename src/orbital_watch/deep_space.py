@@ -30,26 +30,65 @@ PROBES: dict[str, dict] = {
     "voyager_1": {
         "name": "Voyager 1",
         "command": "-31",
+        "pseudo_norad_id": -31,  # JPL Horizons' own real spacecraft ID, reused as a stable pseudo-ID -- always negative, so it can never collide with a real (always-positive) NORAD catalog number
         "launched": "1977-09-05",
-        "milestone": "First human-made object to reach interstellar space (Aug 25, 2012); the most distant human-made object from Earth.",
+        "milestone_headline": "First human-made object to reach interstellar space",
+        "milestone_detail": "Crossed the heliopause on Aug 25, 2012, and is now the most distant human-made object from Earth.",
+        "instruments": ["Magnetometer (MAG)", "Plasma Wave Subsystem (PWS)"],
+        "data_products": ["interstellar magnetic field strength", "plasma wave measurements from interstellar space"],
+        "description": (
+            "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been "
+            "shutting down its remaining science instruments one by one to conserve its dwindling power supply -- "
+            "the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle "
+            "instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are "
+            "still switched on."
+        ),
     },
     "voyager_2": {
         "name": "Voyager 2",
         "command": "-32",
+        "pseudo_norad_id": -32,
         "launched": "1977-08-20",
-        "milestone": "Reached interstellar space Nov 5, 2018; the only spacecraft to have visited all four giant planets (Jupiter, Saturn, Uranus, Neptune).",
+        "milestone_headline": "Only spacecraft to visit all four giant planets",
+        "milestone_detail": "Flew by Jupiter, Saturn, Uranus, and Neptune, then reached interstellar space on Nov 5, 2018.",
+        "instruments": ["Magnetometer (MAG)", "Plasma Wave Subsystem (PWS)"],
+        "data_products": ["interstellar magnetic field strength", "plasma wave measurements from interstellar space"],
+        "description": (
+            "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was "
+            "switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as "
+            "NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still "
+            "returning real data from interstellar space."
+        ),
     },
     "pioneer_10": {
         "name": "Pioneer 10",
         "command": "-23",
+        "pseudo_norad_id": -23,
         "launched": "1972-03-02",
-        "milestone": "First spacecraft to cross the asteroid belt and fly by Jupiter. Last signal received in January 2003; still coasting, silently, outward.",
+        "milestone_headline": "First spacecraft to cross the asteroid belt and fly by Jupiter",
+        "milestone_detail": "Returned the first close-up images of Jupiter in 1973.",
+        "instruments": [],
+        "data_products": [],
+        "description": (
+            "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data "
+            "since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically "
+            "is, not something the spacecraft itself is transmitting."
+        ),
     },
     "pioneer_11": {
         "name": "Pioneer 11",
         "command": "-24",
+        "pseudo_norad_id": -24,
         "launched": "1973-04-05",
-        "milestone": "First spacecraft to fly by Saturn. Last contact in 1995; still coasting, silently, outward.",
+        "milestone_headline": "First spacecraft to fly by Saturn",
+        "milestone_detail": "Returned the first close-up images of Saturn's rings in 1979.",
+        "instruments": [],
+        "data_products": [],
+        "description": (
+            "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The "
+            "distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not "
+            "something the spacecraft itself is transmitting."
+        ),
     },
 }
 
@@ -58,8 +97,13 @@ PROBES: dict[str, dict] = {
 class ProbeStatus:
     key: str
     name: str
+    pseudo_norad_id: int
     launched: str
-    milestone: str
+    milestone_headline: str
+    milestone_detail: str
+    instruments: list[str]
+    data_products: list[str]
+    description: str
     epoch: str
     distance_from_earth_km: float
     distance_from_earth_au: float
@@ -122,8 +166,13 @@ def fetch_probe_status(key: str, session=None, when: datetime | None = None) -> 
     return ProbeStatus(
         key=key,
         name=probe["name"],
+        pseudo_norad_id=probe["pseudo_norad_id"],
         launched=probe["launched"],
-        milestone=probe["milestone"],
+        milestone_headline=probe["milestone_headline"],
+        milestone_detail=probe["milestone_detail"],
+        instruments=probe["instruments"],
+        data_products=probe["data_products"],
+        description=probe["description"],
         epoch=parsed["epoch"],
         distance_from_earth_km=parsed["distance_km"],
         distance_from_earth_au=parsed["distance_km"] / AU_KM,

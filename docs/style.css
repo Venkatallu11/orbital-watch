@@ -137,10 +137,18 @@ main {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  /* CSS Grid items default to min-width: auto, which means a grid item
+     won't shrink below its content's intrinsic size -- and globe.gl's
+     <canvas> reports an intrinsic width equal to whatever pixel size it
+     was last drawn at. Without this, that canvas silently forced this
+     whole column past its 1.3fr track width, squeezing .info-panels down
+     to a few px and pushing it off-screen (looked like every other panel
+     had vanished, when they were just shoved out of the visible area). */
+  min-width: 0;
 }
 
 .globe {
-  height: 620px;
+  height: 480px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #000;
@@ -155,7 +163,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  max-height: 620px;
+  max-height: 480px;
   overflow-y: auto;
   padding-right: 0.3rem;
   scrollbar-width: thin;
@@ -287,49 +295,10 @@ main {
   overflow-y: auto;
 }
 
-#deep-space-panel {
-  margin-top: 1rem;
-}
-
-.deep-space-note {
+.panel-note {
   color: var(--text-dim);
   font-size: 0.85rem;
   margin: 0 0 1rem;
-}
-
-#deep-space-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-}
-
-.probe-card {
-  background: rgba(13, 17, 23, 0.5);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.8rem;
-}
-
-.probe-card h3 {
-  margin: 0 0 0.4rem;
-  font-size: 1rem;
-  color: var(--accent);
-}
-
-.probe-card .probe-stat {
-  margin: 0.3rem 0;
-  font-size: 0.9rem;
-}
-
-.probe-card .probe-stat .label {
-  color: var(--text-dim);
-  font-size: 0.8rem;
-}
-
-.probe-card .probe-milestone {
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: var(--text-dim);
 }
 
 #achievement-content .achievement-headline {

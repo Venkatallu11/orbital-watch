@@ -98,13 +98,13 @@ something you can actually click through instead of reading JSON:
     Earth-orbiting space telescopes are the closest real equivalents to
     "watching interesting things far away," which is why those categories
     exist instead.
-- **Live 3D globe tracking** — a rotating 3D Earth (via `globe.gl`/three.js,
-  real night-lights + starfield textures, not a screenshot) with the
-  selected satellite's current position and dashed ground track, updated
-  every second client-side via `satellite.js` (the same SGP4 math the
-  Python backend uses) from the latest TLE already in `data.json`. No live
-  server needed for this part — it's just math running on data that's
-  already there.
+- **Live 3D globe tracking** — a 3D Earth (via `globe.gl`/three.js, real
+  night-lights + starfield textures, not a screenshot) whose camera
+  continuously follows the selected satellite's current position, with a
+  pulsing marker and animated dashed ground track, updated every second
+  client-side via `satellite.js` (the same SGP4 math the Python backend
+  uses) from the latest TLE already in `data.json`. No live server needed
+  for this part — it's just math running on data that's already there.
 - **Status panel** — TLE age/freshness, the latest detected maneuver (if
   any), and SatNOGS observation health, straight from the same
   `state.json` the scheduled workflow maintains.
@@ -143,12 +143,20 @@ something you can actually click through instead of reading JSON:
   objects (an individual Starlink, a GPS satellite) don't have one of their
   own, and the panel just stays hidden for those rather than inventing
   something.
-- **Deep Space Probes section** — real live distance/speed for Voyager 1,
-  Voyager 2, Pioneer 10, and Pioneer 11 from NASA/JPL's free Horizons API,
-  computed fresh every scheduled run. These aren't Earth-orbiting (no
-  NORAD ID/TLE), so they're a separate section below the globe rather than
-  a marker on it — Horizons still reports real, physics-computed positions
-  for Pioneer 10/11 even though NASA lost contact with them decades ago.
+- **Deep Space Probes** — Voyager 1, Voyager 2, Pioneer 10, and Pioneer 11
+  are real, individually selectable entries in the satellite dropdown,
+  under their own "Deep Space Probes" category, exactly like every other
+  tracked object. Picking one shows real live distance/speed from NASA/JPL's
+  free Horizons API (computed fresh every scheduled run) in the Status
+  panel, and real, currently-accurate instrument status in "What This
+  Satellite Actually Does" (e.g. Voyager 1 is down to two operating
+  instruments as of mid-2026 — NASA has been shutting the rest off to
+  conserve its dwindling power supply). These aren't Earth-orbiting (no
+  NORAD ID/TLE), so no marker appears on the globe for them — Horizons still
+  reports real, physics-computed positions for Pioneer 10/11 even though
+  NASA lost contact with them decades ago. Uses JPL Horizons' own real
+  (always-negative) spacecraft ID as a stable pseudo-NORAD-ID, so it can
+  never collide with a real satellite's ID.
 - **Volcano Watch panel** — real-time USGS elevated-volcano alert status,
   shown on the real thermal-imaging Earth observation satellites (Terra,
   Aqua, Suomi NPP, NOAA-20). Honestly scoped: USGS's feed is US-only

@@ -150,6 +150,20 @@ function renderStatus(sat) {
   const el = document.getElementById("status-content");
   const rows = [];
 
+  // Deep space probes (Voyager/Pioneer) aren't Earth-orbiting -- no NORAD
+  // TLE, no maneuver detection, no SatNOGS observations apply to them. Real
+  // live distance/speed from JPL Horizons instead (see deep_space.py).
+  if (sat.deep_space_status) {
+    const d = sat.deep_space_status;
+    rows.push(`<div class="status-row"><span class="label">Distance from Earth</span><br>` +
+      `${d.distance_from_earth_au.toFixed(2)} AU (${(d.distance_from_earth_km / 1e9).toFixed(2)} billion km)</div>`);
+    rows.push(`<div class="status-row"><span class="label">Current speed relative to Earth</span><br>${d.speed_km_s.toFixed(2)} km/s</div>`);
+    rows.push(`<div class="status-row"><span class="label">Launched</span><br>${d.launched}</div>`);
+    rows.push(`<div class="status-row"><span class="label">Computed as of</span><br>${d.epoch} (NASA/JPL Horizons)</div>`);
+    el.innerHTML = rows.join("");
+    return;
+  }
+
   rows.push(`<div class="status-row"><span class="label">NORAD ID</span><br>${sat.norad_id}</div>`);
 
   if (sat.tle_age_days !== null && sat.tle_age_days !== undefined) {
@@ -229,7 +243,9 @@ function renderInstruments(sat) {
   // points at the real live number already shown above rather than
   // quoting one made-up cadence for everything.
   let updateNote = "This site checks for new data automatically every hour.";
-  if (sat.tle_age_days !== null && sat.tle_age_days !== undefined) {
+  if (sat.deep_space_status) {
+    updateNote += " The distance/speed above is recomputed by NASA/JPL's Horizons system on every check, from this object's own tracked (or, for a probe NASA has lost contact with, ballistically projected) trajectory.";
+  } else if (sat.tle_age_days !== null && sat.tle_age_days !== undefined) {
     updateNote += sat.tle_age_days < 0
       ? " This satellite's own tracking data (TLE) is current -- see \"TLE age\" above."
       : ` This satellite's own tracking data (TLE) was last updated ${sat.tle_age_days.toFixed(1)} day(s) ago (see "TLE age" above) -- how often NORAD republishes it varies a lot by object.`;
@@ -390,29 +406,6 @@ function renderAchievement(sat) {
   `;
 }
 
-function renderDeepSpaceProbes() {
-  const panel = document.getElementById("deep-space-panel");
-  const el = document.getElementById("deep-space-content");
-  const probes = siteData.deep_space_probes || [];
-
-  if (probes.length === 0) {
-    panel.hidden = true;
-    return;
-  }
-
-  panel.hidden = false;
-  el.innerHTML = probes.map((p) => `
-    <div class="probe-card">
-      <h3>${p.name}</h3>
-      <div class="probe-stat"><span class="label">Distance from Earth</span><br>
-        ${p.distance_from_earth_au.toFixed(2)} AU (${(p.distance_from_earth_km / 1e9).toFixed(2)} billion km)</div>
-      <div class="probe-stat"><span class="label">Current speed relative to Earth</span><br>
-        ${p.speed_km_s.toFixed(2)} km/s</div>
-      <div class="probe-stat"><span class="label">Launched</span><br>${p.launched}</div>
-      <div class="probe-milestone">${p.milestone}</div>
-    </div>
-  `).join("");
-}
 
 function renderVolcanoStatus(sat) {
   const panel = document.getElementById("volcano-panel");
@@ -443,7 +436,7 @@ function renderVolcanoStatus(sat) {
     </div>
   `);
   el.innerHTML = `
-    <p class="deep-space-note">Real-time USGS alert status, US volcanoes only -- this is the kind of thing thermal-imaging
+    <p class="panel-note">Real-time USGS alert status, US volcanoes only -- this is the kind of thing thermal-imaging
     satellites like this one help monitor, not something computed by this site itself.</p>
     ${rows.join("")}
   `;
@@ -492,7 +485,7 @@ function renderPrecipitationForecast(sat) {
           `${precip[idx].toFixed(1)} mm rain, ${snow[idx].toFixed(1)} cm snow (forecast)</div>`;
       });
       el.innerHTML = `
-        <p class="deep-space-note">Ground weather forecast (Open-Meteo) at this satellite's current position
+        <p class="panel-note">Ground weather forecast (Open-Meteo) at this satellite's current position
         (${pos.lat.toFixed(1)}, ${pos.lng.toFixed(1)}) -- a weather-model forecast, not something the satellite
         itself measured.</p>
         ${rows.join("")}
@@ -716,7 +709,6 @@ function loadData() {
       siteData = data;
       document.getElementById("generated-at").textContent = `Data as of ${new Date(data.generated_at).toLocaleString()}`;
       populateDropdown();
-      renderDeepSpaceProbes();
       // Select whatever option the dropdown actually shows as chosen (its
       // first <option> in DOM/category order), not data.satellites[0] --
       // those two orderings differ (satellites[] is sorted by NORAD ID,

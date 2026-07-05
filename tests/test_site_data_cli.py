@@ -131,7 +131,13 @@ def test_conjunctions_and_crew_are_read_from_state_json(tmp_path):
             "min_range_km": 1.2, "max_probability": 0.001,
         }],
         "crew_by_craft": {"ISS": ["Jane Doe"]},
-        "deep_space_probes": [{"key": "voyager_1", "name": "Voyager 1", "distance_from_earth_km": 2.5e10}],
+        "deep_space_probes": [{
+            "key": "voyager_1", "name": "Voyager 1", "pseudo_norad_id": -31,
+            "launched": "1977-09-05", "milestone_headline": "h", "milestone_detail": "d",
+            "instruments": [], "data_products": [], "description": "desc",
+            "epoch": "2026-Jul-05 00:00:00.0000", "distance_from_earth_km": 2.5e10,
+            "distance_from_earth_au": 167.0, "speed_km_s": 37.5,
+        }],
     }))
     out_path = tmp_path / "data.json"
 
@@ -142,10 +148,14 @@ def test_conjunctions_and_crew_are_read_from_state_json(tmp_path):
     ])
 
     data = json.loads(out_path.read_text())
-    sat = data["satellites"][0]
+    by_id = {s["norad_id"]: s for s in data["satellites"]}
+    sat = by_id[NORAD_ID]
     assert sat["conjunctions"][0]["other_name"] == "RANDOM DEBRIS"
     assert sat["crew_aboard"] == ["Jane Doe"]
-    assert data["deep_space_probes"][0]["name"] == "Voyager 1"
+    # Voyager 1 shows up as a real selectable satellite entry, not a
+    # separate top-level section
+    assert by_id[-31]["name"] == "Voyager 1"
+    assert by_id[-31]["category"] == "deep_space_probes"
 
 
 def test_satellite_never_fetched_yet_still_appears_with_nulls(tmp_path):

@@ -77,7 +77,10 @@ def test_fetch_probe_status_returns_real_fields():
 
     assert isinstance(status, ProbeStatus)
     assert status.name == "Voyager 1"
+    assert status.pseudo_norad_id == -31
     assert status.launched == "1977-09-05"
+    assert status.milestone_headline
+    assert status.milestone_detail
     assert status.distance_from_earth_km == 2.547842153013403e10
     assert status.distance_from_earth_au == status.distance_from_earth_km / AU_KM
     assert status.speed_km_s > 0

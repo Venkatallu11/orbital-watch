@@ -95,6 +95,7 @@ CATEGORY_LABELS: dict[str, str] = {
     "navigation": "Navigation (GNSS)",
     "communications": "Communications Megaconstellations",
     "amateur": "Amateur Radio & CubeSats",
+    "deep_space_probes": "Deep Space Probes (Not Earth-Orbiting)",
     "uncategorized": "Other",
 }
 
@@ -147,6 +148,7 @@ class SiteSatellite:
     crew_aboard: list[str] | None
     achievement: dict | None
     volcano_alerts: list[dict] | None
+    deep_space_status: dict | None
 
 
 @dataclass
@@ -209,15 +211,53 @@ def build_site_data(
                 crew_aboard=crew_by_craft.get(_SPACE_STATION_CRAFT.get(norad_id, "")),
                 achievement=achievements.get(norad_id),
                 volcano_alerts=volcano_alerts if norad_id in _THERMAL_IMAGING_NORAD_IDS else None,
+                deep_space_status=None,
+            )
+        )
+
+    # Voyager 1/2, Pioneer 10/11 are real objects but not Earth-orbiting --
+    # no NORAD ID/TLE, so they can't come from watchlist.json the way the
+    # other 52 do. They're appended here as ordinary SiteSatellite entries
+    # (using JPL Horizons' own real, always-negative spacecraft ID as a
+    # pseudo norad_id -- can never collide with a real, always-positive
+    # NORAD number) so they show up in the same satellite picker/dropdown,
+    # under their own "Deep Space Probes" category, instead of being a
+    # separate page section a person can't select the same way.
+    for probe in deep_space_probes:
+        satellites.append(
+            SiteSatellite(
+                norad_id=probe["pseudo_norad_id"],
+                name=probe["name"],
+                line1="",
+                line2="",
+                tle_age_days=None,
+                object_type="Deep space probe (not Earth-orbiting)",
+                imagery={"kind": "none"},
+                latest_maneuver=None,
+                satnogs_health=None,
+                category="deep_space_probes",
+                instruments={
+                    "instruments": probe["instruments"],
+                    "data_products": probe["data_products"],
+                    "description": probe["description"],
+                },
+                conjunctions=[],
+                crew_aboard=None,
+                achievement={"headline": probe["milestone_headline"], "detail": probe["milestone_detail"]},
+                volcano_alerts=None,
+                deep_space_status={
+                    "launched": probe["launched"],
+                    "epoch": probe["epoch"],
+                    "distance_from_earth_km": probe["distance_from_earth_km"],
+                    "distance_from_earth_au": probe["distance_from_earth_au"],
+                    "speed_km_s": probe["speed_km_s"],
+                },
             )
         )
 
     return {
         "generated_at": generated_at,
         "category_labels": CATEGORY_LABELS,
-        # Not Earth-orbiting, no TLE, not part of `satellites` -- see
-        # deep_space.py's docstring for why these are a separate section.
-        "deep_space_probes": deep_space_probes,
         "satellites": [
             {
                 "norad_id": s.norad_id,
@@ -235,6 +275,7 @@ def build_site_data(
                 "crew_aboard": s.crew_aboard,
                 "achievement": s.achievement,
                 "volcano_alerts": s.volcano_alerts,
+                "deep_space_status": s.deep_space_status,
             }
             for s in satellites
         ],

@@ -51,8 +51,10 @@ def test_digest_combines_socrates_and_satnogs_via_the_real_cli(tmp_path, monkeyp
         lambda: [CrewMember(name="Jane Doe", craft="ISS")],
     )
     fake_probe = ProbeStatus(
-        key="voyager_1", name="Voyager 1", launched="1977-09-05",
-        milestone="test milestone", epoch="2026-Jul-05 00:00:00.0000",
+        key="voyager_1", name="Voyager 1", pseudo_norad_id=-31, launched="1977-09-05",
+        milestone_headline="test headline", milestone_detail="test detail",
+        instruments=["MAG"], data_products=["magnetic field"], description="test description",
+        epoch="2026-Jul-05 00:00:00.0000",
         distance_from_earth_km=2.5e10, distance_from_earth_au=167.0,
         speed_km_s=37.5,
     )
