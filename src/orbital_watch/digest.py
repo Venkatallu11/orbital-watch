@@ -13,6 +13,23 @@ from orbital_watch.satnogs import ObservationHealth
 from orbital_watch.socrates import Conjunction
 
 
+def format_tle_age(age_days: float) -> str:
+    """Renders tle_age_days as a sentence, including the (real, if rare)
+    case where a TLE's own epoch is later than the fetch time -- seen live
+    on NORAD 25867/Chandra (2026-07-05): CelesTrak occasionally publishes
+    an element set whose fit epoch is a day or two ahead of when it's
+    fetched, which is a genuine catalog/clock-skew artifact, not a bug in
+    tle_age_days' math. A bare negative number ("-1.8 day(s) old") reads as
+    broken, so it's spelled out instead of just formatted with %.1f."""
+    if age_days < 0:
+        return (
+            f"TLE epoch is {abs(age_days):.1f} day(s) ahead of fetch time "
+            f"(catalog/clock-skew artifact, not stale data)"
+        )
+    flag = " -- STALE, treat any numbers above with extra caution" if age_days > 7 else ""
+    return f"TLE is {age_days:.1f} day(s) old{flag}"
+
+
 @dataclass
 class ManeuverAlert:
     norad_id: int
@@ -58,9 +75,7 @@ def generate_digest(
     if tle_ages_days:
         lines.append("## Data freshness (how old is the TLE behind each number)")
         for norad_id in sorted(tle_ages_days):
-            age = tle_ages_days[norad_id]
-            flag = " -- STALE, treat any numbers above with extra caution" if age > 7 else ""
-            lines.append(f"- **{name_for(norad_id)}**: TLE is {age:.1f} day(s) old{flag}")
+            lines.append(f"- **{name_for(norad_id)}**: {format_tle_age(tle_ages_days[norad_id])}")
         lines.append("")
 
     lines.append("## Conjunction risk (CelesTrak SOCRATES, filtered to your watchlist)")

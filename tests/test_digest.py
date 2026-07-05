@@ -102,6 +102,16 @@ def test_fresh_tle_is_not_flagged():
     assert "STALE" not in digest
 
 
+def test_negative_tle_age_is_explained_not_shown_as_a_bare_negative_number():
+    """Seen live (2026-07-05, NORAD 25867/Chandra): CelesTrak occasionally
+    publishes a TLE whose epoch is slightly ahead of fetch time -- a real
+    catalog/clock-skew artifact, not a bug. Should read as an explanation,
+    not a confusing "-1.8 day(s) old"."""
+    digest = generate_digest(NAMES, [], [], [], tle_ages_days={25544: -1.8})
+    assert "-1.8 day(s) old" not in digest
+    assert "ahead of fetch time" in digest
+
+
 def test_no_freshness_data_omits_the_section():
     digest = generate_digest(NAMES, [], [], [])
     assert "Data freshness" not in digest

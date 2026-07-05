@@ -92,12 +92,25 @@ function renderStatus(sat) {
   rows.push(`<div class="status-row"><span class="label">NORAD ID</span><br>${sat.norad_id}</div>`);
 
   if (sat.tle_age_days !== null && sat.tle_age_days !== undefined) {
-    const stale = sat.tle_age_days > 7;
-    const badge = stale
-      ? '<span class="badge badge-warn">STALE</span>'
-      : '<span class="badge badge-ok">fresh</span>';
+    // A negative age is real (if rare) live behavior, not a bug: CelesTrak
+    // occasionally publishes a TLE whose fit epoch is slightly ahead of
+    // fetch time -- a catalog/clock-skew artifact (confirmed live,
+    // 2026-07-05, NORAD 25867/Chandra: -1.8 days). Spelled out instead of
+    // shown as a bare "-1.8 day(s) old", which reads as broken.
+    let ageText;
+    let badge;
+    if (sat.tle_age_days < 0) {
+      ageText = `epoch ${Math.abs(sat.tle_age_days).toFixed(1)} day(s) ahead of fetch time`;
+      badge = '<span class="badge badge-ok">fresh</span>';
+    } else {
+      const stale = sat.tle_age_days > 7;
+      ageText = `${sat.tle_age_days.toFixed(1)} day(s) old`;
+      badge = stale
+        ? '<span class="badge badge-warn">STALE</span>'
+        : '<span class="badge badge-ok">fresh</span>';
+    }
     rows.push(
-      `<div class="status-row"><span class="label">TLE age</span><br>${sat.tle_age_days.toFixed(1)} day(s) ${badge}</div>`
+      `<div class="status-row"><span class="label">TLE age</span><br>${ageText} ${badge}</div>`
     );
   } else {
     rows.push('<div class="status-row"><span class="label">TLE age</span><br>not fetched yet</div>');
