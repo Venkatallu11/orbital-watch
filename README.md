@@ -1,5 +1,9 @@
 # orbital-watch
 
+**Live site: https://venkatallu11.github.io/orbital-watch/** — pick a
+satellite, see it move in real time, and see its current status/imagery.
+Updates automatically every hour (see "Website" below).
+
 A free, open alternative to the "did this satellite maneuver, and should I
 be worried?" question that currently gets answered either by a
 $2,500/month/satellite commercial SSA subscription (LeoLabs), an
@@ -58,8 +62,37 @@ piece together by hand:
 
 A free static site, deployed on GitHub Pages, that turns the watchlist into
 something you can actually click through instead of reading JSON:
+**https://venkatallu11.github.io/orbital-watch/**
 
-- **Pick a satellite** from a dropdown (all 10 watched objects by default).
+- **Pick a satellite** from a dropdown of 50 real, currently-tracked
+  objects, grouped by category so 50 options stay browsable instead of one
+  giant flat list:
+  - **Earth Observation & Weather** (13) — Terra, Aqua, Suomi NPP, NOAA-19,
+    NOAA-20, Landsat 8, GOES-16, GOES-18, Meteosat-11, Metop-B, Sentinel-3A,
+    RADARSAT-2, Pleiades 1A
+  - **Space Telescopes / Deep-Space & Solar Observers** (9) — Hubble,
+    Chandra X-ray Observatory, XMM-Newton, Swift, Fermi (FGRST/GLAST), SDO,
+    Hinode, NuSTAR, IXPE
+  - **Asteroid & Near-Earth Object Watchers** (1) — NEOSSAT, Canada's actual
+    orbiting asteroid/comet-survey telescope
+  - **Space Stations & Human Spaceflight** (6) — ISS (ZARYA + Poisk + Nauka
+    modules), CSS (Tianhe + Wentian + Mengtian modules)
+  - **Navigation (GNSS)** (9) — GPS, Galileo, BeiDou, GLONASS satellites
+  - **Communications Megaconstellations** (7) — Starlink, OneWeb, Iridium
+  - **Amateur Radio & CubeSats** (5) — including AO-7, still operating
+    since 1974
+  - All 50 were pulled from CelesTrak's live GROUP catalogs (see
+    `discover.py`/the `discover-candidates` workflow below), not
+    hand-guessed NORAD IDs.
+  - **Not included: Venus/other-planet orbiters, or anything "watching for
+    aliens."** This whole system works by propagating NORAD-cataloged
+    Earth-orbit TLEs with SGP4 — that method has no meaning for a
+    Venus-orbiting or deep-space spacecraft (no Earth-orbit elements exist
+    for them), and there's no real spacecraft whose mission is "look for
+    aliens" to honestly include. NEOSSAT (asteroids/comets) and the
+    Earth-orbiting space telescopes are the closest real equivalents to
+    "watching interesting things far away," which is why those categories
+    exist instead.
 - **Live position tracking** — the map marker moves every second and the
   dashed ground track is drawn for a full orbit ahead, computed client-side
   in the browser via `satellite.js` (the same SGP4 math the Python backend
@@ -70,21 +103,35 @@ something you can actually click through instead of reading JSON:
   `state.json` the scheduled workflow maintains.
 - **Imagery** — real pictures, not stock photos, matched honestly to what
   each satellite can actually provide:
-  - Earth-observation satellites (Terra, Aqua, Suomi NPP, NOAA-20, Landsat 8)
-    get their actual instrument's imagery from NASA GIBS — yesterday's image
-    for daily-composite instruments, clearly labeled "annual composite, not
-    today's image" for Landsat (which has no daily global GIBS layer).
+  - Earth-observation satellites with a real GIBS layer (Terra, Aqua, Suomi
+    NPP, NOAA-20, Landsat 8) get their actual instrument's imagery from NASA
+    GIBS — yesterday's image for daily-composite instruments, clearly
+    labeled "annual composite, not today's image" for Landsat (which has no
+    daily global GIBS layer).
   - Hubble gets NASA's Astronomy Picture of the Day (APOD) — real deep-space
     imagery, honestly captioned as "may or may not be from Hubble
     specifically" since APOD isn't Hubble-exclusive.
-  - ISS, NOAA-19, and the two Starlinks honestly show "No public imagery
-    source available" rather than faking something.
+  - Everything else (the other 44 satellites, including the other space
+    telescopes, all of navigation/comms/amateur/stations, and NEOSSAT)
+    honestly shows "No public imagery source available" rather than faking
+    a picture — no confirmed free/keyless daily-image API was found for
+    them. Extending the GIBS/APOD mapping to more of these is a real
+    candidate for future work, not done here to avoid guessing at
+    unconfirmed API endpoints.
 
 `docs/data.json` is regenerated every hour by the same scheduled workflow
-(via `orbital-watch-site-data`) and deployed straight to Pages — the site
-always reflects the latest fetch, with no manual step. See the workflow
-file's header comment for the one-time "Settings → Pages → Source: GitHub
-Actions" toggle a repo owner has to flip once before deploys can succeed.
+(via `orbital-watch-site-data`, using `categories.json` for the group each
+satellite belongs to) and deployed straight to Pages — the site always
+reflects the latest fetch, with no manual step. See the workflow file's
+header comment for the one-time "Settings → Pages → Source: GitHub
+Actions" toggle a repo owner has to flip once before deploys can succeed
+(already done for this repo).
+
+**Curating the watchlist further:** `discover_cli.py` (run via the
+manual-only `discover-candidates` workflow, since celestrak.org isn't
+reachable from every sandbox) lists real, currently-active satellites per
+CelesTrak GROUP (stations, weather, science, gps-ops, starlink, etc.) so
+new additions are always verified real objects, not guesses.
 
 ## Accuracy: what's a real fix vs. a hard ceiling
 
@@ -173,6 +220,17 @@ bandwidth limits — other projects report the same timeout, and it happened
 here too (run #3). That's exactly why the Space-Track fallback exists and
 why it's worth configuring those credentials even though CelesTrak alone
 sometimes works fine.
+
+**Update (2026-07-05): watchlist expanded from 10 to 50 real satellites**
+across the 7 categories described in "Website" above, all pulled from
+CelesTrak's live GROUP catalogs via `discover_cli.py` (not hand-guessed).
+Confirmed on a live run right after the expansion: TLEs fetched
+successfully for the large majority of the new 50 (a handful of 404s for
+already-decayed objects are expected and handled gracefully, same as
+before), and `docs/data.json`/the live site regenerated and deployed
+without errors. The 10-satellite figures above are the original run's
+real numbers, left as-is as an honest historical record rather than
+silently rewritten.
 
 **Still a documented best-guess, flagged in code:** the exact TCA date
 format inside the SOCRATES CSV specifically (not yet seen a real response
@@ -269,13 +327,14 @@ python -m orbital_watch.cli \
 Run this on a schedule — **a working GitHub Actions workflow is included**
 at `.github/workflows/orbital-watch.yml` (hourly cron + manual
 `workflow_dispatch`), which commits `state.json`/`digest.md` back to the
-repo after each run since Actions runners are ephemeral. It needs a real
+repo after each run since Actions runners are ephemeral, then generates and
+deploys the website (see "Website" above). It needs a real
 `watchlist.json` committed (not gitignored, unlike a personal one under a
 different filename) — see the workflow file's header comment for the
 one-time setup (copy the example, optionally add Space-Track/webhook repo
-secrets). It hasn't been run live yet (see "Status" above for why); the
-YAML is validated to parse correctly, but confirm it end-to-end once
-merged to the default branch.
+secrets, and the one-time "Settings → Pages → Source: GitHub Actions"
+toggle for the website). Confirmed running live on this repo's own
+schedule (see "Status" above for the real run history).
 
 Auto-exclude noisy constellations by owner instead of hand-listing every
 object (e.g. skip all Starlink station-keeping burns):
@@ -365,8 +424,14 @@ src/orbital_watch/
   history_cli.py     Satellite history entry point
   site_data.py       Shapes state.json + watchlist into docs/data.json (pure function, no I/O)
   site_data_cli.py   Website data-generation entry point
+  discover.py        CelesTrak GROUP catalog fetch, for finding real satellites to add
+  discover_cli.py    Watchlist-curation entry point (prints candidates, doesn't modify anything)
 docs/                Static website (GitHub Pages): index.html, app.js, style.css, data.json (generated)
-tests/               93 tests, fully offline
+watchlist.json       50 real NORAD IDs the scheduled workflow watches
+names.json           norad_id -> friendly display name
+categories.json      norad_id -> category key (see "Website" above), used for the site's optgroup dropdown
+tests/               102 tests, fully offline
 pyproject.toml       Packaging + console_scripts (orbital-watch, orbital-watch-biography, orbital-watch-reentry, orbital-watch-history, orbital-watch-site-data)
-.github/workflows/orbital-watch.yml   Scheduled run + website deploy (see above)
+.github/workflows/orbital-watch.yml         Scheduled run + website deploy (see above)
+.github/workflows/discover-candidates.yml   Manual-only watchlist-curation helper (see "Website" above)
 ```

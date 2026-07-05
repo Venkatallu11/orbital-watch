@@ -99,6 +99,7 @@ jobs:
             --watchlist watchlist.json \
             --state state.json \
             --object-names names.json \
+            --categories-file categories.json \
             --out docs/data.json
 
       - name: Set up GitHub Pages

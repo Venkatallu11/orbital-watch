@@ -44,6 +44,30 @@ def test_generates_data_json_from_a_real_state_file(tmp_path, capsys):
     assert sat["latest_maneuver"]["reason"] == "big jump"
     assert sat["satnogs_health"]["reason"] == "8/9 good"
     assert sat["imagery"] == {"kind": "none"}  # ISS has no imagery source
+    assert sat["category"] == "uncategorized"  # no --categories-file given
+
+
+def test_categories_file_attaches_category_per_satellite(tmp_path):
+    watchlist_path = tmp_path / "watchlist.json"
+    watchlist_path.write_text(json.dumps([NORAD_ID]))
+    state_path = tmp_path / "state.json"
+    state_path.write_text(json.dumps({
+        "previous_tles": {str(NORAD_ID): {"line1": LINE1, "line2": LINE2}},
+    }))
+    categories_path = tmp_path / "categories.json"
+    categories_path.write_text(json.dumps({str(NORAD_ID): "space_stations"}))
+    out_path = tmp_path / "data.json"
+
+    site_data_cli.main([
+        "--watchlist", str(watchlist_path),
+        "--state", str(state_path),
+        "--categories-file", str(categories_path),
+        "--out", str(out_path),
+    ])
+
+    data = json.loads(out_path.read_text())
+    assert data["satellites"][0]["category"] == "space_stations"
+    assert data["category_labels"]["space_stations"] == "Space Stations & Human Spaceflight"
 
 
 def test_satellite_never_fetched_yet_still_appears_with_nulls(tmp_path):

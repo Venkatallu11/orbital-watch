@@ -33,6 +33,21 @@ _GIBS_LAYERS: dict[int, dict] = {
 }
 _APOD_NORAD_IDS = {20580}  # Hubble Space Telescope
 
+# Human-readable labels for categories.json's category keys -- kept here
+# (not hardcoded in the frontend) so adding a new category is a one-place
+# change. "uncategorized" is the fallback for any watchlist entry missing
+# from categories.json, not a real category a satellite is picked for.
+CATEGORY_LABELS: dict[str, str] = {
+    "earth_observation": "Earth Observation & Weather",
+    "space_telescopes": "Space Telescopes (Deep-Space & Solar Observers)",
+    "asteroid_watch": "Asteroid & Near-Earth Object Watchers",
+    "space_stations": "Space Stations & Human Spaceflight",
+    "navigation": "Navigation (GNSS)",
+    "communications": "Communications Megaconstellations",
+    "amateur": "Amateur Radio & CubeSats",
+    "uncategorized": "Other",
+}
+
 
 def imagery_descriptor(norad_id: int) -> dict:
     if norad_id in _GIBS_LAYERS:
@@ -54,6 +69,7 @@ class SiteSatellite:
     imagery: dict
     latest_maneuver: dict | None
     satnogs_health: dict | None
+    category: str
 
 
 @dataclass
@@ -71,11 +87,13 @@ def build_site_data(
     maneuver_events: dict[str, list],
     satnogs_healths_by_id: dict[int, dict],
     object_types: dict[int, str] | None = None,
+    categories: dict[int, str] | None = None,
 ) -> dict:
     """Pure function, no I/O -- takes already-loaded data (from state.json,
     watchlist.json, etc.) and shapes it into the JSON the website expects.
     Kept separate from any file reading so it's trivially testable."""
     object_types = object_types or {}
+    categories = categories or {}
     satellites = []
 
     for norad_id in sorted(watchlist):
@@ -96,11 +114,13 @@ def build_site_data(
                 imagery=imagery_descriptor(norad_id),
                 latest_maneuver=latest_maneuver,
                 satnogs_health=satnogs_healths_by_id.get(norad_id),
+                category=categories.get(norad_id, "uncategorized"),
             )
         )
 
     return {
         "generated_at": generated_at,
+        "category_labels": CATEGORY_LABELS,
         "satellites": [
             {
                 "norad_id": s.norad_id,
@@ -112,6 +132,7 @@ def build_site_data(
                 "imagery": s.imagery,
                 "latest_maneuver": s.latest_maneuver,
                 "satnogs_health": s.satnogs_health,
+                "category": s.category,
             }
             for s in satellites
         ],

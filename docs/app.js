@@ -176,12 +176,38 @@ function selectSatellite(noradId) {
 function populateDropdown() {
   const select = document.getElementById("satellite-select");
   select.innerHTML = "";
+
+  const labels = siteData.category_labels || {};
+  const byCategory = new Map();
   siteData.satellites.forEach((sat) => {
-    const option = document.createElement("option");
-    option.value = sat.norad_id;
-    option.textContent = `${sat.name} (${sat.norad_id})`;
-    select.appendChild(option);
+    const category = sat.category || "uncategorized";
+    if (!byCategory.has(category)) byCategory.set(category, []);
+    byCategory.get(category).push(sat);
   });
+
+  // Grouped with <optgroup> instead of one flat 50-entry list -- with this
+  // many satellites a flat dropdown is unusable, so people can jump
+  // straight to "Earth Observation" or "Space Telescopes" etc. Category
+  // order follows category_labels' key order (from the backend) rather
+  // than whatever order satellites happen to appear in, so the groups show
+  // up in a stable, sensible order every time.
+  const orderedCategories = Object.keys(labels).filter((c) => byCategory.has(c));
+  for (const category of byCategory.keys()) {
+    if (!orderedCategories.includes(category)) orderedCategories.push(category);
+  }
+
+  for (const category of orderedCategories) {
+    const group = document.createElement("optgroup");
+    group.label = labels[category] || category;
+    byCategory.get(category).forEach((sat) => {
+      const option = document.createElement("option");
+      option.value = sat.norad_id;
+      option.textContent = `${sat.name} (${sat.norad_id})`;
+      group.appendChild(option);
+    });
+    select.appendChild(group);
+  }
+
   select.addEventListener("change", () => selectSatellite(Number(select.value)));
 }
 
@@ -192,8 +218,16 @@ function loadData() {
       siteData = data;
       document.getElementById("generated-at").textContent = `Data as of ${new Date(data.generated_at).toLocaleString()}`;
       populateDropdown();
-      if (data.satellites.length > 0) {
-        selectSatellite(data.satellites[0].norad_id);
+      // Select whatever option the dropdown actually shows as chosen (its
+      // first <option> in DOM/category order), not data.satellites[0] --
+      // those two orderings differ (satellites[] is sorted by NORAD ID,
+      // the dropdown is grouped by category), and picking the JSON array's
+      // order here previously left the visible dropdown selection and the
+      // rendered status/map for two different satellites.
+      const select = document.getElementById("satellite-select");
+      if (select.options.length > 0) {
+        select.value = select.options[0].value;
+        selectSatellite(Number(select.value));
       }
     })
     .catch((err) => {

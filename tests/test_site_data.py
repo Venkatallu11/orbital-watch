@@ -86,3 +86,43 @@ def test_satellites_are_sorted_by_norad_id():
     )
     ids = [s["norad_id"] for s in result["satellites"]]
     assert ids == [20580, 25544, 46052]
+
+
+def test_category_is_attached_when_provided():
+    result = build_site_data(
+        generated_at="x",
+        watchlist=[25544],
+        object_names={},
+        previous_tles={},
+        tle_ages_days={},
+        maneuver_events={},
+        satnogs_healths_by_id={},
+        categories={25544: "space_stations"},
+    )
+    assert result["satellites"][0]["category"] == "space_stations"
+
+
+def test_category_defaults_to_uncategorized_not_a_crash():
+    result = build_site_data(
+        generated_at="x",
+        watchlist=[99999],
+        object_names={},
+        previous_tles={},
+        tle_ages_days={},
+        maneuver_events={},
+        satnogs_healths_by_id={},
+    )
+    assert result["satellites"][0]["category"] == "uncategorized"
+
+
+def test_category_labels_are_included_at_top_level():
+    result = build_site_data(
+        generated_at="x",
+        watchlist=[],
+        object_names={},
+        previous_tles={},
+        tle_ages_days={},
+        maneuver_events={},
+        satnogs_healths_by_id={},
+    )
+    assert result["category_labels"]["space_stations"] == "Space Stations & Human Spaceflight"

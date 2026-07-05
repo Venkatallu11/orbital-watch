@@ -6,7 +6,8 @@ workflow), so the site always reflects the latest fetch.
 
 Usage:
     python -m orbital_watch.site_data_cli --watchlist watchlist.json \\
-        --state state.json --object-names names.json --out docs/data.json
+        --state state.json --object-names names.json \\
+        --categories-file categories.json --out docs/data.json
 """
 from __future__ import annotations
 
@@ -24,6 +25,7 @@ def main(argv=None) -> int:
     parser.add_argument("--watchlist", required=True)
     parser.add_argument("--state", required=True)
     parser.add_argument("--object-names", help="Optional JSON file: {\"norad_id\": \"friendly name\"}")
+    parser.add_argument("--categories-file", help="Optional JSON file: {\"norad_id\": \"category_key\"}")
     parser.add_argument("--satcat-file", help="Optional local SATCAT CSV for object_type; skipped if omitted")
     parser.add_argument("--out", required=True, help="Path to write data.json, e.g. docs/data.json")
     args = parser.parse_args(argv)
@@ -35,6 +37,11 @@ def main(argv=None) -> int:
     if args.object_names:
         with open(args.object_names) as f:
             object_names = {int(k): v for k, v in json.load(f).items()}
+
+    categories: dict[int, str] = {}
+    if args.categories_file:
+        with open(args.categories_file) as f:
+            categories = {int(k): v for k, v in json.load(f).items()}
 
     object_types: dict[int, str] = {}
     if args.satcat_file:
@@ -80,6 +87,7 @@ def main(argv=None) -> int:
         maneuver_events=maneuver_events,
         satnogs_healths_by_id=satnogs_healths_by_id,
         object_types=object_types,
+        categories=categories,
     )
 
     with open(args.out, "w") as f:
