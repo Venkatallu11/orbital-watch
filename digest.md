@@ -3,6 +3,17 @@
 ## Maneuvers detected (TLE residual analysis)
 Nothing flagged this run.
 
+## Data freshness (how old is the TLE behind each number)
+- **NORAD 20580**: TLE is 0.4 day(s) old
+- **NORAD 25544**: TLE is 0.6 day(s) old
+- **NORAD 25994**: TLE is 0.4 day(s) old
+- **NORAD 27424**: TLE is 0.4 day(s) old
+- **NORAD 33591**: TLE is 0.6 day(s) old
+- **NORAD 37849**: TLE is 0.5 day(s) old
+- **NORAD 39084**: TLE is 0.4 day(s) old
+- **NORAD 43013**: TLE is 0.4 day(s) old
+- **NORAD 46052**: TLE is 0.4 day(s) old
+
 ## Conjunction risk (CelesTrak SOCRATES, filtered to your watchlist)
 No conjunctions involving your watchlist in the current 7-day SOCRATES run.
 

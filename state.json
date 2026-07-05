@@ -42,5 +42,107 @@
     }
   },
   "baseline_history": {},
-  "maneuver_events": {}
+  "maneuver_events": {},
+  "satnogs_health": {
+    "20580": {
+      "norad_id": 20580,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "25544": {
+      "norad_id": 25544,
+      "total_observations": 25,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 25,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "25994": {
+      "norad_id": 25994,
+      "total_observations": 25,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 25,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "27424": {
+      "norad_id": 27424,
+      "total_observations": 25,
+      "good_count": 1,
+      "bad_count": 2,
+      "unvetted_count": 22,
+      "success_rate": 0.3333333333333333,
+      "is_degraded": true,
+      "reason": "only 1/3 recent vetted observations were good (33%) -- worth checking against the TLE-residual signal"
+    },
+    "33591": {
+      "norad_id": 33591,
+      "total_observations": 25,
+      "good_count": 4,
+      "bad_count": 1,
+      "unvetted_count": 20,
+      "success_rate": 0.8,
+      "is_degraded": false,
+      "reason": "4/5 recent vetted observations were good (80%)"
+    },
+    "37849": {
+      "norad_id": 37849,
+      "total_observations": 25,
+      "good_count": 0,
+      "bad_count": 25,
+      "unvetted_count": 0,
+      "success_rate": 0.0,
+      "is_degraded": true,
+      "reason": "only 0/25 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+    },
+    "39084": {
+      "norad_id": 39084,
+      "total_observations": 25,
+      "good_count": 1,
+      "bad_count": 2,
+      "unvetted_count": 22,
+      "success_rate": 0.3333333333333333,
+      "is_degraded": true,
+      "reason": "only 1/3 recent vetted observations were good (33%) -- worth checking against the TLE-residual signal"
+    },
+    "43013": {
+      "norad_id": 43013,
+      "total_observations": 25,
+      "good_count": 0,
+      "bad_count": 10,
+      "unvetted_count": 15,
+      "success_rate": 0.0,
+      "is_degraded": true,
+      "reason": "only 0/10 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+    },
+    "46052": {
+      "norad_id": 46052,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "46356": {
+      "norad_id": 46356,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    }
+  }
 }
