@@ -1,0 +1,22 @@
+name: research probe (temporary)
+
+# One-off manual helper to see real API responses from candidate data
+# sources before building any feature on top of them. Not part of the
+# hourly pipeline. Delete this workflow (and scripts/research_probe.py)
+# once the features it's scouting are either built for real or ruled out.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run research probe
+        run: python scripts/research_probe.py
