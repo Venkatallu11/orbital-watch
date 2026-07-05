@@ -11,9 +11,13 @@ on:
   workflow_dispatch:
     inputs:
       groups:
-        description: "Comma-separated CelesTrak GROUP names"
-        required: true
-        default: "stations,weather,noaa,goes,science,gps-ops,starlink,oneweb,iridium-NEXT,geo,amateur"
+        description: "Comma-separated CelesTrak GROUP names (optional)"
+        required: false
+        default: ""
+      names:
+        description: "Comma-separated CelesTrak NAME substrings to search for (optional, e.g. GPM)"
+        required: false
+        default: ""
       limit_per_group:
         description: "How many entries to show per group"
         required: true
@@ -34,6 +38,13 @@ jobs:
 
       - name: Discover candidates
         run: |
+          ARGS=()
+          if [ -n "${{ github.event.inputs.groups }}" ]; then
+            ARGS+=(--groups "${{ github.event.inputs.groups }}")
+          fi
+          if [ -n "${{ github.event.inputs.names }}" ]; then
+            ARGS+=(--names "${{ github.event.inputs.names }}")
+          fi
           python -m orbital_watch.discover_cli \
-            --groups "${{ github.event.inputs.groups }}" \
-            --limit-per-group "${{ github.event.inputs.limit_per_group }}"
+            --limit-per-group "${{ github.event.inputs.limit_per_group }}" \
+            "${ARGS[@]}"
