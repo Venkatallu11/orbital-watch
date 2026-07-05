@@ -18,9 +18,14 @@ On each scheduled run (`orbital_watch.cli`):
 2. Propagates the *previous* TLE forward to the new TLE's epoch (SGP4) and
    compares predicted vs. actual state — a large mismatch means the object
    did something SGP4 can't explain from the old elements, i.e. it maneuvered.
-3. Checks that residual against the object's *own* rolling history, not a
-   global threshold — a Starlink satellite that station-keeps constantly
-   doesn't spam alerts, but a normally-quiet object that suddenly moves does.
+3. Normalizes that residual by the time gap between the two TLEs (km/day,
+   not raw km) before comparing it against the object's *own* rolling
+   history — published research on this exact technique flags raw km as
+   incomparable across objects with different TLE update cadences (a
+   Starlink updated every ~4h vs. an object updated weekly), which is a
+   real, documented cause of false positives this fixes. A Starlink
+   satellite that station-keeps constantly still doesn't spam alerts, but
+   a normally-quiet object that suddenly moves does.
 4. Optionally (`--include-socrates`) pulls CelesTrak's free SOCRATES
    conjunction report and filters it to your watchlist — real collision-risk
    awareness without us reimplementing conjunction analysis.
@@ -31,8 +36,8 @@ On each scheduled run (`orbital_watch.cli`):
    checks, alerts on anything anomalous (console + optional webhook), and
    persists maneuver events so `biography_cli` can show a timeline later.
 
-Two companion tools round out what a manual analyst currently has to piece
-together by hand:
+Three companion tools round out what a manual analyst currently has to
+piece together by hand:
 
 - **`biography_cli`** — punch in a NORAD ID, get launch history + owner +
   plain-language maneuver timeline in one page, instead of piecing it
@@ -42,6 +47,43 @@ together by hand:
   uncertainty window, produces the actual ground-track corridor the object
   could come down in, instead of the single false-precision pin/time news
   coverage usually reports.
+- **`history_cli`** — reconstructs a satellite's full timeline (residual
+  trend + every maneuver ever detected) from git's own commit history of
+  `state.json`. No separate log file to maintain: every scheduled run
+  already commits state back to the repo, so the history was already
+  sitting there one commit per hour — this just walks it and reads it back
+  as a clean timeline instead of raw `git log`/`git show` digging.
+
+## Accuracy: what's a real fix vs. a hard ceiling
+
+Public TLE data has a real, permanent precision ceiling no amount of code
+fixes: ~1km accuracy right at epoch, degrading to 10s of km after a week
+and up to ~100km after 10 days (published studies, see below) — free data
+will never match a $2,500/month radar network, and this project says so
+rather than overselling.
+
+But research into this exact technique also flagged a **fixable** false-positive
+cause that earlier versions didn't account for: raw km residual isn't
+comparable across objects with different TLE update cadences. Three fixes,
+each grounded in the research, not guessed:
+1. **Per-day normalization** (`propagate.py`'s `position_error_km_per_day`)
+   — the rolling baseline now compares km/day, not raw km, so a satellite
+   updated every 4 hours and one updated weekly are judged on the same
+   footing instead of one producing permanently "louder" numbers than the
+   other for identical underlying behavior.
+2. **TLE staleness surfaced everywhere** (`tle_age_days`) — every digest
+   now shows how old each satellite's TLE is, flagged if over a week old,
+   so anyone reading a number can judge its confidence themselves instead
+   of every figure being presented with the same false precision.
+3. **Space-Track/CelesTrak cross-availability** — already in place via the
+   fallback logic; both being independently-run catalogs, agreement
+   between them (when both are queried) is corroborating evidence.
+
+**Explicitly not attempted, and why:** a real SatNOGS Doppler-shift
+cross-check (comparing actual observed radio frequency to predicted) would
+improve confidence further, but requires processing raw IQ/audio data — a
+legitimately separate signal-processing project, not a quick accuracy fix.
+Flagged as real future work, not faked.
 
 ## Status: what's actually confirmed live vs. still unverified
 
@@ -105,7 +147,7 @@ format inside the SOCRATES CSV specifically (not yet seen a real response
 body with an actual conjunction row to confirm against) — `_parse_tca`
 tries ISO 8601 first, falls back to the human-readable format.
 
-**Tested and passing (66 tests, all offline):**
+**Tested and passing (84 tests, all offline):**
 SGP4 residual math and per-object rolling baseline, all parsers (against
 fixtures built from confirmed real schemas), the reentry corridor math
 (`skyfield`, fully offline), the biography generator, the unified digest,
@@ -148,10 +190,10 @@ python -m orbital_watch.tle_client --selftest
 ## Setup
 
 Either install it as a package (gives you the `orbital-watch`,
-`orbital-watch-biography`, `orbital-watch-reentry` commands directly):
+`orbital-watch-biography`, `orbital-watch-reentry`, `orbital-watch-history` commands directly):
 ```bash
 pip install -e ".[dev]"
-pytest tests/ -v      # 66 tests, all offline, no network needed
+pytest tests/ -v      # 84 tests, all offline, no network needed
 orbital-watch --help
 ```
 Or just install dependencies and run modules directly with `python -m`:
@@ -238,6 +280,19 @@ python -m orbital_watch.reentry_cli \
 This was manually smoke-tested end-to-end (not just via pytest) after
 installing the package: real corridor computed, real GeoJSON file written.
 
+### Satellite history
+
+```bash
+python -m orbital_watch.history_cli \
+    --norad-id 25544 --object-name "ISS (ZARYA)" --repo . --out iss_history.md
+```
+Run this from inside the repo clone (or pass `--repo /path/to/orbital-watch`).
+It reconstructs the object's full residual trend and every maneuver ever
+detected by walking git's own commit history of `state.json` -- no separate
+log file, no schema change, just reading back what the scheduled workflow
+already committed one hour at a time. Manually verified against this
+project's own real commit history (see "Status" above).
+
 ## Known limitations (physics and policy, not implementation gaps)
 
 - **Noisy objects need their own baseline window to fill up**
@@ -258,8 +313,9 @@ installing the package: real corridor computed, real GeoJSON file written.
 src/orbital_watch/
   tle_client.py      TLE fetch (Space-Track / CelesTrak) + parser
   ratelimit.py       Sliding-window rate limiter (Space-Track's documented limits)
-  propagate.py       SGP4 residual computation
+  propagate.py       SGP4 residual computation (per-day normalized) + TLE staleness
   baseline.py        Per-object rolling anomaly baseline
+  history.py         Satellite timeline reconstruction from git's own state.json commits
   socrates.py        CelesTrak SOCRATES conjunction ingestion + watchlist filter
   satnogs.py         SatNOGS observation-health proxy signal
   satcat.py          SATCAT metadata fetch + parser + owner-based auto-exclusion
@@ -271,7 +327,8 @@ src/orbital_watch/
   cli.py             Main scheduled entry point
   biography_cli.py   Satellite biography entry point
   reentry_cli.py     Reentry corridor entry point
-tests/               66 tests, fully offline
-pyproject.toml       Packaging + console_scripts (orbital-watch, orbital-watch-biography, orbital-watch-reentry)
+  history_cli.py     Satellite history entry point
+tests/               84 tests, fully offline
+pyproject.toml       Packaging + console_scripts (orbital-watch, orbital-watch-biography, orbital-watch-reentry, orbital-watch-history)
 .github/workflows/orbital-watch.yml   Scheduled run (see above)
 ```

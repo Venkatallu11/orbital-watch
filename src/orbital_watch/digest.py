@@ -19,6 +19,8 @@ class ManeuverAlert:
     residual_km: float
     z_score: float
     reason: str
+    epoch_gap_days: float | None = None
+    residual_km_per_day: float | None = None
 
 
 def generate_digest(
@@ -26,6 +28,7 @@ def generate_digest(
     maneuver_alerts: list[ManeuverAlert],
     conjunctions: list[Conjunction],
     satnogs_healths: list[ObservationHealth],
+    tle_ages_days: dict[int, float] | None = None,
 ) -> str:
     def name_for(norad_id: int) -> str:
         return object_names.get(norad_id, f"NORAD {norad_id}")
@@ -37,11 +40,28 @@ def generate_digest(
         lines.append("Nothing flagged this run.")
     else:
         for alert in maneuver_alerts:
+            gap_bit = (
+                f", {alert.residual_km_per_day:.2f} km/day over {alert.epoch_gap_days:.2f} day(s) between TLEs"
+                if alert.residual_km_per_day is not None
+                else ""
+            )
             lines.append(
                 f"- **{name_for(alert.norad_id)}**: {alert.reason} "
-                f"({alert.residual_km:.2f} km residual, {alert.z_score:.1f} sigma)"
+                f"({alert.residual_km:.2f} km residual{gap_bit}, {alert.z_score:.1f} sigma)"
             )
     lines.append("")
+
+    # Surfaced per research into false-positive causes: SGP4/TLE accuracy
+    # degrades from ~1km near epoch to 10s of km after a week, so every
+    # number above deserves to be read next to how stale its input was,
+    # rather than presented with a false sense of uniform precision.
+    if tle_ages_days:
+        lines.append("## Data freshness (how old is the TLE behind each number)")
+        for norad_id in sorted(tle_ages_days):
+            age = tle_ages_days[norad_id]
+            flag = " -- STALE, treat any numbers above with extra caution" if age > 7 else ""
+            lines.append(f"- **{name_for(norad_id)}**: TLE is {age:.1f} day(s) old{flag}")
+        lines.append("")
 
     lines.append("## Conjunction risk (CelesTrak SOCRATES, filtered to your watchlist)")
     if not conjunctions:

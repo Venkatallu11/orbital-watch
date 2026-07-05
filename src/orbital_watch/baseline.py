@@ -6,6 +6,15 @@ alerts, while a normally-quiet object that suddenly moves does.
 Instead of one global "residual > X km = alert" threshold, each NORAD ID
 gets its own trailing window of past residuals. A new residual is flagged
 only if it's an outlier *relative to that object's own recent history*.
+
+ACCURACY NOTE: as of this version, cli.py feeds this class
+`position_error_km_per_day` (raw km divided by the time gap between TLEs)
+rather than raw km -- published research on this technique flags that raw
+km isn't comparable across objects/updates with different TLE gap sizes
+(a Starlink updated every 4 hours vs. an object updated weekly), and the
+per-day rate fixes that. The class itself is unit-agnostic (it just
+tracks *a* rolling metric); see propagate.py for why per-day is now what's
+passed in.
 """
 from __future__ import annotations
 
@@ -50,8 +59,8 @@ class PerObjectBaseline:
 
         is_anomalous = z >= self.z_threshold
         reason = (
-            f"residual {residual_km:.3f} km is {z:.1f} sigma above this object's "
-            f"recent baseline ({mu:.3f} km avg)"
+            f"residual {residual_km:.3f} km/day is {z:.1f} sigma above this object's "
+            f"recent baseline ({mu:.3f} km/day avg)"
             if is_anomalous
             else "within this object's normal drift pattern"
         )

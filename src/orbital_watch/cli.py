@@ -29,7 +29,7 @@ from sgp4.api import Satrec
 from orbital_watch.alert import format_alert, send_console, send_webhook
 from orbital_watch.baseline import PerObjectBaseline
 from orbital_watch.digest import ManeuverAlert, generate_digest
-from orbital_watch.propagate import compute_residual
+from orbital_watch.propagate import compute_residual, tle_age_days
 from orbital_watch.store import JsonStore
 from orbital_watch.tle_client import CelesTrakClient, SpaceTrackClient, load_tles_from_file
 
@@ -158,9 +158,11 @@ def main(argv=None) -> int:
     print(f"Fetched {len(records)} TLE(s) for {len(watchlist)} watched object(s).")
 
     maneuver_alerts: list[ManeuverAlert] = []
+    tle_ages_days: dict[int, float] = {}
     for record in records:
         norad_key = str(record.norad_id)
         after_satrec = build_satrec(record)
+        tle_ages_days[record.norad_id] = tle_age_days(after_satrec)
 
         prev = previous_tles.get(norad_key)
         if prev is not None:
@@ -169,7 +171,12 @@ def main(argv=None) -> int:
                 after_satrec.jdsatepoch + after_satrec.jdsatepochF
             ):
                 residual = compute_residual(before_satrec, after_satrec)
-                verdict = baseline.evaluate(record.norad_id, residual.position_error_km)
+                # Feed the per-day rate, not raw km -- see propagate.py's
+                # ACCURACY NOTE: raw km isn't comparable across objects/
+                # updates with different TLE gap sizes (a Starlink updated
+                # every 4h vs. an object updated weekly), which published
+                # research flags as a real false-positive cause.
+                verdict = baseline.evaluate(record.norad_id, residual.position_error_km_per_day)
 
                 if verdict.is_anomalous:
                     message = format_alert(verdict, residual)
@@ -182,6 +189,8 @@ def main(argv=None) -> int:
                         residual_km=residual.position_error_km,
                         z_score=verdict.z_score,
                         reason=verdict.reason,
+                        epoch_gap_days=residual.epoch_gap_days,
+                        residual_km_per_day=residual.position_error_km_per_day,
                     )
                     maneuver_alerts.append(alert)
 
@@ -190,6 +199,8 @@ def main(argv=None) -> int:
                         {
                             "timestamp": datetime.now(timezone.utc).isoformat(),
                             "residual_km": residual.position_error_km,
+                            "residual_km_per_day": residual.position_error_km_per_day,
+                            "epoch_gap_days": residual.epoch_gap_days,
                             "z_score": verdict.z_score,
                             "reason": verdict.reason,
                         }
@@ -205,7 +216,7 @@ def main(argv=None) -> int:
     satnogs_healths = _fetch_satnogs_health_safely(watchlist) if args.include_satnogs else []
 
     if args.include_socrates or args.include_satnogs:
-        digest = generate_digest(object_names, maneuver_alerts, conjunctions, satnogs_healths)
+        digest = generate_digest(object_names, maneuver_alerts, conjunctions, satnogs_healths, tle_ages_days)
         print("\n" + digest + "\n")
         if args.digest_out:
             with open(args.digest_out, "w") as f:

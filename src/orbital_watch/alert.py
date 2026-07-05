@@ -8,7 +8,9 @@ def format_alert(baseline_verdict, residual) -> str:
     return (
         f"[MANEUVER SUSPECTED] NORAD {baseline_verdict.norad_id}: "
         f"{baseline_verdict.reason} "
-        f"(position residual {residual.position_error_km:.2f} km, "
+        f"(position residual {residual.position_error_km:.2f} km over "
+        f"{residual.epoch_gap_days:.2f} day(s) between TLEs -- "
+        f"{residual.position_error_km_per_day:.2f} km/day, "
         f"velocity residual {residual.velocity_error_km_s:.4f} km/s)"
     )
 

@@ -20,6 +20,7 @@ dev = ["pytest>=7.0"]
 orbital-watch = "orbital_watch.cli:main"
 orbital-watch-biography = "orbital_watch.biography_cli:main"
 orbital-watch-reentry = "orbital_watch.reentry_cli:main"
+orbital-watch-history = "orbital_watch.history_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

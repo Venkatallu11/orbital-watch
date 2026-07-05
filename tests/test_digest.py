@@ -64,3 +64,44 @@ def test_degraded_satnogs_health_is_flagged_visibly():
     digest = generate_digest(NAMES, [], [], healths)
     assert "DEGRADED" in digest
     assert "only 2/10 good" in digest
+
+
+def test_maneuver_alert_shows_per_day_rate_when_provided():
+    alerts = [ManeuverAlert(
+        norad_id=25544, residual_km=12.5, z_score=4.1, reason="big jump",
+        epoch_gap_days=0.5, residual_km_per_day=25.0,
+    )]
+    digest = generate_digest(NAMES, alerts, [], [])
+    assert "25.00 km/day" in digest
+    assert "0.50 day(s) between TLEs" in digest
+
+
+def test_maneuver_alert_without_per_day_data_omits_that_bit_cleanly():
+    """Older/synthetic ManeuverAlerts without the new fields shouldn't
+    produce a broken or misleading line."""
+    alerts = [ManeuverAlert(norad_id=25544, residual_km=12.5, z_score=4.1, reason="big jump")]
+    digest = generate_digest(NAMES, alerts, [], [])
+    assert "km/day" not in digest
+
+
+def test_freshness_section_lists_every_watched_object():
+    digest = generate_digest(NAMES, [], [], [], tle_ages_days={25544: 0.3, 48274: 9.2})
+    assert "Data freshness" in digest
+    assert "ISS (ZARYA)" in digest
+    assert "0.3 day(s) old" in digest
+    assert "9.2 day(s) old" in digest
+
+
+def test_stale_tle_is_flagged_visibly():
+    digest = generate_digest(NAMES, [], [], [], tle_ages_days={25544: 9.2})
+    assert "STALE" in digest
+
+
+def test_fresh_tle_is_not_flagged():
+    digest = generate_digest(NAMES, [], [], [], tle_ages_days={25544: 0.3})
+    assert "STALE" not in digest
+
+
+def test_no_freshness_data_omits_the_section():
+    digest = generate_digest(NAMES, [], [], [])
+    assert "Data freshness" not in digest
