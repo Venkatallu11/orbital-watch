@@ -39,6 +39,170 @@
     "46356": {
       "line1": "1 46356U 20062AH  26178.09828745  .09495866  12368-4  50765-3 0  9998",
       "line2": "2 46356  53.0154 147.1846 0007262 242.6624 117.3684 16.42186075322173"
+    },
+    "7530": {
+      "line1": "1 07530U 74089B   26185.28851557 -.00000043  00000+0  19074-4 0  9998",
+      "line2": "2 07530 101.9900 198.7133 0012660  98.4849 273.4162 12.53698407362669"
+    },
+    "24278": {
+      "line1": "1 24278U 96046B   26185.53759951 -.00000022  00000+0  11740-4 0  9995",
+      "line2": "2 24278  98.5226  32.0316 0350732  51.5389 311.6677 13.53275016475519"
+    },
+    "25867": {
+      "line1": "1 25867U 99040B   26187.88935528  .00000762  00000+0  00000+0 0  9995",
+      "line2": "2 25867  56.4267 116.1509 7809224 310.0350   0.5660  0.37802688 17396"
+    },
+    "25989": {
+      "line1": "1 25989U 99066A   26181.31376484  .00000075  00000+0  00000+0 0  9997",
+      "line2": "2 25989  64.4187 282.8185 4670815  64.6474   0.0796  0.50127122 23075"
+    },
+    "26407": {
+      "line1": "1 26407U 00040A   26184.48658159  .00000067  00000+0  00000+0 0  9991",
+      "line2": "2 26407  54.8498 214.5148 0120758 302.6092 229.8904  2.00557835190277"
+    },
+    "26931": {
+      "line1": "1 26931U 01043C   26185.48093683  .00000178  00000+0  97381-4 0  9999",
+      "line2": "2 26931  67.0488 199.5420 0006014 265.8312  94.2103 14.31962328292926"
+    },
+    "28485": {
+      "line1": "1 28485U 04047A   26185.28803099  .00075476  00000+0  58570-3 0  9999",
+      "line2": "2 28485  20.5529  52.8275 0000799 197.6102 162.4317 15.70048873189557"
+    },
+    "29479": {
+      "line1": "1 29479U 06041A   26185.49074653  .00001108  00000+0  19862-3 0  9990",
+      "line2": "2 29479  98.0545 201.3881 0016272 230.0435 129.9341 14.68649313 57413"
+    },
+    "32275": {
+      "line1": "1 32275U 07052A   26185.27816505 -.00000044  00000+0  00000+0 0  9996",
+      "line2": "2 32275  65.5660 315.3584 0003097 199.8215 160.1742  2.13104425145421"
+    },
+    "32382": {
+      "line1": "1 32382U 07061A   26185.60050076 -.00000081  00000+0 -14369-4 0  9995",
+      "line2": "2 32382  98.5776 192.2842 0001303  84.3134 275.8197 14.29980980968440"
+    },
+    "33053": {
+      "line1": "1 33053U 08029A   26185.38349583  .00003842  00000+0  14036-3 0  9991",
+      "line2": "2 33053  25.5821  85.0693 0008176 166.5911 193.4846 15.24028352998464"
+    },
+    "35932": {
+      "line1": "1 35932U 09051B   26185.47808840  .00001528  00000+0  31098-3 0  9997",
+      "line2": "2 35932  98.4021  93.6669 0007217 148.5860 211.5774 14.62517748891680"
+    },
+    "35933": {
+      "line1": "1 35933U 09051C   26185.01738541  .00001005  00000+0  21142-3 0  9997",
+      "line2": "2 35933  98.3948  92.7981 0005397 160.6033 199.5374 14.61748287891649"
+    },
+    "36086": {
+      "line1": "1 36086U 09060A   26185.47597407  .00009720  00000+0  18499-3 0  9994",
+      "line2": "2 36086  51.6303 214.5154 0006744 255.1217 104.9025 15.48889796591460"
+    },
+    "36111": {
+      "line1": "1 36111U 09070A   26183.67073075 -.00000011  00000+0  00000+0 0  9994",
+      "line2": "2 36111  65.0199  70.4441 0003835 338.5659 276.2480  2.13103720128753"
+    },
+    "36395": {
+      "line1": "1 36395U 10005A   26183.25044652 -.00000081  00000+0  00000+0 0  9998",
+      "line2": "2 36395  34.6806  86.1151 0001496  53.7669 128.3250  1.00270409 60216"
+    },
+    "36585": {
+      "line1": "1 36585U 10022A   26185.16171045  .00000075  00000+0  00000+0 0  9999",
+      "line2": "2 36585  54.2694 207.8783 0126520  66.1429 115.6659  2.00563270117937"
+    },
+    "36828": {
+      "line1": "1 36828U 10036A   26185.66622681 -.00000075  00000+0  00000+0 0  9997",
+      "line2": "2 36828  54.3059 162.8019 0059188 225.2573 241.8517  1.00267388 58274"
+    },
+    "37846": {
+      "line1": "1 37846U 11060A   26184.27277324 -.00000076  00000+0  00000+0 0  9993",
+      "line2": "2 37846  56.9888 341.3256 0002656  57.8189 302.2010  1.70475789 91393"
+    },
+    "38012": {
+      "line1": "1 38012U 11076F   26185.62836723  .00000642  00000+0  14795-3 0  9998",
+      "line2": "2 38012  98.1972 260.4969 0001766  85.6662  24.1564 14.58543080774537"
+    },
+    "38358": {
+      "line1": "1 38358U 12031A   26185.66670139  .00024919  00000+0  14723-2 0  9997",
+      "line2": "2 38358   6.0266 263.0175 0007406   1.3271 255.0763 15.08967474  1307"
+    },
+    "38771": {
+      "line1": "1 38771U 12049A   26185.57618465  .00000154  00000+0  90357-4 0  9993",
+      "line2": "2 38771  98.6495 236.7278 0001221 318.5789  41.5296 14.21444462715733"
+    },
+    "39089": {
+      "line1": "1 39089U 13009D   26185.49174534  .00000251  00000+0  10148-3 0  9995",
+      "line2": "2 39089  98.4185   5.1134 0010760 188.7439 171.3561 14.35833144699222"
+    },
+    "40105": {
+      "line1": "1 40105U 14045A   26183.01128841 -.00000018  00000+0  00000+0 0  9997",
+      "line2": "2 40105  55.3623  87.8744 0033958 118.3288 242.0466  2.00559500 86377"
+    },
+    "40128": {
+      "line1": "1 40128U 14050A   26184.04751290 -.00000030  00000+0  00000+0 0  9996",
+      "line2": "2 40128  48.8580 272.7857 1676668 180.0160 180.0435  1.85520088 78614"
+    },
+    "40732": {
+      "line1": "1 40732U 15034A   26185.58052867  .00000073  00000+0  00000+0 0  9990",
+      "line2": "2 40732   3.2440  71.0017 0002248 349.7592  80.1171  1.00268534  7398"
+    },
+    "41335": {
+      "line1": "1 41335U 16011A   26185.60878007  .00000164  00000+0  85832-4 0  9993",
+      "line2": "2 41335  98.6242 252.7417 0001426  93.8118 266.3226 14.26737858540546"
+    },
+    "41866": {
+      "line1": "1 41866U 16071A   26185.55790856 -.00000079  00000+0  00000+0 0  9992",
+      "line2": "2 41866   0.3808  85.6839 0000534  47.1691 245.8762  1.00271917 35274"
+    },
+    "41917": {
+      "line1": "1 41917U 17003A   26185.46784939  .00000089  00000+0  24839-4 0  9991",
+      "line2": "2 41917  86.3954  81.3319 0002083  93.4703 266.6731 14.34218231495685"
+    },
+    "41918": {
+      "line1": "1 41918U 17003B   26185.45516396  .00000016  00000+0 -15164-5 0  9994",
+      "line2": "2 41918  86.3953  81.2367 0001957  78.9419 281.1996 14.34217735495704"
+    },
+    "43001": {
+      "line1": "1 43001U 17069A   26184.24174458 -.00000036  00000+0  00000+0 0  9995",
+      "line2": "2 43001  56.7055  62.5561 0009679 326.7179  33.2911  1.86231596 58901"
+    },
+    "44057": {
+      "line1": "1 44057U 19010A   26185.50447224  .00000076  00000+0  16615-3 0  9995",
+      "line2": "2 44057  87.9081 225.3457 0001693  87.6827 272.4498 13.16595897353843"
+    },
+    "44714": {
+      "line1": "1 44714U 19074B   26184.48382644  .00078145  00000+0  12613-2 0  9990",
+      "line2": "2 44714  53.1513 350.5865 0002381 253.8870 106.1878 15.52228182366742"
+    },
+    "44718": {
+      "line1": "1 44718U 19074F   26185.44204113  .00120742  00000+0  18915-2 0  9997",
+      "line2": "2 44718  53.1560 346.2192 0003489 270.7040  89.3570 15.52847491366886"
+    },
+    "45131": {
+      "line1": "1 45131U 20008A   26185.36248128  .00000050  00000+0  10694-3 0  9997",
+      "line2": "2 45131  87.8511  49.3589 0001425  47.6738 312.4510 13.09463696308319"
+    },
+    "48274": {
+      "line1": "1 48274U 21035A   26184.22810215  .00007882  00000+0  10678-3 0  9997",
+      "line2": "2 48274  41.4672 224.3616 0002880 262.1202  97.9309 15.57904594296214"
+    },
+    "49044": {
+      "line1": "1 49044U 21066A   26185.47597407  .00009720  00000+0  18499-3 0  9992",
+      "line2": "2 49044  51.6303 214.5154 0006744 255.1217 104.9025 15.48889796609198"
+    },
+    "49954": {
+      "line1": "1 49954U 21121A   26185.58335648  .00017641  00000+0  98464-3 0  9994",
+      "line2": "2 49954   0.2294 185.7556 0006847 339.4272 144.1197 15.10408892  5631"
+    },
+    "51850": {
+      "line1": "1 51850U 22021A   26185.51086661  .00000109  00000+0  00000+0 0  9999",
+      "line2": "2 51850   0.0415 221.7763 0000592 303.1764 164.4734  1.00270988  6762"
+    },
+    "53239": {
+      "line1": "1 53239U 22085A   26184.22810215  .00007882  00000+0  10678-3 0  9990",
+      "line2": "2 53239  41.4672 224.3616 0002880 262.1202  97.9309 15.57904594288234"
+    },
+    "54216": {
+      "line1": "1 54216U 22143A   26184.22810215  .00007882  00000+0  10678-3 0  9991",
+      "line2": "2 54216  41.4672 224.3616 0002880 262.1202  97.9309 15.57904594295418"
     }
   },
   "baseline_history": {},
@@ -136,6 +300,416 @@
     },
     "46356": {
       "norad_id": 46356,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "7530": {
+      "norad_id": 7530,
+      "total_observations": 25,
+      "good_count": 0,
+      "bad_count": 1,
+      "unvetted_count": 24,
+      "success_rate": 0.0,
+      "is_degraded": false,
+      "reason": "0/1 recent vetted observations were good (0%)"
+    },
+    "24278": {
+      "norad_id": 24278,
+      "total_observations": 25,
+      "good_count": 4,
+      "bad_count": 1,
+      "unvetted_count": 20,
+      "success_rate": 0.8,
+      "is_degraded": false,
+      "reason": "4/5 recent vetted observations were good (80%)"
+    },
+    "25867": {
+      "norad_id": 25867,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "25989": {
+      "norad_id": 25989,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "26407": {
+      "norad_id": 26407,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "26931": {
+      "norad_id": 26931,
+      "total_observations": 25,
+      "good_count": 1,
+      "bad_count": 14,
+      "unvetted_count": 10,
+      "success_rate": 0.06666666666666667,
+      "is_degraded": true,
+      "reason": "only 1/15 recent vetted observations were good (7%) -- worth checking against the TLE-residual signal"
+    },
+    "28485": {
+      "norad_id": 28485,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "29479": {
+      "norad_id": 29479,
+      "total_observations": 25,
+      "good_count": 1,
+      "bad_count": 0,
+      "unvetted_count": 24,
+      "success_rate": 1.0,
+      "is_degraded": false,
+      "reason": "1/1 recent vetted observations were good (100%)"
+    },
+    "32275": {
+      "norad_id": 32275,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "32382": {
+      "norad_id": 32382,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "33053": {
+      "norad_id": 33053,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "35932": {
+      "norad_id": 35932,
+      "total_observations": 25,
+      "good_count": 0,
+      "bad_count": 6,
+      "unvetted_count": 19,
+      "success_rate": 0.0,
+      "is_degraded": true,
+      "reason": "only 0/6 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+    },
+    "35933": {
+      "norad_id": 35933,
+      "total_observations": 25,
+      "good_count": 7,
+      "bad_count": 5,
+      "unvetted_count": 13,
+      "success_rate": 0.5833333333333334,
+      "is_degraded": false,
+      "reason": "7/12 recent vetted observations were good (58%)"
+    },
+    "36086": {
+      "norad_id": 36086,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "36111": {
+      "norad_id": 36111,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "36395": {
+      "norad_id": 36395,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "36585": {
+      "norad_id": 36585,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "36828": {
+      "norad_id": 36828,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "37846": {
+      "norad_id": 37846,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "38012": {
+      "norad_id": 38012,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "38358": {
+      "norad_id": 38358,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "38771": {
+      "norad_id": 38771,
+      "total_observations": 25,
+      "good_count": 0,
+      "bad_count": 9,
+      "unvetted_count": 16,
+      "success_rate": 0.0,
+      "is_degraded": true,
+      "reason": "only 0/9 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+    },
+    "39089": {
+      "norad_id": 39089,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "40105": {
+      "norad_id": 40105,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "40128": {
+      "norad_id": 40128,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "40732": {
+      "norad_id": 40732,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "41335": {
+      "norad_id": 41335,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "41866": {
+      "norad_id": 41866,
+      "total_observations": 25,
+      "good_count": 3,
+      "bad_count": 8,
+      "unvetted_count": 14,
+      "success_rate": 0.2727272727272727,
+      "is_degraded": true,
+      "reason": "only 3/11 recent vetted observations were good (27%) -- worth checking against the TLE-residual signal"
+    },
+    "41917": {
+      "norad_id": 41917,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "41918": {
+      "norad_id": 41918,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "43001": {
+      "norad_id": 43001,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "44057": {
+      "norad_id": 44057,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "44714": {
+      "norad_id": 44714,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "44718": {
+      "norad_id": 44718,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "45131": {
+      "norad_id": 45131,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "48274": {
+      "norad_id": 48274,
+      "total_observations": 25,
+      "good_count": 2,
+      "bad_count": 10,
+      "unvetted_count": 13,
+      "success_rate": 0.16666666666666666,
+      "is_degraded": true,
+      "reason": "only 2/12 recent vetted observations were good (17%) -- worth checking against the TLE-residual signal"
+    },
+    "49044": {
+      "norad_id": 49044,
+      "total_observations": 25,
+      "good_count": 12,
+      "bad_count": 6,
+      "unvetted_count": 7,
+      "success_rate": 0.6666666666666666,
+      "is_degraded": false,
+      "reason": "12/18 recent vetted observations were good (67%)"
+    },
+    "49954": {
+      "norad_id": 49954,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "51850": {
+      "norad_id": 51850,
+      "total_observations": 25,
+      "good_count": 0,
+      "bad_count": 10,
+      "unvetted_count": 15,
+      "success_rate": 0.0,
+      "is_degraded": true,
+      "reason": "only 0/10 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+    },
+    "53239": {
+      "norad_id": 53239,
+      "total_observations": 0,
+      "good_count": 0,
+      "bad_count": 0,
+      "unvetted_count": 0,
+      "success_rate": null,
+      "is_degraded": false,
+      "reason": "not enough vetted observations yet to judge"
+    },
+    "54216": {
+      "norad_id": 54216,
       "total_observations": 0,
       "good_count": 0,
       "bad_count": 0,
