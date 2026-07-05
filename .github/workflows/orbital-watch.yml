@@ -16,6 +16,10 @@ name: orbital-watch scheduled run
 #      change `--source celestrak` to `--source spacetrack` below for the
 #      richer/faster-updated catalog.
 #   3. (Optional) Add repo secret ALERT_WEBHOOK_URL for Discord/Slack alerts.
+#   4. One-time manual step this workflow cannot do for you: in the repo's
+#      Settings -> Pages, set "Source" to "GitHub Actions". Until that's
+#      done, the deploy-pages step below will fail even though everything
+#      else succeeds -- it just means Pages isn't turned on yet.
 #
 # NOTE: run #1 on this workflow (2026-07-04) failed on
 # `test_satcat_fetch_failure_falls_back_to_unfiltered_watchlist` -- fixed,
@@ -39,10 +43,15 @@ on:
 
 permissions:
   contents: write  # needed to commit state.json back
+  pages: write     # needed to deploy the docs/ website to GitHub Pages
+  id-token: write  # needed by actions/deploy-pages for OIDC verification
 
 jobs:
   watch:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -83,3 +92,23 @@ jobs:
           git add state.json digest.md
           git diff --cached --quiet || git commit -m "orbital-watch: update state and digest [skip ci]"
           git push
+
+      - name: Generate website data (docs/data.json)
+        run: |
+          orbital-watch-site-data \
+            --watchlist watchlist.json \
+            --state state.json \
+            --object-names names.json \
+            --out docs/data.json
+
+      - name: Set up GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload docs/ as Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

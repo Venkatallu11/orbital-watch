@@ -54,6 +54,38 @@ piece together by hand:
   sitting there one commit per hour — this just walks it and reads it back
   as a clean timeline instead of raw `git log`/`git show` digging.
 
+## Website (`docs/`)
+
+A free static site, deployed on GitHub Pages, that turns the watchlist into
+something you can actually click through instead of reading JSON:
+
+- **Pick a satellite** from a dropdown (all 10 watched objects by default).
+- **Live position tracking** — the map marker moves every second and the
+  dashed ground track is drawn for a full orbit ahead, computed client-side
+  in the browser via `satellite.js` (the same SGP4 math the Python backend
+  uses) from the latest TLE already in `data.json`. No live server needed
+  for this part — it's just math running on data that's already there.
+- **Status panel** — TLE age/freshness, the latest detected maneuver (if
+  any), and SatNOGS observation health, straight from the same
+  `state.json` the scheduled workflow maintains.
+- **Imagery** — real pictures, not stock photos, matched honestly to what
+  each satellite can actually provide:
+  - Earth-observation satellites (Terra, Aqua, Suomi NPP, NOAA-20, Landsat 8)
+    get their actual instrument's imagery from NASA GIBS — yesterday's image
+    for daily-composite instruments, clearly labeled "annual composite, not
+    today's image" for Landsat (which has no daily global GIBS layer).
+  - Hubble gets NASA's Astronomy Picture of the Day (APOD) — real deep-space
+    imagery, honestly captioned as "may or may not be from Hubble
+    specifically" since APOD isn't Hubble-exclusive.
+  - ISS, NOAA-19, and the two Starlinks honestly show "No public imagery
+    source available" rather than faking something.
+
+`docs/data.json` is regenerated every hour by the same scheduled workflow
+(via `orbital-watch-site-data`) and deployed straight to Pages — the site
+always reflects the latest fetch, with no manual step. See the workflow
+file's header comment for the one-time "Settings → Pages → Source: GitHub
+Actions" toggle a repo owner has to flip once before deploys can succeed.
+
 ## Accuracy: what's a real fix vs. a hard ceiling
 
 Public TLE data has a real, permanent precision ceiling no amount of code
@@ -147,14 +179,17 @@ format inside the SOCRATES CSV specifically (not yet seen a real response
 body with an actual conjunction row to confirm against) — `_parse_tca`
 tries ISO 8601 first, falls back to the human-readable format.
 
-**Tested and passing (84 tests, all offline):**
+**Tested and passing (93 tests, all offline):**
 SGP4 residual math and per-object rolling baseline, all parsers (against
 fixtures built from confirmed real schemas), the reentry corridor math
 (`skyfield`, fully offline), the biography generator, the unified digest,
 the Space-Track rate limiter (confirmed to actually be called, not just
 constructed), SATCAT owner-based auto-exclusion, the CelesTrak-to-Space-Track
 fallback logic (including the per-satellite-vs-connection-failure
-distinction above), and full end-to-end CLI runs for all three entry points.
+distinction above), git-history-based satellite timeline reconstruction
+(against real temporary git repos, not mocked), the website data-shaping
+layer (`site_data.py`, including honest imagery-source mapping), and full
+end-to-end CLI runs for all entry points.
 
 Run the self-test below to sanity-check connectivity from wherever you're
 deploying this before turning on the schedule:
@@ -328,7 +363,10 @@ src/orbital_watch/
   biography_cli.py   Satellite biography entry point
   reentry_cli.py     Reentry corridor entry point
   history_cli.py     Satellite history entry point
-tests/               84 tests, fully offline
-pyproject.toml       Packaging + console_scripts (orbital-watch, orbital-watch-biography, orbital-watch-reentry, orbital-watch-history)
-.github/workflows/orbital-watch.yml   Scheduled run (see above)
+  site_data.py       Shapes state.json + watchlist into docs/data.json (pure function, no I/O)
+  site_data_cli.py   Website data-generation entry point
+docs/                Static website (GitHub Pages): index.html, app.js, style.css, data.json (generated)
+tests/               93 tests, fully offline
+pyproject.toml       Packaging + console_scripts (orbital-watch, orbital-watch-biography, orbital-watch-reentry, orbital-watch-history, orbital-watch-site-data)
+.github/workflows/orbital-watch.yml   Scheduled run + website deploy (see above)
 ```

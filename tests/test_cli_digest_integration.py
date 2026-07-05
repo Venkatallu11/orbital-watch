@@ -63,3 +63,9 @@ def test_digest_combines_socrates_and_satnogs_via_the_real_cli(tmp_path, monkeyp
     digest_text = digest_path.read_text()
     assert "VANGUARD 1" in digest_text
     assert "DEGRADED" in digest_text  # 3/8 good = 37.5%, below the 50% default threshold
+
+    # SatNOGS health must be persisted to state.json, not just printed into
+    # this run's digest and then lost -- site_data_cli.py depends on this.
+    state = json.loads(state_path.read_text())
+    assert state["satnogs_health"][str(NORAD_ID)]["good_count"] == 3
+    assert state["satnogs_health"][str(NORAD_ID)]["is_degraded"] is True

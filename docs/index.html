@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>orbital-watch</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>orbital-watch</h1>
+    <p class="tagline">Free, open satellite maneuver/conjunction/observation-health watchdog. Pick a satellite below.</p>
+  </header>
+
+  <main>
+    <section class="controls">
+      <label for="satellite-select">Satellite:</label>
+      <select id="satellite-select"></select>
+      <span id="generated-at" class="generated-at"></span>
+    </section>
+
+    <section class="panels">
+      <div id="map" class="map"></div>
+
+      <div class="info-panels">
+        <div class="panel" id="status-panel">
+          <h2>Status</h2>
+          <div id="status-content">Select a satellite above.</div>
+        </div>
+
+        <div class="panel" id="imagery-panel">
+          <h2>Imagery</h2>
+          <div id="imagery-content"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      <a href="https://github.com/Venkatallu11/orbital-watch">github.com/Venkatallu11/orbital-watch</a>
+      &mdash; data updates hourly via GitHub Actions. Not a collision-avoidance system;
+      see the README for what's confirmed live vs. still a best-effort.
+    </p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/satellite.js@4.1.4/dist/satellite.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

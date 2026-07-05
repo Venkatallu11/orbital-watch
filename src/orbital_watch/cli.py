@@ -222,6 +222,18 @@ def main(argv=None) -> int:
             with open(args.digest_out, "w") as f:
                 f.write(digest)
 
+    # Persisted so site_data_cli.py (and anything else reading state.json
+    # later) has the latest SatNOGS health without needing its own live
+    # fetch -- previously this was only ever printed into that run's
+    # digest and then lost.
+    if satnogs_healths:
+        from dataclasses import asdict
+
+        satnogs_health_state = store.get("satnogs_health", {})
+        for health in satnogs_healths:
+            satnogs_health_state[str(health.norad_id)] = asdict(health)
+        store.set("satnogs_health", satnogs_health_state)
+
     store.set("previous_tles", previous_tles)
     store.set("baseline_history", baseline.to_dict())
     store.set("maneuver_events", maneuver_events)
