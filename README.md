@@ -469,3 +469,7 @@ pyproject.toml       Packaging + console_scripts (orbital-watch, orbital-watch-b
 .github/workflows/orbital-watch.yml         Scheduled run + website deploy (see above)
 .github/workflows/discover-candidates.yml   Manual-only watchlist-curation helper (see "Website" above)
 ```
+
+## License
+
+MIT — see [LICENSE](LICENSE). Maintained by [Venkatallu11](https://github.com/Venkatallu11).
