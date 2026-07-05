@@ -1,0 +1,544 @@
+{
+  "7530": {
+    "instruments": [
+      "Linear transponders"
+    ],
+    "data_products": [
+      "amateur radio voice/data relay"
+    ],
+    "description": "AO-7, launched in 1974, is the oldest still-operating amateur satellite -- its battery failed in 1981, but a short-circuited cell let it resume working on solar power alone in 2002, and it's still in use today."
+  },
+  "20580": {
+    "instruments": [
+      "WFC3",
+      "ACS",
+      "COS",
+      "STIS"
+    ],
+    "data_products": [
+      "visible/UV/near-infrared imagery & spectroscopy of stars, galaxies, and planets"
+    ],
+    "description": "Hubble observes in visible, ultraviolet, and near-infrared light from low Earth orbit -- above the atmospheric blur and UV absorption that limit ground telescopes."
+  },
+  "24278": {
+    "instruments": [
+      "Linear transponder"
+    ],
+    "data_products": [
+      "amateur radio voice/data relay"
+    ],
+    "description": "FO-29, built by Japanese amateur radio operators, relays ham radio voice and digital traffic through an analog transponder."
+  },
+  "25544": {
+    "instruments": [],
+    "data_products": [
+      "hundreds of ongoing microgravity/human-physiology/Earth-observation experiments"
+    ],
+    "description": "The ISS is a crewed research station, not a sensing satellite -- Zarya was its first launched module (1998) and now houses life-support and propulsion systems."
+  },
+  "25867": {
+    "instruments": [
+      "ACIS",
+      "HRC"
+    ],
+    "data_products": [
+      "X-ray imaging & spectroscopy"
+    ],
+    "description": "Chandra X-ray Observatory images extremely hot, energetic cosmic objects -- black holes, neutron stars, supernova remnants -- that emit X-rays rather than visible light."
+  },
+  "25989": {
+    "instruments": [
+      "EPIC cameras",
+      "RGS spectrometers",
+      "Optical Monitor"
+    ],
+    "data_products": [
+      "X-ray imaging & spectroscopy, simultaneous optical/UV monitoring"
+    ],
+    "description": "ESA's XMM-Newton is one of the most sensitive X-ray observatories ever built, studying the same extreme objects as Chandra with complementary spectroscopy."
+  },
+  "25994": {
+    "instruments": [
+      "MODIS",
+      "ASTER",
+      "MISR",
+      "CERES",
+      "MOPITT"
+    ],
+    "data_products": [
+      "true-color imagery",
+      "wildfire detection",
+      "cloud & aerosol properties",
+      "multi-angle imaging",
+      "carbon monoxide pollution"
+    ],
+    "description": "NASA's Terra satellite carries five instruments studying Earth's land, atmosphere, and energy budget together -- most famously MODIS, the source of the daily true-color imagery this site shows."
+  },
+  "26407": {
+    "instruments": [
+      "Atomic clocks",
+      "L-band navigation transmitters"
+    ],
+    "data_products": [
+      "GPS timing & ranging signals"
+    ],
+    "description": "This GPS satellite broadcasts precise timing/ranging radio signals used by GPS receivers worldwide for positioning -- it doesn't observe Earth or space."
+  },
+  "26931": {
+    "instruments": [
+      "APRS digipeater"
+    ],
+    "data_products": [
+      "amateur position/message relay (APRS)"
+    ],
+    "description": "PCSAT, built by the US Naval Academy, relays APRS position and text messages for amateur radio operators worldwide."
+  },
+  "27424": {
+    "instruments": [
+      "MODIS",
+      "AIRS",
+      "AMSU",
+      "CERES"
+    ],
+    "data_products": [
+      "true-color imagery",
+      "atmospheric temperature & humidity profiles",
+      "sea surface temperature",
+      "cloud properties"
+    ],
+    "description": "NASA's Aqua satellite focuses on the water cycle: AIRS measures 3D atmospheric temperature/humidity profiles, while MODIS provides the daily imagery shown here."
+  },
+  "28485": {
+    "instruments": [
+      "BAT (Burst Alert Telescope)",
+      "XRT (X-ray Telescope)",
+      "UVOT (UV/Optical Telescope)"
+    ],
+    "data_products": [
+      "gamma-ray burst detection & rapid follow-up imaging"
+    ],
+    "description": "Swift is built to catch gamma-ray bursts -- the universe's most powerful explosions -- and immediately slew to image the afterglow in X-ray and UV/optical light."
+  },
+  "29479": {
+    "instruments": [
+      "SOT (Solar Optical Telescope)",
+      "XRT (X-ray Telescope)",
+      "EIS (EUV Imaging Spectrometer)"
+    ],
+    "data_products": [
+      "solar magnetic field & corona imagery",
+      "solar flare observation"
+    ],
+    "description": "JAXA/NASA/ESA's Hinode studies the Sun's magnetic field and corona to understand what powers solar flares and eruptions."
+  },
+  "32275": {
+    "instruments": [
+      "Atomic clocks",
+      "L-band navigation transmitters"
+    ],
+    "data_products": [
+      "GLONASS timing & ranging signals"
+    ],
+    "description": "This GLONASS-M satellite broadcasts Russia's GNSS navigation signals -- it doesn't observe Earth or space."
+  },
+  "32382": {
+    "instruments": [
+      "C-band Synthetic Aperture Radar (SAR)"
+    ],
+    "data_products": [
+      "all-weather day/night radar imagery",
+      "ship detection",
+      "sea-ice monitoring"
+    ],
+    "description": "Canada's RADARSAT-2 images Earth with radar instead of light, so it works through cloud cover and at night -- used for ice monitoring, maritime surveillance, and disaster response."
+  },
+  "33053": {
+    "instruments": [
+      "LAT (Large Area Telescope)",
+      "GBM (Gamma-ray Burst Monitor)"
+    ],
+    "data_products": [
+      "gamma-ray sky survey",
+      "pulsar & blazar monitoring",
+      "gamma-ray burst detection"
+    ],
+    "description": "The Fermi Gamma-ray Space Telescope continuously surveys the entire sky in gamma rays, the highest-energy light there is."
+  },
+  "33591": {
+    "instruments": [
+      "AVHRR/3",
+      "HIRS",
+      "AMSU-A",
+      "MHS",
+      "SBUV/2"
+    ],
+    "data_products": [
+      "visible/infrared imagery",
+      "atmospheric soundings",
+      "ozone monitoring"
+    ],
+    "description": "NOAA-19 is the last of the older POES weather satellite series, still providing visible/infrared imagery and atmospheric temperature soundings."
+  },
+  "35932": {
+    "instruments": [
+      "Airglow imaging camera"
+    ],
+    "data_products": [
+      "upper-atmosphere airglow imagery (educational/scientific)"
+    ],
+    "description": "SwissCube, Switzerland's first satellite (built by EPFL students), imaged Earth's faint airglow layer to study upper-atmosphere chemistry."
+  },
+  "35933": {
+    "instruments": [
+      "MEMS micro reaction wheel (technology demonstration)"
+    ],
+    "data_products": [
+      "attitude-control technology demonstration"
+    ],
+    "description": "BEESAT-1, built by TU Berlin students, tested a miniaturized reaction wheel for CubeSat attitude control -- a real flight technology demonstration, not an environmental sensor."
+  },
+  "36086": {
+    "instruments": [],
+    "data_products": [
+      "docking port, airlock, and stowage for the ISS Russian segment"
+    ],
+    "description": "Poisk is a small ISS module used for docking, spacewalks, and cargo storage on the Russian segment."
+  },
+  "36111": {
+    "instruments": [
+      "Atomic clocks",
+      "L-band navigation transmitters"
+    ],
+    "data_products": [
+      "GLONASS timing & ranging signals"
+    ],
+    "description": "This GLONASS-M satellite broadcasts Russia's GNSS navigation signals -- it doesn't observe Earth or space."
+  },
+  "36395": {
+    "instruments": [
+      "AIA (Atmospheric Imaging Assembly)",
+      "HMI (Helioseismic and Magnetic Imager)",
+      "EVE (EUV Variability Experiment)"
+    ],
+    "data_products": [
+      "continuous high-resolution imagery of the Sun",
+      "solar magnetic field maps",
+      "solar irradiance"
+    ],
+    "description": "SDO stares at the Sun continuously, imaging its atmosphere and mapping its magnetic field to study solar flares and space weather."
+  },
+  "36585": {
+    "instruments": [
+      "Atomic clocks",
+      "L-band navigation transmitters"
+    ],
+    "data_products": [
+      "GPS timing & ranging signals"
+    ],
+    "description": "This GPS satellite broadcasts precise timing/ranging radio signals used by GPS receivers worldwide for positioning -- it doesn't observe Earth or space."
+  },
+  "36828": {
+    "instruments": [
+      "Atomic clocks",
+      "B-band navigation transmitters"
+    ],
+    "data_products": [
+      "BeiDou timing & ranging signals"
+    ],
+    "description": "This BeiDou-2 satellite broadcasts China's regional GNSS navigation signals -- it doesn't observe Earth or space."
+  },
+  "37846": {
+    "instruments": [
+      "Atomic clocks",
+      "E-band navigation transmitters"
+    ],
+    "data_products": [
+      "Galileo timing & ranging signals"
+    ],
+    "description": "Galileo-PFM was the first satellite of Europe's Galileo GNSS constellation, broadcasting navigation signals -- it doesn't observe Earth or space."
+  },
+  "37849": {
+    "instruments": [
+      "VIIRS",
+      "CrIS",
+      "ATMS",
+      "OMPS"
+    ],
+    "data_products": [
+      "true-color imagery",
+      "atmospheric soundings",
+      "ozone monitoring"
+    ],
+    "description": "Suomi NPP bridges NASA's older Earth-observing satellites and NOAA's newer JPSS weather series -- VIIRS provides the imagery here, CrIS/ATMS feed atmospheric soundings into weather forecast models."
+  },
+  "38012": {
+    "instruments": [
+      "High-resolution optical imager"
+    ],
+    "data_products": [
+      "sub-meter resolution optical imagery"
+    ],
+    "description": "France's Pleiades 1A is a commercial high-resolution imaging satellite, capable of resolving objects under a meter across."
+  },
+  "38358": {
+    "instruments": [
+      "Focusing hard X-ray telescope"
+    ],
+    "data_products": [
+      "high-energy X-ray imaging"
+    ],
+    "description": "NuSTAR was the first telescope able to focus (rather than just detect) high-energy X-rays, sharpening our view of black holes and supernova remnants."
+  },
+  "38771": {
+    "instruments": [
+      "ASCAT",
+      "IASI",
+      "AVHRR/3",
+      "HIRS",
+      "AMSU-A",
+      "MHS",
+      "GOME-2",
+      "GRAS"
+    ],
+    "data_products": [
+      "ocean wind speed & direction",
+      "atmospheric temperature & humidity profiles",
+      "ozone & trace gases"
+    ],
+    "description": "Metop-B's ASCAT instrument measures ocean surface wind speed and direction by radar backscatter -- a real wind-data source, distinct from imagery."
+  },
+  "39084": {
+    "instruments": [
+      "OLI (Operational Land Imager)",
+      "TIRS (Thermal Infrared Sensor)"
+    ],
+    "data_products": [
+      "land-surface imagery",
+      "land-surface temperature"
+    ],
+    "description": "Landsat 8 continues the longest continuous land-imagery record in existence (since 1972) -- OLI images the land surface, TIRS measures its thermal emission."
+  },
+  "39089": {
+    "instruments": [
+      "15 cm optical telescope"
+    ],
+    "data_products": [
+      "near-Earth asteroid detection & tracking",
+      "space debris/satellite surveillance"
+    ],
+    "description": "Canada's NEOSSAT is a small but real asteroid-hunting telescope in Earth orbit, also used to track satellites and debris in high orbits where ground telescopes struggle (twilight/daylight observing)."
+  },
+  "39574": {
+    "instruments": [
+      "GMI (GPM Microwave Imager)",
+      "DPR (Dual-frequency Precipitation Radar)"
+    ],
+    "data_products": [
+      "global rain rate",
+      "snowfall rate"
+    ],
+    "description": "GPM Core Observatory is a real rain- and snow-measuring satellite (NASA/JAXA) -- its GMI and DPR instruments are the source of the near-real-time global precipitation-rate map this site shows."
+  },
+  "40105": {
+    "instruments": [
+      "Atomic clocks",
+      "L-band navigation transmitters"
+    ],
+    "data_products": [
+      "GPS timing & ranging signals"
+    ],
+    "description": "This GPS satellite broadcasts precise timing/ranging radio signals used by GPS receivers worldwide for positioning -- it doesn't observe Earth or space."
+  },
+  "40128": {
+    "instruments": [
+      "Atomic clocks",
+      "E-band navigation transmitters"
+    ],
+    "data_products": [
+      "Galileo timing & ranging signals"
+    ],
+    "description": "This Galileo satellite broadcasts Europe's GNSS navigation signals -- it doesn't observe Earth or space."
+  },
+  "40732": {
+    "instruments": [
+      "SEVIRI",
+      "GERB"
+    ],
+    "data_products": [
+      "real-time weather imagery over Europe/Africa/Atlantic",
+      "Earth radiation budget"
+    ],
+    "description": "EUMETSAT's Meteosat-11 images Europe, Africa, and the Atlantic every 15 minutes from geostationary orbit -- Europe's equivalent of the US GOES satellites."
+  },
+  "41335": {
+    "instruments": [
+      "OLCI",
+      "SLSTR",
+      "SRAL",
+      "MWR"
+    ],
+    "data_products": [
+      "ocean color",
+      "sea & land surface temperature",
+      "sea level height"
+    ],
+    "description": "ESA/Copernicus Sentinel-3A monitors ocean color, sea/land surface temperature, and sea-level height as part of Europe's climate-monitoring program."
+  },
+  "41866": {
+    "instruments": [
+      "ABI (Advanced Baseline Imager)",
+      "GLM (Geostationary Lightning Mapper)",
+      "SUVI",
+      "EXIS"
+    ],
+    "data_products": [
+      "real-time weather imagery",
+      "lightning detection",
+      "solar/space weather monitoring"
+    ],
+    "description": "GOES-16 (GOES-East) watches the Americas and Atlantic continuously from geostationary orbit -- the source of the familiar 10-minute-updated weather-satellite loops seen on forecasts."
+  },
+  "41917": {
+    "instruments": [
+      "L-band cross-link antennas",
+      "Aireon ADS-B receiver (hosted payload)"
+    ],
+    "data_products": [
+      "voice/data/IoT relay",
+      "real-time global aircraft tracking (Aireon)"
+    ],
+    "description": "This Iridium NEXT satellite relays voice/data/IoT traffic, and also hosts an Aireon ADS-B receiver -- a real secondary payload that tracks aircraft globally, including over oceans with no radar coverage."
+  },
+  "41918": {
+    "instruments": [
+      "L-band cross-link antennas",
+      "Aireon ADS-B receiver (hosted payload)"
+    ],
+    "data_products": [
+      "voice/data/IoT relay",
+      "real-time global aircraft tracking (Aireon)"
+    ],
+    "description": "This Iridium NEXT satellite relays voice/data/IoT traffic, and also hosts an Aireon ADS-B receiver -- a real secondary payload that tracks aircraft globally, including over oceans with no radar coverage."
+  },
+  "43001": {
+    "instruments": [
+      "Atomic clocks",
+      "B-band navigation transmitters"
+    ],
+    "data_products": [
+      "BeiDou timing & ranging signals"
+    ],
+    "description": "This BeiDou-3 satellite is part of China's global GNSS constellation, broadcasting navigation signals -- it doesn't observe Earth or space."
+  },
+  "43013": {
+    "instruments": [
+      "VIIRS",
+      "CrIS",
+      "ATMS",
+      "OMPS"
+    ],
+    "data_products": [
+      "true-color imagery",
+      "atmospheric soundings",
+      "ozone monitoring"
+    ],
+    "description": "NOAA-20 (JPSS-1) carries the same instrument suite as Suomi NPP, feeding US weather forecasts with twice-daily global coverage."
+  },
+  "44057": {
+    "instruments": [
+      "Ku/Ka-band antennas"
+    ],
+    "data_products": [
+      "broadband internet relay"
+    ],
+    "description": "This OneWeb satellite relays broadband internet as part of a global constellation -- it doesn't sense the environment."
+  },
+  "44714": {
+    "instruments": [
+      "Ku/Ka-band phased-array antennas"
+    ],
+    "data_products": [
+      "broadband internet relay"
+    ],
+    "description": "This Starlink satellite relays broadband internet between ground terminals -- it doesn't sense the environment."
+  },
+  "44718": {
+    "instruments": [
+      "Ku/Ka-band phased-array antennas"
+    ],
+    "data_products": [
+      "broadband internet relay"
+    ],
+    "description": "This Starlink satellite relays broadband internet between ground terminals -- it doesn't sense the environment."
+  },
+  "45131": {
+    "instruments": [
+      "Ku/Ka-band antennas"
+    ],
+    "data_products": [
+      "broadband internet relay"
+    ],
+    "description": "This OneWeb satellite relays broadband internet as part of a global constellation -- it doesn't sense the environment."
+  },
+  "46052": {
+    "instruments": [
+      "Ku/Ka-band phased-array antennas",
+      "laser inter-satellite links"
+    ],
+    "data_products": [
+      "broadband internet relay"
+    ],
+    "description": "This Starlink satellite relays broadband internet between ground terminals and other Starlink satellites -- it doesn't sense the environment."
+  },
+  "48274": {
+    "instruments": [],
+    "data_products": [
+      "crew life support, Chinese space station core operations"
+    ],
+    "description": "Tianhe is the core module of China's Tiangong space station, providing life support and living quarters for Shenzhou crews."
+  },
+  "49044": {
+    "instruments": [],
+    "data_products": [
+      "Russian laboratory & research module operations"
+    ],
+    "description": "Nauka (added to the ISS in 2021) is Russia's main research laboratory module, hosting experiments and additional life-support systems."
+  },
+  "49954": {
+    "instruments": [
+      "X-ray polarimeters"
+    ],
+    "data_products": [
+      "X-ray polarization measurements"
+    ],
+    "description": "IXPE (launched 2021) measures the polarization of X-rays from black holes and neutron stars -- a genuinely new kind of measurement no prior X-ray telescope could make."
+  },
+  "51850": {
+    "instruments": [
+      "ABI (Advanced Baseline Imager)",
+      "GLM (Geostationary Lightning Mapper)",
+      "SUVI",
+      "EXIS"
+    ],
+    "data_products": [
+      "real-time weather imagery",
+      "lightning detection",
+      "solar/space weather monitoring"
+    ],
+    "description": "GOES-18 (GOES-West) is GOES-16's twin, watching the Pacific and western Americas continuously from geostationary orbit."
+  },
+  "53239": {
+    "instruments": [],
+    "data_products": [
+      "life-science experiments aboard China's space station"
+    ],
+    "description": "Wentian is a laboratory module on China's Tiangong station focused on life-science and biology experiments."
+  },
+  "54216": {
+    "instruments": [],
+    "data_products": [
+      "microgravity fluid-physics experiments aboard China's space station"
+    ],
+    "description": "Mengtian is Tiangong's other laboratory module, focused on microgravity fluid physics and materials science experiments."
+  }
+}

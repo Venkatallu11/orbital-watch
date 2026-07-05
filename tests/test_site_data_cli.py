@@ -70,6 +70,30 @@ def test_categories_file_attaches_category_per_satellite(tmp_path):
     assert data["category_labels"]["space_stations"] == "Space Stations & Human Spaceflight"
 
 
+def test_instruments_file_attaches_instrument_info_per_satellite(tmp_path):
+    watchlist_path = tmp_path / "watchlist.json"
+    watchlist_path.write_text(json.dumps([NORAD_ID]))
+    state_path = tmp_path / "state.json"
+    state_path.write_text(json.dumps({
+        "previous_tles": {str(NORAD_ID): {"line1": LINE1, "line2": LINE2}},
+    }))
+    instruments_path = tmp_path / "instruments.json"
+    instruments_path.write_text(json.dumps({
+        str(NORAD_ID): {"instruments": [], "data_products": ["crew research"], "description": "It's the ISS."}
+    }))
+    out_path = tmp_path / "data.json"
+
+    site_data_cli.main([
+        "--watchlist", str(watchlist_path),
+        "--state", str(state_path),
+        "--instruments-file", str(instruments_path),
+        "--out", str(out_path),
+    ])
+
+    data = json.loads(out_path.read_text())
+    assert data["satellites"][0]["instruments"]["description"] == "It's the ISS."
+
+
 def test_satellite_never_fetched_yet_still_appears_with_nulls(tmp_path):
     watchlist_path = tmp_path / "watchlist.json"
     watchlist_path.write_text(json.dumps([99999]))

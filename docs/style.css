@@ -21,6 +21,63 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.5;
+  position: relative;
+}
+
+/* Rotating backdrop of real satellite-captured photos (EPIC/GOES/Hubble-JWST
+   -- see app.js's startBackdropRotation). Fixed behind everything, dimmed
+   so foreground text/panels stay readable; the panels themselves keep a
+   solid background so the photo is atmosphere, not something you have to
+   read through. */
+#backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+#backdrop-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: opacity 1.5s ease-in-out, background-image 0.5s;
+  opacity: 0.55;
+}
+
+#backdrop-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(13, 17, 23, 0.55) 0%, rgba(13, 17, 23, 0.85) 70%, rgba(13, 17, 23, 0.97) 100%);
+}
+
+#backdrop-caption {
+  position: fixed;
+  bottom: 0.5rem;
+  right: 0.75rem;
+  z-index: 1;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  background: rgba(13, 17, 23, 0.6);
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  max-width: 90vw;
+  display: none; /* shown only once a backdrop photo actually loads -- see app.js setBackdrop() */
+}
+
+#backdrop-caption.visible {
+  display: block;
+}
+
+:root[data-theme="light"] #backdrop-overlay {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.88) 70%, rgba(255, 255, 255, 0.98) 100%);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) #backdrop-overlay {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.88) 70%, rgba(255, 255, 255, 0.98) 100%);
+  }
 }
 
 header {

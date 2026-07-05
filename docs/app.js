@@ -138,20 +138,57 @@ function renderStatus(sat) {
   el.innerHTML = rows.join("");
 }
 
+function renderInstruments(sat) {
+  const el = document.getElementById("instruments-content");
+  const info = sat.instruments;
+
+  if (!info) {
+    el.innerHTML = '<div class="no-imagery">No instrument/mission info on file for this satellite yet.</div>';
+    return;
+  }
+
+  const rows = [`<p>${info.description}</p>`];
+
+  if (info.instruments && info.instruments.length > 0) {
+    rows.push(
+      `<div class="status-row"><span class="label">Instruments</span><br>${info.instruments.join(", ")}</div>`
+    );
+  }
+
+  if (info.data_products && info.data_products.length > 0) {
+    rows.push(
+      `<div class="status-row"><span class="label">What it actually measures/does</span><br>${info.data_products.join(", ")}</div>`
+    );
+  }
+
+  el.innerHTML = rows.join("");
+}
+
 function renderImagery(sat) {
   const el = document.getElementById("imagery-content");
   el.innerHTML = "Loading...";
 
   if (sat.imagery.kind === "gibs") {
-    const date = sat.imagery.cadence === "annual" ? `${new Date().getUTCFullYear() - 1}-01-01` : isoDateDaysAgo(1);
+    let date;
+    if (sat.imagery.cadence === "annual") {
+      date = `${new Date().getUTCFullYear() - 1}-01-01`;
+    } else if (sat.imagery.cadence === "realtime") {
+      date = isoDateDaysAgo(0); // today -- this product is near-real-time, not a daily composite
+    } else {
+      date = isoDateDaysAgo(1);
+    }
     const url =
       "https://wvs.earthdata.nasa.gov/api/v1/snapshot" +
       `?REQUEST=GetSnapshot&LAYERS=${encodeURIComponent(sat.imagery.layer)}` +
       `&CRS=EPSG:4326&TIME=${date}&BBOX=-90,-180,90,180&FORMAT=image/jpeg&WIDTH=720&HEIGHT=360`;
-    const cadenceNote =
-      sat.imagery.cadence === "annual"
-        ? "Annual composite (Landsat doesn't have a daily global GIBS layer) -- not today's image."
-        : `Real imagery from this satellite's instrument, ${date} (NASA GIBS).`;
+    let cadenceNote;
+    if (sat.imagery.cadence === "annual") {
+      cadenceNote = "Annual composite (Landsat doesn't have a daily global GIBS layer) -- not today's image.";
+    } else if (sat.imagery.cadence === "realtime") {
+      cadenceNote = `Real global rain/snowfall-rate data, refreshed every 30 min (NASA GIBS/IMERG), ${date}.`;
+    } else {
+      cadenceNote = `Real imagery from this satellite's instrument, ${date} (NASA GIBS).`;
+    }
     el.innerHTML = `<img src="${url}" alt="Satellite imagery"><div class="caption">${cadenceNote}</div>`;
     return;
   }
@@ -178,11 +215,110 @@ function renderImagery(sat) {
   el.innerHTML = '<div class="no-imagery">No public imagery source available for this satellite.</div>';
 }
 
+// --- Rotating backdrop of real satellite-captured photos ---
+// Sources (all real, none fabricated/stock):
+//  - GOES-16/18 GeoColor: NOAA's CDN always serves the CURRENT full-disk
+//    image at a fixed URL (confirmed real, refreshed ~every 10 min); each
+//    rotation cache-busts the URL so the browser re-fetches whatever is
+//    current instead of a stale cached copy.
+//  - NASA EPIC (DSCOVR): real full-Earth photos, refreshed every 60-100 min;
+//    fetched once per page load via EPIC's own JSON API, same graceful
+//    .catch()-and-skip pattern already used for the APOD fetch below.
+//  - NASA images-api.nasa.gov: real released Hubble/JWST photos.
+// Rotating which of these real photos is DISPLAYED every 60s is honest;
+// claiming each individual photo itself refreshes every 60s would not be
+// (most of these sources don't update that fast -- see README).
+const GOES_BACKDROPS = [
+  { url: "https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/1808x1808.jpg", caption: "GOES-16 (GOES-East) GeoColor, NOAA/NESDIS -- real near-real-time imagery, refreshed ~every 10 min" },
+  { url: "https://cdn.star.nesdis.noaa.gov/GOES18/ABI/FD/GEOCOLOR/1808x1808.jpg", caption: "GOES-18 (GOES-West) GeoColor, NOAA/NESDIS -- real near-real-time imagery, refreshed ~every 10 min" },
+];
+
+let backdropPool = [];
+let backdropIndex = 0;
+let backdropTimer;
+
+function setBackdrop(entry, attemptsLeft) {
+  if (!entry) return;
+  // attemptsLeft bounds the onerror retry chain to one pass over the pool --
+  // without this, a session where every source is unreachable (this site
+  // blocked by a firewall/ad-blocker, or every CDN briefly down at once)
+  // would retry forever in a tight loop instead of just leaving the plain
+  // dark background.
+  if (attemptsLeft === undefined) attemptsLeft = backdropPool.length;
+  const img = new Image();
+  img.onload = () => {
+    document.getElementById("backdrop-image").style.backgroundImage = `url("${entry.url}")`;
+    const captionEl = document.getElementById("backdrop-caption");
+    captionEl.textContent = entry.caption;
+    captionEl.classList.add("visible");
+  };
+  img.onerror = () => {
+    if (attemptsLeft > 1 && backdropPool.length > 1) {
+      backdropIndex = (backdropIndex + 1) % backdropPool.length;
+      setBackdrop(backdropPool[backdropIndex], attemptsLeft - 1);
+    }
+  };
+  img.src = entry.url;
+}
+
+function fetchEpicPhotos() {
+  return fetch("https://epic.gsfc.nasa.gov/api/natural")
+    .then((r) => r.json())
+    .then((images) =>
+      images.slice(0, 4).map((img) => {
+        const [year, month, day] = img.date.split(" ")[0].split("-");
+        return {
+          url: `https://epic.gsfc.nasa.gov/archive/natural/${year}/${month}/${day}/png/${img.image}.png`,
+          caption: `NASA EPIC (DSCOVR), ${img.date} -- real full-Earth photo from 1 million miles away`,
+        };
+      })
+    )
+    .catch(() => []); // EPIC unreachable/rate-limited -- just fewer real photos in the pool, not a crash
+}
+
+function fetchDeepSpacePhotos() {
+  const queries = ["hubble nebula", "james webb space telescope"];
+  return Promise.all(
+    queries.map((q) =>
+      fetch(`https://images-api.nasa.gov/search?q=${encodeURIComponent(q)}&media_type=image`)
+        .then((r) => r.json())
+        .then((result) => {
+          const items = (result.collection && result.collection.items) || [];
+          return items
+            .slice(0, 3)
+            .map((item) => ({
+              url: item.links && item.links[0] && item.links[0].href,
+              caption: `${(item.data && item.data[0] && item.data[0].title) || "NASA image"} (images.nasa.gov)`,
+            }))
+            .filter((entry) => entry.url);
+        })
+        .catch(() => [])
+    )
+  ).then((results) => results.flat());
+}
+
+function startBackdropRotation() {
+  const cacheBust = (entry) => ({ ...entry, url: `${entry.url}?t=${Date.now()}` });
+
+  Promise.all([fetchEpicPhotos(), fetchDeepSpacePhotos()]).then(([epic, deepSpace]) => {
+    backdropPool = [...GOES_BACKDROPS, ...epic, ...deepSpace];
+    if (backdropPool.length === 0) return; // all sources failed -- plain dark background, not broken
+    setBackdrop(backdropPool[0]);
+    if (backdropTimer) clearInterval(backdropTimer);
+    backdropTimer = setInterval(() => {
+      backdropIndex = (backdropIndex + 1) % backdropPool.length;
+      const entry = backdropPool[backdropIndex];
+      setBackdrop(GOES_BACKDROPS.includes(entry) ? cacheBust(entry) : entry);
+    }, 60000);
+  });
+}
+
 function selectSatellite(noradId) {
   const sat = siteData.satellites.find((s) => s.norad_id === noradId);
   if (!sat) return;
   startTracking(sat);
   renderStatus(sat);
+  renderInstruments(sat);
   renderImagery(sat);
 }
 
@@ -252,3 +388,4 @@ function loadData() {
 
 initMap();
 loadData();
+startBackdropRotation();

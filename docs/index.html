@@ -8,6 +8,12 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="backdrop" aria-hidden="true">
+    <div id="backdrop-image"></div>
+    <div id="backdrop-overlay"></div>
+  </div>
+  <div id="backdrop-caption"></div>
+
   <header>
     <h1>orbital-watch</h1>
     <p class="tagline">Free, open satellite maneuver/conjunction/observation-health watchdog. Pick a satellite below.</p>
@@ -27,6 +33,11 @@
         <div class="panel" id="status-panel">
           <h2>Status</h2>
           <div id="status-content">Select a satellite above.</div>
+        </div>
+
+        <div class="panel" id="instruments-panel">
+          <h2>What This Satellite Actually Does</h2>
+          <div id="instruments-content"></div>
         </div>
 
         <div class="panel" id="imagery-panel">

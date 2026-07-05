@@ -21,6 +21,11 @@ def test_landsat_is_honestly_labeled_annual_not_daily():
     assert result["cadence"] == "annual"
 
 
+def test_gpm_gets_the_real_imerg_rain_rate_layer_labeled_realtime():
+    result = imagery_descriptor(39574)  # GPM Core Observatory
+    assert result == {"kind": "gibs", "layer": "IMERG_Precipitation_Rate_30min", "cadence": "realtime"}
+
+
 def test_hubble_gets_apod_not_a_fake_guarantee():
     assert imagery_descriptor(20580) == {"kind": "apod"}
 
@@ -113,6 +118,35 @@ def test_category_defaults_to_uncategorized_not_a_crash():
         satnogs_healths_by_id={},
     )
     assert result["satellites"][0]["category"] == "uncategorized"
+
+
+def test_instruments_are_attached_when_provided():
+    result = build_site_data(
+        generated_at="x",
+        watchlist=[26407],
+        object_names={},
+        previous_tles={},
+        tle_ages_days={},
+        maneuver_events={},
+        satnogs_healths_by_id={},
+        instruments={26407: {"instruments": [], "data_products": ["GPS timing & ranging signals"], "description": "broadcasts GPS signals"}},
+    )
+    sat = result["satellites"][0]
+    assert sat["instruments"]["description"] == "broadcasts GPS signals"
+    assert sat["instruments"]["instruments"] == []
+
+
+def test_instruments_default_to_none_not_a_crash():
+    result = build_site_data(
+        generated_at="x",
+        watchlist=[99999],
+        object_names={},
+        previous_tles={},
+        tle_ages_days={},
+        maneuver_events={},
+        satnogs_healths_by_id={},
+    )
+    assert result["satellites"][0]["instruments"] is None
 
 
 def test_category_labels_are_included_at_top_level():

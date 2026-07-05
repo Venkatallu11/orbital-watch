@@ -11,6 +11,11 @@ picture." Confirmed via research, not assumed:
   - Landsat 8: GIBS only has an ANNUAL composite for Landsat (WELD product),
     not a daily layer like the others -- labeled as such, not claimed to be
     "live" when it isn't.
+  - GPM Core Observatory: GIBS' real IMERG_Precipitation_Rate_30min layer --
+    an actual global rain/snowfall-rate product from GPM's GMI microwave
+    imager + DPR radar, refreshed every 30 min. Labeled "realtime" (not
+    "daily") and requested for today's date rather than yesterday's, since
+    the underlying product is near-real-time.
   - Hubble: no simple keyless image-archive API (HubbleSite's own v3 API
     gates behind a free-account key per their docs). Using NASA's APOD
     (Astronomy Picture of the Day) instead, honestly labeled as "today's
@@ -30,6 +35,7 @@ _GIBS_LAYERS: dict[int, dict] = {
     37849: {"layer": "VIIRS_SNPP_CorrectedReflectance_TrueColor", "cadence": "daily"},     # Suomi NPP
     43013: {"layer": "VIIRS_NOAA20_CorrectedReflectance_TrueColor", "cadence": "daily"},   # NOAA-20
     39084: {"layer": "Landsat_WELD_CorrectedReflectance_TrueColor_Global_Annual", "cadence": "annual"},  # Landsat 8
+    39574: {"layer": "IMERG_Precipitation_Rate_30min", "cadence": "realtime"},  # GPM Core Observatory
 }
 _APOD_NORAD_IDS = {20580}  # Hubble Space Telescope
 
@@ -39,6 +45,7 @@ _APOD_NORAD_IDS = {20580}  # Hubble Space Telescope
 # from categories.json, not a real category a satellite is picked for.
 CATEGORY_LABELS: dict[str, str] = {
     "earth_observation": "Earth Observation & Weather",
+    "precipitation_watch": "Precipitation & Rain/Snow Watch",
     "space_telescopes": "Space Telescopes (Deep-Space & Solar Observers)",
     "asteroid_watch": "Asteroid & Near-Earth Object Watchers",
     "space_stations": "Space Stations & Human Spaceflight",
@@ -70,6 +77,7 @@ class SiteSatellite:
     latest_maneuver: dict | None
     satnogs_health: dict | None
     category: str
+    instruments: dict | None
 
 
 @dataclass
@@ -88,12 +96,14 @@ def build_site_data(
     satnogs_healths_by_id: dict[int, dict],
     object_types: dict[int, str] | None = None,
     categories: dict[int, str] | None = None,
+    instruments: dict[int, dict] | None = None,
 ) -> dict:
     """Pure function, no I/O -- takes already-loaded data (from state.json,
     watchlist.json, etc.) and shapes it into the JSON the website expects.
     Kept separate from any file reading so it's trivially testable."""
     object_types = object_types or {}
     categories = categories or {}
+    instruments = instruments or {}
     satellites = []
 
     for norad_id in sorted(watchlist):
@@ -115,6 +125,7 @@ def build_site_data(
                 latest_maneuver=latest_maneuver,
                 satnogs_health=satnogs_healths_by_id.get(norad_id),
                 category=categories.get(norad_id, "uncategorized"),
+                instruments=instruments.get(norad_id),
             )
         )
 
@@ -133,6 +144,7 @@ def build_site_data(
                 "latest_maneuver": s.latest_maneuver,
                 "satnogs_health": s.satnogs_health,
                 "category": s.category,
+                "instruments": s.instruments,
             }
             for s in satellites
         ],
