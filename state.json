@@ -232,11 +232,11 @@
       "norad_id": 25994,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 0,
-      "unvetted_count": 25,
-      "success_rate": null,
+      "bad_count": 1,
+      "unvetted_count": 24,
+      "success_rate": 0.0,
       "is_degraded": false,
-      "reason": "not enough vetted observations yet to judge"
+      "reason": "0/1 recent vetted observations were good (0%)"
     },
     "27424": {
       "norad_id": 27424,
@@ -282,11 +282,11 @@
       "norad_id": 43013,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 10,
-      "unvetted_count": 15,
+      "bad_count": 11,
+      "unvetted_count": 14,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/10 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/11 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "46052": {
       "norad_id": 46052,
@@ -322,11 +322,11 @@
       "norad_id": 24278,
       "total_observations": 25,
       "good_count": 4,
-      "bad_count": 1,
-      "unvetted_count": 20,
-      "success_rate": 0.8,
+      "bad_count": 0,
+      "unvetted_count": 21,
+      "success_rate": 1.0,
       "is_degraded": false,
-      "reason": "4/5 recent vetted observations were good (80%)"
+      "reason": "4/4 recent vetted observations were good (100%)"
     },
     "25867": {
       "norad_id": 25867,
@@ -362,11 +362,11 @@
       "norad_id": 26931,
       "total_observations": 25,
       "good_count": 1,
-      "bad_count": 14,
-      "unvetted_count": 10,
-      "success_rate": 0.06666666666666667,
+      "bad_count": 13,
+      "unvetted_count": 11,
+      "success_rate": 0.07142857142857142,
       "is_degraded": true,
-      "reason": "only 1/15 recent vetted observations were good (7%) -- worth checking against the TLE-residual signal"
+      "reason": "only 1/14 recent vetted observations were good (7%) -- worth checking against the TLE-residual signal"
     },
     "28485": {
       "norad_id": 28485,
