@@ -370,6 +370,139 @@ function renderCrew(sat) {
     <ul>${sat.crew_aboard.map((name) => `<li>${name}</li>`).join("")}</ul>`;
 }
 
+function renderAchievement(sat) {
+  const panel = document.getElementById("achievement-panel");
+  const el = document.getElementById("achievement-content");
+
+  // Only shown for satellites with a real, individually-verified milestone
+  // (see achievements.json) -- most of the 52 tracked objects (an
+  // individual Starlink, a GPS satellite) don't have one of their own, and
+  // the panel just stays hidden rather than inventing something for them.
+  if (!sat.achievement) {
+    panel.hidden = true;
+    return;
+  }
+
+  panel.hidden = false;
+  el.innerHTML = `
+    <p class="achievement-headline">${sat.achievement.headline}</p>
+    <p class="achievement-detail">${sat.achievement.detail}</p>
+  `;
+}
+
+function renderDeepSpaceProbes() {
+  const panel = document.getElementById("deep-space-panel");
+  const el = document.getElementById("deep-space-content");
+  const probes = siteData.deep_space_probes || [];
+
+  if (probes.length === 0) {
+    panel.hidden = true;
+    return;
+  }
+
+  panel.hidden = false;
+  el.innerHTML = probes.map((p) => `
+    <div class="probe-card">
+      <h3>${p.name}</h3>
+      <div class="probe-stat"><span class="label">Distance from Earth</span><br>
+        ${p.distance_from_earth_au.toFixed(2)} AU (${(p.distance_from_earth_km / 1e9).toFixed(2)} billion km)</div>
+      <div class="probe-stat"><span class="label">Current speed relative to Earth</span><br>
+        ${p.speed_km_s.toFixed(2)} km/s</div>
+      <div class="probe-stat"><span class="label">Launched</span><br>${p.launched}</div>
+      <div class="probe-milestone">${p.milestone}</div>
+    </div>
+  `).join("");
+}
+
+function renderVolcanoStatus(sat) {
+  const panel = document.getElementById("volcano-panel");
+  const el = document.getElementById("volcano-content");
+
+  // Only shown for the real thermal-imaging Earth observation satellites
+  // (Terra/Aqua/Suomi NPP/NOAA-20 -- see site_data.py) -- USGS's feed
+  // itself is US-only and isn't something this satellite's own processing
+  // produced, so this is framed as real-world context, not a per-satellite
+  // detection log.
+  if (!sat.volcano_alerts) {
+    panel.hidden = true;
+    return;
+  }
+
+  panel.hidden = false;
+  if (sat.volcano_alerts.length === 0) {
+    el.innerHTML = '<div class="no-imagery">No US volcano currently above normal status, per USGS.</div>';
+    return;
+  }
+
+  const colorToBadge = { RED: "badge-danger", ORANGE: "badge-warn", YELLOW: "badge-warn", GREEN: "badge-ok" };
+  const rows = sat.volcano_alerts.map((v) => `
+    <div class="status-row">
+      <span class="badge ${colorToBadge[v.color_code] || "badge-warn"}">${v.alert_level}</span>
+      <strong>${v.volcano_name}</strong> (${v.observatory})
+      <br><span class="label">As of ${v.sent_utc} UTC -- <a href="${v.notice_url}">USGS notice</a></span>
+    </div>
+  `);
+  el.innerHTML = `
+    <p class="deep-space-note">Real-time USGS alert status, US volcanoes only -- this is the kind of thing thermal-imaging
+    satellites like this one help monitor, not something computed by this site itself.</p>
+    ${rows.join("")}
+  `;
+}
+
+// Fetched client-side, live, at the moment a precipitation-watch satellite
+// is selected -- NOT computed server-side and baked into data.json, because
+// the satellite keeps moving (GPM orbits Earth roughly every 93 minutes),
+// so a forecast for "wherever it was when the hourly pipeline last ran"
+// would already be for the wrong place by the time someone loads the page.
+// Open-Meteo is a real, free, keyless forecast API -- this is a genuine
+// short-term weather-model forecast for the ground point below the
+// satellite right now, not something the satellite itself measured (that's
+// what the Imagery panel's real-time GPM rain-rate layer is for).
+function renderPrecipitationForecast(sat) {
+  const panel = document.getElementById("precipitation-panel");
+  const el = document.getElementById("precipitation-content");
+
+  if (sat.category !== "precipitation_watch") {
+    panel.hidden = true;
+    return;
+  }
+
+  const satrec = satrecFor(sat);
+  const pos = satrec ? currentLatLon(satrec, new Date()) : null;
+  if (!pos) {
+    panel.hidden = true;
+    return;
+  }
+
+  panel.hidden = false;
+  el.innerHTML = "Loading ground forecast from Open-Meteo...";
+
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.lat.toFixed(2)}&longitude=${pos.lng.toFixed(2)}&hourly=precipitation,snowfall&forecast_days=1&timezone=UTC`)
+    .then((r) => r.json())
+    .then((data) => {
+      const times = data.hourly.time;
+      const precip = data.hourly.precipitation;
+      const snow = data.hourly.snowfall;
+      const nowHour = new Date().getUTCHours();
+      const startIdx = times.findIndex((t) => new Date(t).getUTCHours() === nowHour);
+      const rows = times.slice(Math.max(startIdx, 0), Math.max(startIdx, 0) + 6).map((t, i) => {
+        const idx = Math.max(startIdx, 0) + i;
+        const hour = new Date(t).toISOString().slice(11, 16);
+        return `<div class="status-row"><span class="label">${hour} UTC</span><br>` +
+          `${precip[idx].toFixed(1)} mm rain, ${snow[idx].toFixed(1)} cm snow (forecast)</div>`;
+      });
+      el.innerHTML = `
+        <p class="deep-space-note">Ground weather forecast (Open-Meteo) at this satellite's current position
+        (${pos.lat.toFixed(1)}, ${pos.lng.toFixed(1)}) -- a weather-model forecast, not something the satellite
+        itself measured.</p>
+        ${rows.join("")}
+      `;
+    })
+    .catch(() => {
+      el.innerHTML = '<div class="no-imagery">Could not load Open-Meteo forecast right now.</div>';
+    });
+}
+
 function renderHistory(sat) {
   const timeline = document.getElementById("history-timeline");
   const toggle = document.getElementById("history-toggle");
@@ -520,6 +653,9 @@ function selectSatellite(noradId) {
   renderCollisionRisk(sat);
   renderCrew(sat);
   renderHistory(sat);
+  renderAchievement(sat);
+  renderVolcanoStatus(sat);
+  renderPrecipitationForecast(sat);
 }
 
 function populateDropdown() {
@@ -580,6 +716,7 @@ function loadData() {
       siteData = data;
       document.getElementById("generated-at").textContent = `Data as of ${new Date(data.generated_at).toLocaleString()}`;
       populateDropdown();
+      renderDeepSpaceProbes();
       // Select whatever option the dropdown actually shows as chosen (its
       // first <option> in DOM/category order), not data.satellites[0] --
       // those two orderings differ (satellites[] is sorted by NORAD ID,

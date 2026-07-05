@@ -26,7 +26,14 @@
     </section>
 
     <section class="panels">
-      <div id="globe" class="globe"></div>
+      <div class="globe-column">
+        <div id="globe" class="globe"></div>
+
+        <div class="panel" id="achievement-panel" hidden>
+          <h2>Notable Achievement</h2>
+          <div id="achievement-content"></div>
+        </div>
+      </div>
 
       <div class="info-panels">
         <div class="panel" id="status-panel">
@@ -49,6 +56,16 @@
           <div id="collision-content"></div>
         </div>
 
+        <div class="panel" id="precipitation-panel" hidden>
+          <h2>Ground Weather Forecast</h2>
+          <div id="precipitation-content"></div>
+        </div>
+
+        <div class="panel" id="volcano-panel" hidden>
+          <h2>Volcano Watch (US, USGS)</h2>
+          <div id="volcano-content"></div>
+        </div>
+
         <div class="panel" id="crew-panel" hidden>
           <h2>Who's Aboard Right Now</h2>
           <div id="crew-content"></div>
@@ -62,6 +79,16 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <section class="panel" id="deep-space-panel" hidden>
+      <h2>Deep Space Probes</h2>
+      <p class="deep-space-note">
+        Not tracked on the globe above -- these left Earth orbit decades ago, so they have no
+        NORAD ID/TLE. Real live distance/speed from NASA/JPL's Horizons system, computed fresh
+        each run.
+      </p>
+      <div id="deep-space-content"></div>
     </section>
   </main>
 

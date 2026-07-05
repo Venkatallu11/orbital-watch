@@ -94,6 +94,30 @@ def test_instruments_file_attaches_instrument_info_per_satellite(tmp_path):
     assert data["satellites"][0]["instruments"]["description"] == "It's the ISS."
 
 
+def test_achievements_file_attaches_achievement_per_satellite(tmp_path):
+    watchlist_path = tmp_path / "watchlist.json"
+    watchlist_path.write_text(json.dumps([NORAD_ID]))
+    state_path = tmp_path / "state.json"
+    state_path.write_text(json.dumps({
+        "previous_tles": {str(NORAD_ID): {"line1": LINE1, "line2": LINE2}},
+    }))
+    achievements_path = tmp_path / "achievements.json"
+    achievements_path.write_text(json.dumps({
+        str(NORAD_ID): {"headline": "Test milestone", "detail": "..."},
+    }))
+    out_path = tmp_path / "data.json"
+
+    site_data_cli.main([
+        "--watchlist", str(watchlist_path),
+        "--state", str(state_path),
+        "--achievements-file", str(achievements_path),
+        "--out", str(out_path),
+    ])
+
+    data = json.loads(out_path.read_text())
+    assert data["satellites"][0]["achievement"]["headline"] == "Test milestone"
+
+
 def test_conjunctions_and_crew_are_read_from_state_json(tmp_path):
     watchlist_path = tmp_path / "watchlist.json"
     watchlist_path.write_text(json.dumps([NORAD_ID]))
@@ -107,6 +131,7 @@ def test_conjunctions_and_crew_are_read_from_state_json(tmp_path):
             "min_range_km": 1.2, "max_probability": 0.001,
         }],
         "crew_by_craft": {"ISS": ["Jane Doe"]},
+        "deep_space_probes": [{"key": "voyager_1", "name": "Voyager 1", "distance_from_earth_km": 2.5e10}],
     }))
     out_path = tmp_path / "data.json"
 
@@ -120,6 +145,7 @@ def test_conjunctions_and_crew_are_read_from_state_json(tmp_path):
     sat = data["satellites"][0]
     assert sat["conjunctions"][0]["other_name"] == "RANDOM DEBRIS"
     assert sat["crew_aboard"] == ["Jane Doe"]
+    assert data["deep_space_probes"][0]["name"] == "Voyager 1"
 
 
 def test_satellite_never_fetched_yet_still_appears_with_nulls(tmp_path):

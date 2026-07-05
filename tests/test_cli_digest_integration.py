@@ -14,7 +14,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from orbital_watch import cli  # noqa: E402
 from orbital_watch.crew import CrewMember  # noqa: E402
+from orbital_watch.deep_space import ProbeStatus  # noqa: E402
 from orbital_watch.socrates import Conjunction  # noqa: E402
+from orbital_watch.volcano import VolcanoAlert  # noqa: E402
 
 LINE1 = "1 00005U 58002B   00179.78495062  .00000023  00000-0  28098-4 0  4753"
 LINE2 = "2 00005  34.2682 348.7242 1859667 331.7664  19.3264 10.82419157413667"
@@ -48,6 +50,25 @@ def test_digest_combines_socrates_and_satnogs_via_the_real_cli(tmp_path, monkeyp
         "orbital_watch.crew.fetch_crew",
         lambda: [CrewMember(name="Jane Doe", craft="ISS")],
     )
+    fake_probe = ProbeStatus(
+        key="voyager_1", name="Voyager 1", launched="1977-09-05",
+        milestone="test milestone", epoch="2026-Jul-05 00:00:00.0000",
+        distance_from_earth_km=2.5e10, distance_from_earth_au=167.0,
+        speed_km_s=37.5,
+    )
+    monkeypatch.setattr(
+        "orbital_watch.deep_space.fetch_all_probes",
+        lambda: [fake_probe],
+    )
+    fake_alert = VolcanoAlert(
+        volcano_name="Great Sitkin", observatory="Alaska Volcano Observatory",
+        alert_level="WATCH", color_code="ORANGE",
+        sent_utc="2026-07-04 20:11:15", notice_url="https://example.com/notice",
+    )
+    monkeypatch.setattr(
+        "orbital_watch.volcano.fetch_elevated_volcanoes",
+        lambda: [fake_alert],
+    )
 
     cli.main([
         "--watchlist", str(watchlist_path),
@@ -58,6 +79,8 @@ def test_digest_combines_socrates_and_satnogs_via_the_real_cli(tmp_path, monkeyp
         "--include-socrates",
         "--include-satnogs",
         "--include-crew",
+        "--include-deep-space",
+        "--include-volcano-status",
         "--digest-out", str(digest_path),
     ])
 
@@ -84,3 +107,12 @@ def test_digest_combines_socrates_and_satnogs_via_the_real_cli(tmp_path, monkeyp
 
     # Crew data persisted for the website's "who's aboard" feature.
     assert state["crew_by_craft"]["ISS"] == ["Jane Doe"]
+
+    # Deep-space-probe data persisted for the website's new "Deep Space
+    # Probes" section.
+    assert state["deep_space_probes"][0]["name"] == "Voyager 1"
+    assert state["deep_space_probes"][0]["distance_from_earth_km"] == 2.5e10
+
+    # Volcano alert data persisted for the website's volcano status card.
+    assert state["volcano_alerts"][0]["volcano_name"] == "Great Sitkin"
+    assert state["volcano_alerts"][0]["alert_level"] == "WATCH"

@@ -134,6 +134,38 @@ something you can actually click through instead of reading JSON:
   satellite's residual/maneuver timeline from git's own commit history of
   `state.json` (see `history.py`), precomputed into `docs/history.json`
   every scheduled run so the site doesn't need a database.
+- **Notable Achievement panel** — a real, individually-verified historical
+  milestone (launch date, discovery, "first to...") for the 14 satellites
+  that have one (`achievements.json`), e.g. Hubble's Deep Field, ISS's
+  continuous crewed habitation since Nov 2000, AO-7's 21-year revival.
+  Every fact was checked against NASA/JPL/Wikipedia sources before being
+  written down, not recalled from memory alone. Most of the 52 tracked
+  objects (an individual Starlink, a GPS satellite) don't have one of their
+  own, and the panel just stays hidden for those rather than inventing
+  something.
+- **Deep Space Probes section** — real live distance/speed for Voyager 1,
+  Voyager 2, Pioneer 10, and Pioneer 11 from NASA/JPL's free Horizons API,
+  computed fresh every scheduled run. These aren't Earth-orbiting (no
+  NORAD ID/TLE), so they're a separate section below the globe rather than
+  a marker on it — Horizons still reports real, physics-computed positions
+  for Pioneer 10/11 even though NASA lost contact with them decades ago.
+- **Volcano Watch panel** — real-time USGS elevated-volcano alert status,
+  shown on the real thermal-imaging Earth observation satellites (Terra,
+  Aqua, Suomi NPP, NOAA-20). Honestly scoped: USGS's feed is US-only
+  (Alaska/Hawaii/Cascades observatories), and it's the latest known status
+  per volcano, not a queryable date-range history — so this shows "current
+  status as of [real timestamp]," not a fabricated "checked in the last 7
+  days" log.
+- **Ground Weather Forecast panel** — for GPM/DMSP (the precipitation-watch
+  satellites): a real short-term rain/snowfall forecast (Open-Meteo, free,
+  keyless) at the satellite's current live position. Fetched client-side
+  at the moment you pick one of these satellites, not baked into
+  `data.json` server-side — the satellite keeps moving (GPM orbits roughly
+  every 93 minutes), so a forecast computed once an hour and cached would
+  already be for the wrong place by the time someone loads the page.
+  Labeled honestly as a weather-model forecast, not something the
+  satellite itself measured (that's what the real-time GPM rain-rate
+  imagery layer above it is for).
 - **Imagery** — real pictures, not stock photos, matched honestly to what
   each satellite can actually provide, with a switcher when more than one
   real view exists:
@@ -295,7 +327,7 @@ format inside the SOCRATES CSV specifically (not yet seen a real response
 body with an actual conjunction row to confirm against) — `_parse_tca`
 tries ISO 8601 first, falls back to the human-readable format.
 
-**Tested and passing (123 tests, all offline):**
+**Tested and passing (134 tests, all offline):**
 SGP4 residual math and per-object rolling baseline, all parsers (against
 fixtures built from confirmed real schemas), the reentry corridor math
 (`skyfield`, fully offline), the biography generator, the unified digest,
@@ -497,7 +529,7 @@ watchlist.json       52 real NORAD IDs the scheduled workflow watches
 names.json           norad_id -> friendly display name
 categories.json      norad_id -> category key (see "Website" above), used for the site's optgroup dropdown
 instruments.json     norad_id -> real instrument/mission info (see "Website" above)
-tests/               123 tests, fully offline
+tests/               134 tests, fully offline
 pyproject.toml       Packaging + console_scripts (orbital-watch, orbital-watch-biography, orbital-watch-reentry, orbital-watch-history, orbital-watch-site-data, orbital-watch-site-history, orbital-watch-discover, orbital-watch-verify-imagery)
 .github/workflows/orbital-watch.yml         Scheduled run + website deploy (see above)
 .github/workflows/discover-candidates.yml   Manual-only watchlist-curation helper (see "Website" above)

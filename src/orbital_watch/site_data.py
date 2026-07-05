@@ -74,6 +74,14 @@ _SPACE_STATION_CRAFT: dict[int, str] = {
     54216: "Tiangong",  # CSS (Mengtian)
 }
 
+# Real Earth observation satellites whose own instrument (MODIS/VIIRS) does
+# thermal-anomaly detection -- the kind of satellite actually used for
+# volcano/wildfire hotspot monitoring (see the "Active Fires & Thermal
+# Anomalies" GIBS layers above for these same four). USGS's volcano feed
+# itself isn't produced by this pipeline's own satellite processing --
+# see volcano.py's docstring for exactly what's real here vs. context.
+_THERMAL_IMAGING_NORAD_IDS: set[int] = {25994, 27424, 37849, 43013}  # Terra, Aqua, Suomi NPP, NOAA-20
+
 # Human-readable labels for categories.json's category keys -- kept here
 # (not hardcoded in the frontend) so adding a new category is a one-place
 # change. "uncategorized" is the fallback for any watchlist entry missing
@@ -137,6 +145,8 @@ class SiteSatellite:
     instruments: dict | None
     conjunctions: list[dict]
     crew_aboard: list[str] | None
+    achievement: dict | None
+    volcano_alerts: list[dict] | None
 
 
 @dataclass
@@ -158,6 +168,9 @@ def build_site_data(
     instruments: dict[int, dict] | None = None,
     conjunctions: list[dict] | None = None,
     crew_by_craft: dict[str, list[str]] | None = None,
+    deep_space_probes: list[dict] | None = None,
+    achievements: dict[int, dict] | None = None,
+    volcano_alerts: list[dict] | None = None,
 ) -> dict:
     """Pure function, no I/O -- takes already-loaded data (from state.json,
     watchlist.json, etc.) and shapes it into the JSON the website expects.
@@ -167,6 +180,9 @@ def build_site_data(
     instruments = instruments or {}
     conjunctions = conjunctions or []
     crew_by_craft = crew_by_craft or {}
+    deep_space_probes = deep_space_probes or []
+    achievements = achievements or {}
+    volcano_alerts = volcano_alerts or []
     satellites = []
 
     for norad_id in sorted(watchlist):
@@ -191,12 +207,17 @@ def build_site_data(
                 instruments=instruments.get(norad_id),
                 conjunctions=conjunctions_for(norad_id, conjunctions),
                 crew_aboard=crew_by_craft.get(_SPACE_STATION_CRAFT.get(norad_id, "")),
+                achievement=achievements.get(norad_id),
+                volcano_alerts=volcano_alerts if norad_id in _THERMAL_IMAGING_NORAD_IDS else None,
             )
         )
 
     return {
         "generated_at": generated_at,
         "category_labels": CATEGORY_LABELS,
+        # Not Earth-orbiting, no TLE, not part of `satellites` -- see
+        # deep_space.py's docstring for why these are a separate section.
+        "deep_space_probes": deep_space_probes,
         "satellites": [
             {
                 "norad_id": s.norad_id,
@@ -212,6 +233,8 @@ def build_site_data(
                 "instruments": s.instruments,
                 "conjunctions": s.conjunctions,
                 "crew_aboard": s.crew_aboard,
+                "achievement": s.achievement,
+                "volcano_alerts": s.volcano_alerts,
             }
             for s in satellites
         ],

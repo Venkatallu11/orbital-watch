@@ -133,6 +133,12 @@ main {
   }
 }
 
+.globe-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .globe {
   height: 620px;
   border-radius: 8px;
@@ -232,7 +238,8 @@ main {
 #imagery-content .no-imagery,
 #collision-content .no-imagery,
 #crew-content .no-imagery,
-#history-timeline .no-imagery {
+#history-timeline .no-imagery,
+#achievement-content .no-imagery {
   color: var(--text-dim);
   font-style: italic;
 }
@@ -278,6 +285,62 @@ main {
   margin-top: 0.8rem;
   max-height: 300px;
   overflow-y: auto;
+}
+
+#deep-space-panel {
+  margin-top: 1rem;
+}
+
+.deep-space-note {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
+#deep-space-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.probe-card {
+  background: rgba(13, 17, 23, 0.5);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8rem;
+}
+
+.probe-card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.probe-card .probe-stat {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+}
+
+.probe-card .probe-stat .label {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+
+.probe-card .probe-milestone {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+#achievement-content .achievement-headline {
+  font-weight: 600;
+  margin: 0 0 0.4rem;
+}
+
+#achievement-content .achievement-detail {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  margin: 0;
 }
 
 footer {

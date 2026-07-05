@@ -28,6 +28,7 @@ def main(argv=None) -> int:
     parser.add_argument("--object-names", help="Optional JSON file: {\"norad_id\": \"friendly name\"}")
     parser.add_argument("--categories-file", help="Optional JSON file: {\"norad_id\": \"category_key\"}")
     parser.add_argument("--instruments-file", help="Optional JSON file: {\"norad_id\": {instruments/data_products/description}}")
+    parser.add_argument("--achievements-file", help="Optional JSON file: {\"norad_id\": {headline/detail}} -- only satellites with a genuine, verified milestone")
     parser.add_argument("--satcat-file", help="Optional local SATCAT CSV for object_type; skipped if omitted")
     parser.add_argument("--out", required=True, help="Path to write data.json, e.g. docs/data.json")
     args = parser.parse_args(argv)
@@ -49,6 +50,11 @@ def main(argv=None) -> int:
     if args.instruments_file:
         with open(args.instruments_file) as f:
             instruments = {int(k): v for k, v in json.load(f).items()}
+
+    achievements: dict[int, dict] = {}
+    if args.achievements_file:
+        with open(args.achievements_file) as f:
+            achievements = {int(k): v for k, v in json.load(f).items()}
 
     object_types: dict[int, str] = {}
     if args.satcat_file:
@@ -89,6 +95,8 @@ def main(argv=None) -> int:
     # empty (not an error) if those flags weren't used on the last run.
     conjunctions = store.get("conjunctions", [])
     crew_by_craft = store.get("crew_by_craft", {})
+    deep_space_probes = store.get("deep_space_probes", [])
+    volcano_alerts = store.get("volcano_alerts", [])
 
     data = build_site_data(
         generated_at=datetime.now(timezone.utc).isoformat(),
@@ -103,6 +111,9 @@ def main(argv=None) -> int:
         instruments=instruments,
         conjunctions=conjunctions,
         crew_by_craft=crew_by_craft,
+        deep_space_probes=deep_space_probes,
+        achievements=achievements,
+        volcano_alerts=volcano_alerts,
     )
 
     with open(args.out, "w") as f:

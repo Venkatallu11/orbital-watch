@@ -1,0 +1,58 @@
+{
+  "20580": {
+    "headline": "Took the Hubble Deep Field (1995)",
+    "detail": "A 10-day exposure of a seemingly empty patch of sky that revealed roughly 3,000 previously unseen galaxies, reshaping how astronomers estimate the number of galaxies in the universe."
+  },
+  "25867": {
+    "headline": "Imaged the neutron star at the heart of Cassiopeia A",
+    "detail": "Chandra's X-ray images of the Cassiopeia A supernova remnant revealed the compact neutron star left behind by the explosion, along with the expanding debris shockwave."
+  },
+  "25989": {
+    "headline": "One of ESA's most productive X-ray observatories",
+    "detail": "Launched in 1999, XMM-Newton carries the largest X-ray mirrors ever built and has been used in thousands of scientific papers on black holes, neutron stars, and galaxy clusters."
+  },
+  "33053": {
+    "headline": "Discovered the 'Fermi Bubbles' (2010)",
+    "detail": "Fermi's gamma-ray survey of the sky revealed two enormous, previously-unknown gamma-ray-emitting structures extending above and below the Milky Way's center."
+  },
+  "36395": {
+    "headline": "Continuous whole-Sun imaging since 2010",
+    "detail": "The Solar Dynamics Observatory has captured the Sun in multiple wavelengths nearly continuously since launch, building one of the largest public archives of solar imagery ever produced."
+  },
+  "49954": {
+    "headline": "First mission dedicated to X-ray polarization (2021)",
+    "detail": "IXPE is the first satellite built specifically to measure the polarization of X-rays from black holes, neutron stars, and supernova remnants -- about 100x more sensitive to it than any earlier mission."
+  },
+  "38358": {
+    "headline": "First focusing high-energy X-ray telescope in orbit",
+    "detail": "NuSTAR uses precisely aligned nested mirrors to focus high-energy X-rays, a first for a space telescope, letting it image black holes and supernova remnants far more sharply than earlier X-ray missions."
+  },
+  "25544": {
+    "headline": "Continuously crewed since November 2, 2000",
+    "detail": "The ISS has hosted an unbroken chain of crews for over two decades -- over 270 people from more than 20 countries have visited it."
+  },
+  "48274": {
+    "headline": "Core module of China's first long-term space station",
+    "detail": "Tianhe launched April 29, 2021 as the first and largest module of Tiangong, China's first space station meant for permanent crewed habitation."
+  },
+  "39084": {
+    "headline": "Part of the longest continuous space-based record of Earth's land surface",
+    "detail": "Landsat 8 continues a program running since 1972 -- the longest continuous satellite record of Earth's land surface, used to track everything from deforestation to urban growth."
+  },
+  "39574": {
+    "headline": "First spaceborne dual-frequency precipitation radar",
+    "detail": "GPM Core Observatory's Ku/Ka-band Dual-frequency Precipitation Radar was the first of its kind in orbit, resolving the 3D structure of rain and snow rather than just a 2D estimate."
+  },
+  "39089": {
+    "headline": "World's first satellite dedicated to hunting asteroids",
+    "detail": "Launched in 2013, NEOSSat was the first space telescope built specifically to detect and track asteroids, comets, and satellites/debris from orbit."
+  },
+  "41866": {
+    "headline": "First of NOAA's GOES-R series",
+    "detail": "GOES-16 carries the first operational Geostationary Lightning Mapper and imagery roughly 4x sharper and 5x faster than the GOES satellites it replaced."
+  },
+  "7530": {
+    "headline": "The 'satellite that refused to die'",
+    "detail": "Launched in 1974, AO-7 went silent after a battery failure in 1981 -- then, in 2002, one of its shorted battery cells failed open, letting it run directly off solar power and come back to life 21+ years later. It's the oldest still-operating amateur radio satellite."
+  }
+}

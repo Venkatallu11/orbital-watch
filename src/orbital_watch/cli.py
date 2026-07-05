@@ -14,7 +14,7 @@ Usage:
     python -m orbital_watch.cli --watchlist watchlist.json --state state.json
     python -m orbital_watch.cli --watchlist watchlist.json --state state.json --source celestrak
     python -m orbital_watch.cli --watchlist watchlist.json --state state.json --source file --tle-file sample.tle
-    python -m orbital_watch.cli --watchlist watchlist.json --state state.json --include-socrates --include-satnogs --include-crew --digest-out digest.md
+    python -m orbital_watch.cli --watchlist watchlist.json --state state.json --include-socrates --include-satnogs --include-crew --include-deep-space --digest-out digest.md
 """
 from __future__ import annotations
 
@@ -62,6 +62,35 @@ def _fetch_crew_safely() -> dict[str, list[str]]:
     except Exception as exc:  # noqa: BLE001 - deliberately broad, see docstring
         print(f"Warning: Open Notify crew fetch failed ({exc}), skipping.")
         return {}
+
+
+def _fetch_deep_space_probes_safely() -> list:
+    """Voyager 1/2, Pioneer 10/11 real live distance/speed from JPL
+    Horizons -- best-effort like the other optional fetches, since a
+    third-party API being briefly down shouldn't take down the whole run."""
+    from dataclasses import asdict
+
+    from orbital_watch.deep_space import fetch_all_probes
+
+    try:
+        return [asdict(status) for status in fetch_all_probes()]
+    except Exception as exc:  # noqa: BLE001 - deliberately broad, see docstring
+        print(f"Warning: JPL Horizons deep-space-probe fetch failed ({exc}), skipping.")
+        return []
+
+
+def _fetch_volcano_status_safely() -> list:
+    """USGS's real-time elevated-volcano alert feed (US-only) -- best-effort
+    like the other optional fetches."""
+    from dataclasses import asdict
+
+    from orbital_watch.volcano import fetch_elevated_volcanoes
+
+    try:
+        return [asdict(alert) for alert in fetch_elevated_volcanoes()]
+    except Exception as exc:  # noqa: BLE001 - deliberately broad, see docstring
+        print(f"Warning: USGS volcano status fetch failed ({exc}), skipping.")
+        return []
 
 
 def _fetch_satnogs_health_safely(watchlist: set[int]) -> list:
@@ -112,6 +141,8 @@ def main(argv=None) -> int:
     parser.add_argument("--include-socrates", action="store_true", help="Fetch CelesTrak SOCRATES conjunction data")
     parser.add_argument("--include-satnogs", action="store_true", help="Fetch SatNOGS observation health")
     parser.add_argument("--include-crew", action="store_true", help="Fetch Open Notify 'people in space now' data")
+    parser.add_argument("--include-deep-space", action="store_true", help="Fetch JPL Horizons distance/speed for Voyager 1/2, Pioneer 10/11")
+    parser.add_argument("--include-volcano-status", action="store_true", help="Fetch USGS real-time elevated-volcano alerts (US-only)")
     parser.add_argument("--object-names", help="Optional JSON file: {\"norad_id\": \"friendly name\"} for the digest")
     parser.add_argument("--digest-out", help="Optional path to write the combined digest as markdown")
     parser.add_argument("--exclude-owners-file", help="Optional JSON file: [\"owner\", ...] to auto-exclude by SATCAT owner")
@@ -229,6 +260,8 @@ def main(argv=None) -> int:
     conjunctions = _fetch_conjunctions_safely(watchlist) if args.include_socrates else []
     satnogs_healths = _fetch_satnogs_health_safely(watchlist) if args.include_satnogs else []
     crew_by_craft = _fetch_crew_safely() if args.include_crew else {}
+    deep_space_probes = _fetch_deep_space_probes_safely() if args.include_deep_space else []
+    volcano_alerts = _fetch_volcano_status_safely() if args.include_volcano_status else []
 
     if args.include_socrates or args.include_satnogs:
         digest = generate_digest(object_names, maneuver_alerts, conjunctions, satnogs_healths, tle_ages_days)
@@ -263,6 +296,12 @@ def main(argv=None) -> int:
 
     if crew_by_craft:
         store.set("crew_by_craft", crew_by_craft)
+
+    if deep_space_probes:
+        store.set("deep_space_probes", deep_space_probes)
+
+    if volcano_alerts:
+        store.set("volcano_alerts", volcano_alerts)
 
     store.set("previous_tles", previous_tles)
     store.set("baseline_history", baseline.to_dict())

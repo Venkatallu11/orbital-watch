@@ -229,3 +229,53 @@ def test_crew_aboard_is_attached_for_space_station_modules():
     assert by_id[25544]["crew_aboard"] == ["Jane Doe"]
     assert by_id[48274]["crew_aboard"] == ["Li Wei"]
     assert by_id[26407]["crew_aboard"] is None  # GPS satellite -- not a space station
+
+
+def test_deep_space_probes_are_a_separate_top_level_section_not_per_satellite():
+    result = build_site_data(
+        generated_at="x",
+        watchlist=[25544],
+        object_names={},
+        previous_tles={},
+        tle_ages_days={},
+        maneuver_events={},
+        satnogs_healths_by_id={},
+        deep_space_probes=[{"key": "voyager_1", "name": "Voyager 1", "distance_from_earth_km": 2.5e10}],
+    )
+    assert result["deep_space_probes"] == [{"key": "voyager_1", "name": "Voyager 1", "distance_from_earth_km": 2.5e10}]
+    # not attached to any individual satellite -- these aren't Earth-orbiting
+    assert "deep_space_probes" not in result["satellites"][0]
+
+
+def test_deep_space_probes_default_to_empty_list_not_a_crash():
+    result = build_site_data(
+        generated_at="x", watchlist=[], object_names={}, previous_tles={},
+        tle_ages_days={}, maneuver_events={}, satnogs_healths_by_id={},
+    )
+    assert result["deep_space_probes"] == []
+
+
+def test_achievement_is_attached_only_for_satellites_that_have_one():
+    result = build_site_data(
+        generated_at="x",
+        watchlist=[20580, 26407],  # Hubble, a GPS satellite
+        object_names={}, previous_tles={}, tle_ages_days={},
+        maneuver_events={}, satnogs_healths_by_id={},
+        achievements={20580: {"headline": "Took the Hubble Deep Field (1995)", "detail": "..."}},
+    )
+    by_id = {s["norad_id"]: s for s in result["satellites"]}
+    assert by_id[20580]["achievement"]["headline"] == "Took the Hubble Deep Field (1995)"
+    assert by_id[26407]["achievement"] is None  # no fabricated achievement for satellites without one
+
+
+def test_volcano_alerts_attached_only_to_thermal_imaging_satellites():
+    result = build_site_data(
+        generated_at="x",
+        watchlist=[25994, 20580],  # Terra (thermal-imaging), Hubble (not)
+        object_names={}, previous_tles={}, tle_ages_days={},
+        maneuver_events={}, satnogs_healths_by_id={},
+        volcano_alerts=[{"volcano_name": "Great Sitkin", "alert_level": "WATCH"}],
+    )
+    by_id = {s["norad_id"]: s for s in result["satellites"]}
+    assert by_id[25994]["volcano_alerts"] == [{"volcano_name": "Great Sitkin", "alert_level": "WATCH"}]
+    assert by_id[20580]["volcano_alerts"] is None  # Hubble isn't a thermal-imaging Earth observation satellite
