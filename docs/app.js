@@ -63,8 +63,12 @@ function initGlobe() {
     .pathStroke(1.5)
     .pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 0);
 
-  globeInstance.controls().autoRotate = true;
-  globeInstance.controls().autoRotateSpeed = 0.35;
+  // NOTE: autoRotate is deliberately left off. It rotates the camera every
+  // frame regardless of what pointOfView() last set, so it was silently
+  // undoing the "center on the tracked satellite" call in startTracking()
+  // a moment after every selection -- the marker would drift away from the
+  // middle of the view within a second or two of loading. Instead the
+  // camera now follows the satellite continuously (see startTracking()).
 
   // globe.gl reads the container's size when it's constructed -- if the
   // layout hasn't fully settled yet (fonts/CSS still applying), the canvas
@@ -117,24 +121,28 @@ function startTracking(sat) {
     return;
   }
 
+  // Camera continuously follows the satellite's live position (a "chase
+  // cam") instead of a one-time center -- a real satellite moves fast
+  // enough (ISS crosses the globe in ~90 minutes) that centering only once,
+  // on selection, would drift out of view again within a minute or two.
+  // The first call also sets the zoom level (altitude); every call after
+  // that omits altitude so a manual zoom/drag by the user is preserved
+  // instead of being reset every tick.
+  let zoomed = false;
   const tick = () => {
     const pos = currentLatLon(satrec, new Date());
-    if (pos) {
-      globeInstance.pointsData([pos]).ringsData([pos]);
+    if (!pos) return;
+    globeInstance.pointsData([pos]).ringsData([pos]);
+    if (!zoomed) {
+      globeInstance.pointOfView({ lat: pos.lat, lng: pos.lng, altitude: 2.2 }, 1000);
+      zoomed = true;
+    } else {
+      globeInstance.pointOfView({ lat: pos.lat, lng: pos.lng }, 800);
     }
   };
 
-  const initialPos = currentLatLon(satrec, new Date());
   tick();
   globeInstance.pathsData([{ points: groundTrackPoints(satrec) }]);
-  // Re-center the camera ON the satellite's actual current position instead
-  // of leaving it wherever the last auto-rotate/previous selection left it
-  // -- previously the view never moved after the initial fixed pointOfView,
-  // so a newly-selected satellite could easily end up on the globe's far
-  // side or off in a corner (looked "off to the side, unclear").
-  if (initialPos) {
-    globeInstance.pointOfView({ lat: initialPos.lat, lng: initialPos.lng, altitude: 2.2 }, 1000);
-  }
   updateTimer = setInterval(tick, 1000);
 }
 
