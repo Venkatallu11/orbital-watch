@@ -1,0 +1,37 @@
+name: verify GIBS imagery layers
+
+# Manual-only helper: confirms a candidate NASA GIBS layer identifier
+# actually returns a real image before it's hardcoded into
+# site_data.py's imagery mapping. Not part of the hourly pipeline --
+# run it from the Actions tab whenever adding a new imagery layer.
+# (wvs.earthdata.nasa.gov isn't reachable from every dev sandbox, so this
+# runs the check on a real GitHub-hosted runner.)
+
+on:
+  workflow_dispatch:
+    inputs:
+      layers:
+        description: "Comma-separated GIBS layer identifiers to check"
+        required: true
+      date:
+        description: "Date to request (YYYY-MM-DD)"
+        required: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install orbital-watch
+        run: pip install -e .
+
+      - name: Verify layers
+        run: |
+          python -m orbital_watch.verify_imagery_cli \
+            --layers "${{ github.event.inputs.layers }}" \
+            --date "${{ github.event.inputs.date }}"
