@@ -124,6 +124,7 @@ main {
   display: grid;
   grid-template-columns: 1.3fr 1fr;
   gap: 1rem;
+  align-items: start;
 }
 
 @media (max-width: 800px) {
@@ -133,17 +134,42 @@ main {
 }
 
 .globe {
-  height: 480px;
+  height: 620px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #000;
   overflow: hidden;
 }
 
+/* Matches the globe's height and scrolls internally instead of either
+   trailing off with empty space next to a shorter globe, or stretching
+   the whole page far past it -- there are more cards than fit in one
+   screen (status, instruments, imagery, collision risk, crew, history). */
 .info-panels {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  max-height: 620px;
+  overflow-y: auto;
+  padding-right: 0.3rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.info-panels::-webkit-scrollbar {
+  width: 8px;
+}
+
+.info-panels::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 8px;
+}
+
+@media (max-width: 800px) {
+  .info-panels {
+    max-height: none;
+    overflow-y: visible;
+  }
 }
 
 .panel {

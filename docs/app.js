@@ -28,7 +28,10 @@ function isoDateDaysAgo(days) {
 // imagery textures shipped in the three-globe package itself -- not a
 // screenshot or a fabricated image.
 function initGlobe() {
-  globeInstance = new Globe(document.getElementById("globe"))
+  const container = document.getElementById("globe");
+  globeInstance = new Globe(container)
+    .width(container.clientWidth)
+    .height(container.clientHeight)
     .globeImageUrl("https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/earth-night.jpg")
     .backgroundImageUrl("https://cdn.jsdelivr.net/npm/three-globe@2.45.2/example/img/night-sky.png")
     .backgroundColor("rgba(0,0,0,0)")
@@ -36,24 +39,43 @@ function initGlobe() {
     .pointLat("lat")
     .pointLng("lng")
     .pointAltitude(0.02)
-    .pointRadius(0.6)
+    .pointRadius(0.7)
     .pointColor(() => "#58a6ff")
+    // Pulsing ring around the marker so the current position is easy to
+    // spot at a glance instead of a plain static dot.
+    .ringsData([])
+    .ringLat("lat")
+    .ringLng("lng")
+    .ringColor(() => (t) => `rgba(88, 166, 255, ${1 - t})`)
+    .ringMaxRadius(4)
+    .ringPropagationSpeed(3)
+    .ringRepeatPeriod(1200)
+    // Ground track: bright, dashed, and animated so it visibly "flows" in
+    // the direction of travel instead of sitting as a static faint line.
     .pathsData([])
     .pathPoints("points")
     .pathPointLat((p) => p[0])
     .pathPointLng((p) => p[1])
-    .pathColor(() => "rgba(88, 166, 255, 0.7)")
-    .pathDashLength(0.02)
-    .pathDashGap(0.008)
-    .pathDashAnimateTime(0)
-    .pointOfView({ lat: 20, lng: 0, altitude: 2.4 }, 0);
+    .pathColor(() => ["#58a6ff", "rgba(88, 166, 255, 0.15)"])
+    .pathDashLength(0.06)
+    .pathDashGap(0.03)
+    .pathDashAnimateTime(6000)
+    .pathStroke(1.5)
+    .pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 0);
 
   globeInstance.controls().autoRotate = true;
   globeInstance.controls().autoRotateSpeed = 0.35;
 
+  // globe.gl reads the container's size when it's constructed -- if the
+  // layout hasn't fully settled yet (fonts/CSS still applying), the canvas
+  // can end up the wrong size and the globe renders small/off-center
+  // inside its box ("showing on the right side", not centered). Re-measure
+  // once after the browser's next paint, and on every resize after that.
+  requestAnimationFrame(() => {
+    globeInstance.width(container.clientWidth).height(container.clientHeight);
+  });
   window.addEventListener("resize", () => {
-    globeInstance.width(document.getElementById("globe").clientWidth);
-    globeInstance.height(document.getElementById("globe").clientHeight);
+    globeInstance.width(container.clientWidth).height(container.clientHeight);
   });
 }
 
@@ -91,19 +113,28 @@ function startTracking(sat) {
   if (updateTimer) clearInterval(updateTimer);
   const satrec = satrecFor(sat);
   if (!satrec) {
-    globeInstance.pointsData([]).pathsData([]);
+    globeInstance.pointsData([]).ringsData([]).pathsData([]);
     return;
   }
 
   const tick = () => {
     const pos = currentLatLon(satrec, new Date());
     if (pos) {
-      globeInstance.pointsData([pos]);
+      globeInstance.pointsData([pos]).ringsData([pos]);
     }
   };
 
+  const initialPos = currentLatLon(satrec, new Date());
   tick();
   globeInstance.pathsData([{ points: groundTrackPoints(satrec) }]);
+  // Re-center the camera ON the satellite's actual current position instead
+  // of leaving it wherever the last auto-rotate/previous selection left it
+  // -- previously the view never moved after the initial fixed pointOfView,
+  // so a newly-selected satellite could easily end up on the globe's far
+  // side or off in a corner (looked "off to the side, unclear").
+  if (initialPos) {
+    globeInstance.pointOfView({ lat: initialPos.lat, lng: initialPos.lng, altitude: 2.2 }, 1000);
+  }
   updateTimer = setInterval(tick, 1000);
 }
 
@@ -182,6 +213,20 @@ function renderInstruments(sat) {
       `<div class="status-row"><span class="label">What it actually measures/does</span><br>${info.data_products.join(", ")}</div>`
     );
   }
+
+  // Honest update-cadence line: this site's own check cadence is a fixed,
+  // real fact (the GitHub Actions schedule); the satellite's OWN tracking
+  // data doesn't refresh on a single fixed schedule across all 52 objects
+  // (it varies a lot -- a Starlink vs. a GPS satellite), so that part
+  // points at the real live number already shown above rather than
+  // quoting one made-up cadence for everything.
+  let updateNote = "This site checks for new data automatically every hour.";
+  if (sat.tle_age_days !== null && sat.tle_age_days !== undefined) {
+    updateNote += sat.tle_age_days < 0
+      ? " This satellite's own tracking data (TLE) is current -- see \"TLE age\" above."
+      : ` This satellite's own tracking data (TLE) was last updated ${sat.tle_age_days.toFixed(1)} day(s) ago (see "TLE age" above) -- how often NORAD republishes it varies a lot by object.`;
+  }
+  rows.push(`<div class="status-row"><span class="label">How often this updates</span><br>${updateNote}</div>`);
 
   el.innerHTML = rows.join("");
 }
