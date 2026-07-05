@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from orbital_watch.discover import _parse_named_tle_text, fetch_group  # noqa: E402
+from orbital_watch.discover import _parse_named_tle_text, fetch_by_name, fetch_group  # noqa: E402
 
 LINE1 = "1 25544U 98067A   26185.50000000  .00016717  00000-0  10270-3 0  9008"
 LINE2 = "2 25544  51.6416 247.4627 0006703 130.5360 325.0288 15.72125391123456"
@@ -59,3 +59,11 @@ def test_fetch_group_passes_group_param_and_parses_result():
     assert session.last_params == {"GROUP": "stations", "FORMAT": "tle"}
     assert len(entries) == 1
     assert entries[0].norad_id == 25544
+
+
+def test_fetch_by_name_passes_name_param_and_parses_result():
+    session = _FakeSession(f"ISS (ZARYA)\n{LINE1}\n{LINE2}\n")
+    entries = fetch_by_name("ISS", session=session)
+    assert session.last_params == {"NAME": "ISS", "FORMAT": "tle"}
+    assert len(entries) == 1
+    assert entries[0].name == "ISS (ZARYA)"

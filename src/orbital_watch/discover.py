@@ -35,6 +35,17 @@ def fetch_group(group: str, session=None) -> list[CatalogEntry]:
     return _parse_named_tle_text(resp.text)
 
 
+def fetch_by_name(name: str, session=None) -> list[CatalogEntry]:
+    """CelesTrak's NAME query (substring match against the catalog's object
+    name) -- for finding a specific real satellite's NORAD ID (e.g. "GPM")
+    without having to guess it or know which GROUP it's classified under."""
+    resp = (session or requests).get(
+        CELESTRAK_GP_URL, params={"NAME": name, "FORMAT": "tle"}, timeout=30
+    )
+    resp.raise_for_status()
+    return _parse_named_tle_text(resp.text)
+
+
 def _parse_named_tle_text(text: str) -> list[CatalogEntry]:
     lines = [ln for ln in text.strip().splitlines() if ln.strip()]
     entries = []
