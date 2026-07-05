@@ -362,11 +362,11 @@
       "norad_id": 26931,
       "total_observations": 25,
       "good_count": 1,
-      "bad_count": 13,
-      "unvetted_count": 11,
-      "success_rate": 0.07142857142857142,
+      "bad_count": 14,
+      "unvetted_count": 10,
+      "success_rate": 0.06666666666666667,
       "is_degraded": true,
-      "reason": "only 1/14 recent vetted observations were good (7%) -- worth checking against the TLE-residual signal"
+      "reason": "only 1/15 recent vetted observations were good (7%) -- worth checking against the TLE-residual signal"
     },
     "28485": {
       "norad_id": 28485,
