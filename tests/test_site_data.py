@@ -259,7 +259,7 @@ def test_deep_space_probes_appear_as_real_selectable_satellites():
     assert probe["name"] == "Voyager 1"
     assert probe["category"] == "deep_space_probes"
     assert probe["line1"] == "" and probe["line2"] == ""  # no TLE -- not Earth-orbiting
-    assert probe["achievement"] == {"headline": "test headline", "detail": "test detail"}
+    assert probe["achievements"] == [{"headline": "test headline", "detail": "test detail"}]
     assert probe["instruments"]["description"] == "test description"
     assert probe["deep_space_status"]["distance_from_earth_km"] == 2.5e10
     # a normal satellite is unaffected and has no deep_space_status
@@ -275,17 +275,21 @@ def test_deep_space_probes_default_to_empty_not_a_crash():
     assert len(result["satellites"]) == 1  # no probes added when none are passed in
 
 
-def test_achievement_is_attached_only_for_satellites_that_have_one():
+def test_achievements_are_attached_only_for_satellites_that_have_one():
     result = build_site_data(
         generated_at="x",
         watchlist=[20580, 26407],  # Hubble, a GPS satellite
         object_names={}, previous_tles={}, tle_ages_days={},
         maneuver_events={}, satnogs_healths_by_id={},
-        achievements={20580: {"headline": "Took the Hubble Deep Field (1995)", "detail": "..."}},
+        achievements={20580: [
+            {"headline": "Took the Hubble Deep Field (1995)", "detail": "..."},
+            {"headline": "Second real Hubble milestone", "detail": "..."},
+        ]},
     )
     by_id = {s["norad_id"]: s for s in result["satellites"]}
-    assert by_id[20580]["achievement"]["headline"] == "Took the Hubble Deep Field (1995)"
-    assert by_id[26407]["achievement"] is None  # no fabricated achievement for satellites without one
+    assert len(by_id[20580]["achievements"]) == 2
+    assert by_id[20580]["achievements"][0]["headline"] == "Took the Hubble Deep Field (1995)"
+    assert by_id[26407]["achievements"] is None  # no fabricated achievement for satellites without one
 
 
 def test_volcano_alerts_attached_only_to_thermal_imaging_satellites():
@@ -299,3 +303,39 @@ def test_volcano_alerts_attached_only_to_thermal_imaging_satellites():
     by_id = {s["norad_id"]: s for s in result["satellites"]}
     assert by_id[25994]["volcano_alerts"] == [{"volcano_name": "Great Sitkin", "alert_level": "WATCH"}]
     assert by_id[20580]["volcano_alerts"] is None  # Hubble isn't a thermal-imaging Earth observation satellite
+
+
+def test_ocean_context_attached_only_to_real_ocean_sensing_satellites():
+    result = build_site_data(
+        generated_at="x",
+        watchlist=[41335, 32382, 38771, 20580],  # Sentinel-3A, RADARSAT-2, Metop-B, Hubble
+        object_names={}, previous_tles={}, tle_ages_days={},
+        maneuver_events={}, satnogs_healths_by_id={},
+    )
+    by_id = {s["norad_id"]: s for s in result["satellites"]}
+    assert by_id[41335]["ocean_context"] == "marine"
+    assert by_id[32382]["ocean_context"] == "marine"
+    assert by_id[38771]["ocean_context"] == "wind"
+    assert by_id[20580]["ocean_context"] is None  # Hubble doesn't sense the ocean
+
+
+def test_global_fire_count_attached_only_to_thermal_imaging_satellites():
+    result = build_site_data(
+        generated_at="x",
+        watchlist=[25994, 20580],  # Terra (thermal-imaging), Hubble (not)
+        object_names={}, previous_tles={}, tle_ages_days={},
+        maneuver_events={}, satnogs_healths_by_id={},
+        global_fire_count=1234,
+    )
+    by_id = {s["norad_id"]: s for s in result["satellites"]}
+    assert by_id[25994]["global_fire_count"] == 1234
+    assert by_id[20580]["global_fire_count"] is None
+
+
+def test_global_fire_count_none_when_not_configured():
+    result = build_site_data(
+        generated_at="x",
+        watchlist=[25994], object_names={}, previous_tles={},
+        tle_ages_days={}, maneuver_events={}, satnogs_healths_by_id={},
+    )
+    assert result["satellites"][0]["global_fire_count"] is None

@@ -312,6 +312,13 @@ main {
   margin: 0;
 }
 
+#achievement-content .achievement-progress {
+  margin: 0.6rem 0 0;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-align: right;
+}
+
 footer {
   padding: 1rem 1.5rem 2rem;
   text-align: center;

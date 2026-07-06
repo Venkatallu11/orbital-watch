@@ -16,7 +16,13 @@ name: orbital-watch scheduled run
 #      change `--source celestrak` to `--source spacetrack` below for the
 #      richer/faster-updated catalog.
 #   3. (Optional) Add repo secret ALERT_WEBHOOK_URL for Discord/Slack alerts.
-#   4. One-time manual step this workflow cannot do for you: in the repo's
+#   4. (Optional) Add repo secret FIRMS_MAP_KEY for real, GLOBAL wildfire
+#      detection counts (NASA FIRMS) on the website's Wildfire & Volcano
+#      Watch panel -- sign up free (2 minutes, no cost) at
+#      https://firms.modaps.eosdis.nasa.gov/api/map_key/ . Without this,
+#      that panel still shows real US-only volcano status (USGS, no key
+#      needed) but honestly says the fire-detection count isn't set up yet.
+#   5. One-time manual step this workflow cannot do for you: in the repo's
 #      Settings -> Pages, set "Source" to "GitHub Actions". Until that's
 #      done, the deploy-pages step below will fail even though everything
 #      else succeeds -- it just means Pages isn't turned on yet.
@@ -79,6 +85,7 @@ jobs:
           SPACETRACK_USER: ${{ secrets.SPACETRACK_USER }}
           SPACETRACK_PASS: ${{ secrets.SPACETRACK_PASS }}
           ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+          FIRMS_MAP_KEY: ${{ secrets.FIRMS_MAP_KEY }}
         run: |
           orbital-watch \
             --watchlist watchlist.json \

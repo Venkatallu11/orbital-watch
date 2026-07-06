@@ -82,6 +82,24 @@ _SPACE_STATION_CRAFT: dict[int, str] = {
 # see volcano.py's docstring for exactly what's real here vs. context.
 _THERMAL_IMAGING_NORAD_IDS: set[int] = {25994, 27424, 37849, 43013}  # Terra, Aqua, Suomi NPP, NOAA-20
 
+# Real ocean-sensing satellites, mapped to which real Open-Meteo dataset
+# actually matches their own instrument -- fetched client-side (see app.js)
+# since these satellites orbit fast enough that a value computed once an
+# hour server-side would already be stale by the time someone loads the
+# page (same reasoning as the precipitation-watch ground forecast).
+# "marine" -> Open-Meteo's Marine Weather API (sea surface temp/wave
+#   height) -- matches Sentinel-3A's OLCI/SLSTR ocean-color/SST instruments,
+#   and used as general ocean-condition context for RADARSAT-2's SAR
+#   sea-ice/ship monitoring (not the same as ice detection, but the closest
+#   real, free, keyless ocean data available).
+# "wind" -> Open-Meteo's regular forecast API's wind fields -- matches
+#   Metop-B's ASCAT ocean-wind instrument directly.
+_OCEAN_CONTEXT_NORAD_IDS: dict[int, str] = {
+    41335: "marine",  # Sentinel-3A
+    32382: "marine",  # RADARSAT-2
+    38771: "wind",     # Metop-B
+}
+
 # Human-readable labels for categories.json's category keys -- kept here
 # (not hardcoded in the frontend) so adding a new category is a one-place
 # change. "uncategorized" is the fallback for any watchlist entry missing
@@ -146,9 +164,11 @@ class SiteSatellite:
     instruments: dict | None
     conjunctions: list[dict]
     crew_aboard: list[str] | None
-    achievement: dict | None
+    achievements: list[dict] | None
     volcano_alerts: list[dict] | None
     deep_space_status: dict | None
+    ocean_context: str | None
+    global_fire_count: int | None
 
 
 @dataclass
@@ -171,8 +191,9 @@ def build_site_data(
     conjunctions: list[dict] | None = None,
     crew_by_craft: dict[str, list[str]] | None = None,
     deep_space_probes: list[dict] | None = None,
-    achievements: dict[int, dict] | None = None,
+    achievements: dict[int, list[dict]] | None = None,
     volcano_alerts: list[dict] | None = None,
+    global_fire_count: int | None = None,
 ) -> dict:
     """Pure function, no I/O -- takes already-loaded data (from state.json,
     watchlist.json, etc.) and shapes it into the JSON the website expects.
@@ -209,9 +230,11 @@ def build_site_data(
                 instruments=instruments.get(norad_id),
                 conjunctions=conjunctions_for(norad_id, conjunctions),
                 crew_aboard=crew_by_craft.get(_SPACE_STATION_CRAFT.get(norad_id, "")),
-                achievement=achievements.get(norad_id),
+                achievements=achievements.get(norad_id),
                 volcano_alerts=volcano_alerts if norad_id in _THERMAL_IMAGING_NORAD_IDS else None,
                 deep_space_status=None,
+                ocean_context=_OCEAN_CONTEXT_NORAD_IDS.get(norad_id),
+                global_fire_count=global_fire_count if norad_id in _THERMAL_IMAGING_NORAD_IDS else None,
             )
         )
 
@@ -243,7 +266,7 @@ def build_site_data(
                 },
                 conjunctions=[],
                 crew_aboard=None,
-                achievement={"headline": probe["milestone_headline"], "detail": probe["milestone_detail"]},
+                achievements=[{"headline": probe["milestone_headline"], "detail": probe["milestone_detail"]}],
                 volcano_alerts=None,
                 deep_space_status={
                     "launched": probe["launched"],
@@ -252,6 +275,8 @@ def build_site_data(
                     "distance_from_earth_au": probe["distance_from_earth_au"],
                     "speed_km_s": probe["speed_km_s"],
                 },
+                ocean_context=None,
+                global_fire_count=None,
             )
         )
 
@@ -273,9 +298,11 @@ def build_site_data(
                 "instruments": s.instruments,
                 "conjunctions": s.conjunctions,
                 "crew_aboard": s.crew_aboard,
-                "achievement": s.achievement,
+                "achievements": s.achievements,
                 "volcano_alerts": s.volcano_alerts,
                 "deep_space_status": s.deep_space_status,
+                "ocean_context": s.ocean_context,
+                "global_fire_count": s.global_fire_count,
             }
             for s in satellites
         ],

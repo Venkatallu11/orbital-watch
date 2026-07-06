@@ -71,6 +71,11 @@ def test_digest_combines_socrates_and_satnogs_via_the_real_cli(tmp_path, monkeyp
         "orbital_watch.volcano.fetch_elevated_volcanoes",
         lambda: [fake_alert],
     )
+    monkeypatch.setenv("FIRMS_MAP_KEY", "test-key")
+    monkeypatch.setattr(
+        "orbital_watch.firms.fetch_global_fire_count",
+        lambda map_key: 4242,
+    )
 
     cli.main([
         "--watchlist", str(watchlist_path),
@@ -118,3 +123,28 @@ def test_digest_combines_socrates_and_satnogs_via_the_real_cli(tmp_path, monkeyp
     # Volcano alert data persisted for the website's volcano status card.
     assert state["volcano_alerts"][0]["volcano_name"] == "Great Sitkin"
     assert state["volcano_alerts"][0]["alert_level"] == "WATCH"
+
+    # Global fire count persisted when FIRMS_MAP_KEY is configured.
+    assert state["global_fire_count"] == 4242
+
+
+def test_global_fire_count_skipped_without_a_configured_map_key(tmp_path, monkeypatch):
+    watchlist_path = tmp_path / "watchlist.json"
+    watchlist_path.write_text(json.dumps([NORAD_ID]))
+    state_path = tmp_path / "state.json"
+    tle_path = tmp_path / "seed.tle"
+    tle_path.write_text(f"{LINE1}\n{LINE2}\n")
+
+    monkeypatch.delenv("FIRMS_MAP_KEY", raising=False)
+
+    cli.main([
+        "--watchlist", str(watchlist_path),
+        "--state", str(state_path),
+        "--source", "file",
+        "--tle-file", str(tle_path),
+    ])
+
+    state = json.loads(state_path.read_text())
+    # Not just empty/zero -- genuinely absent, so the site can tell "not
+    # configured" apart from "fetched, zero fires right now."
+    assert "global_fire_count" not in state

@@ -79,6 +79,25 @@ def _fetch_deep_space_probes_safely() -> list:
         return []
 
 
+def _fetch_global_fire_count_safely() -> int | None:
+    """NASA FIRMS' real, GLOBAL (not US-only) active-fire detection count
+    for the last 24h. Requires a free FIRMS_MAP_KEY (see firms.py's
+    docstring for why -- unlike NASA's APOD, FIRMS has no public shared
+    key). Returns None (not 0) when no key is configured, so the site can
+    tell "not set up yet" apart from "genuinely zero fires detected"."""
+    map_key = os.environ.get("FIRMS_MAP_KEY")
+    if not map_key:
+        return None
+
+    from orbital_watch.firms import fetch_global_fire_count
+
+    try:
+        return fetch_global_fire_count(map_key)
+    except Exception as exc:  # noqa: BLE001 - deliberately broad, see docstring
+        print(f"Warning: NASA FIRMS fire-count fetch failed ({exc}), skipping.")
+        return None
+
+
 def _fetch_volcano_status_safely() -> list:
     """USGS's real-time elevated-volcano alert feed (US-only) -- best-effort
     like the other optional fetches."""
@@ -262,6 +281,10 @@ def main(argv=None) -> int:
     crew_by_craft = _fetch_crew_safely() if args.include_crew else {}
     deep_space_probes = _fetch_deep_space_probes_safely() if args.include_deep_space else []
     volcano_alerts = _fetch_volcano_status_safely() if args.include_volcano_status else []
+    # No CLI flag for this one -- gated purely by whether FIRMS_MAP_KEY is
+    # set (same idea as the SPACETRACK_USER/PASS fallback above), since
+    # there's nothing to configure beyond the free key itself.
+    global_fire_count = _fetch_global_fire_count_safely()
 
     if args.include_socrates or args.include_satnogs:
         digest = generate_digest(object_names, maneuver_alerts, conjunctions, satnogs_healths, tle_ages_days)
@@ -302,6 +325,12 @@ def main(argv=None) -> int:
 
     if volcano_alerts:
         store.set("volcano_alerts", volcano_alerts)
+
+    # Written whenever a real count came back, including a real 0 -- not
+    # just when truthy -- so the site can tell "FIRMS_MAP_KEY isn't set up"
+    # apart from "genuinely zero fires detected in the last 24h."
+    if global_fire_count is not None:
+        store.set("global_fire_count", global_fire_count)
 
     store.set("previous_tles", previous_tles)
     store.set("baseline_history", baseline.to_dict())

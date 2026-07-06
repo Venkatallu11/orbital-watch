@@ -16,6 +16,7 @@ let globeInstance;
 let updateTimer;
 let siteData;
 let historyData;
+let achievementTimer;
 
 function isoDateDaysAgo(days) {
   const d = new Date();
@@ -387,23 +388,43 @@ function renderCrew(sat) {
 }
 
 function renderAchievement(sat) {
+  if (achievementTimer) clearInterval(achievementTimer);
+
   const panel = document.getElementById("achievement-panel");
   const el = document.getElementById("achievement-content");
+  const items = sat.achievements;
 
-  // Only shown for satellites with a real, individually-verified milestone
-  // (see achievements.json) -- most of the 52 tracked objects (an
-  // individual Starlink, a GPS satellite) don't have one of their own, and
-  // the panel just stays hidden rather than inventing something for them.
-  if (!sat.achievement) {
+  // Only shown for satellites with at least one real, individually-verified
+  // milestone (see achievements.json) -- the panel just stays hidden rather
+  // than inventing something for satellites without one.
+  if (!items || items.length === 0) {
     panel.hidden = true;
     return;
   }
 
   panel.hidden = false;
-  el.innerHTML = `
-    <p class="achievement-headline">${sat.achievement.headline}</p>
-    <p class="achievement-detail">${sat.achievement.detail}</p>
-  `;
+
+  const show = (index) => {
+    const item = items[index];
+    el.innerHTML = `
+      <p class="achievement-headline">${item.headline}</p>
+      <p class="achievement-detail">${item.detail}</p>
+      ${items.length > 1 ? `<p class="achievement-progress">${index + 1} / ${items.length}</p>` : ""}
+    `;
+  };
+
+  let current = 0;
+  show(current);
+
+  // Cycles through every real achievement this satellite has, like a
+  // hint/tip rotation -- only worth doing (and only starts a timer at all)
+  // when there's more than one to show.
+  if (items.length > 1) {
+    achievementTimer = setInterval(() => {
+      current = (current + 1) % items.length;
+      show(current);
+    }, 30000);
+  }
 }
 
 
@@ -412,33 +433,55 @@ function renderVolcanoStatus(sat) {
   const el = document.getElementById("volcano-content");
 
   // Only shown for the real thermal-imaging Earth observation satellites
-  // (Terra/Aqua/Suomi NPP/NOAA-20 -- see site_data.py) -- USGS's feed
-  // itself is US-only and isn't something this satellite's own processing
-  // produced, so this is framed as real-world context, not a per-satellite
-  // detection log.
-  if (!sat.volcano_alerts) {
+  // (Terra/Aqua/Suomi NPP/NOAA-20 -- see site_data.py). Two independent
+  // real signals, shown together since both come from the same class of
+  // satellite instrument: NASA FIRMS' fire-detection count is genuinely
+  // GLOBAL (needs a free FIRMS_MAP_KEY -- see README -- so may not be set
+  // up on every deployment); USGS's volcano feed is real but US-only.
+  // Neither is something this satellite's own processing produced here --
+  // both are real-world context for what this class of satellite is used for.
+  const hasFire = sat.global_fire_count !== null && sat.global_fire_count !== undefined;
+  const hasVolcano = !!sat.volcano_alerts;
+
+  if (!hasFire && !hasVolcano) {
     panel.hidden = true;
     return;
   }
 
   panel.hidden = false;
-  if (sat.volcano_alerts.length === 0) {
-    el.innerHTML = '<div class="no-imagery">No US volcano currently above normal status, per USGS.</div>';
-    return;
+  const parts = [];
+
+  if (hasFire) {
+    parts.push(
+      `<div class="status-row"><span class="label">Global active fire detections, last 24h (NASA FIRMS, worldwide)</span><br>${sat.global_fire_count.toLocaleString()}</div>`
+    );
+  } else {
+    parts.push(
+      '<div class="status-row"><span class="label">Global fire detections</span><br>' +
+      'Not set up on this deployment -- needs a free NASA FIRMS MAP_KEY (see README).</div>'
+    );
   }
 
-  const colorToBadge = { RED: "badge-danger", ORANGE: "badge-warn", YELLOW: "badge-warn", GREEN: "badge-ok" };
-  const rows = sat.volcano_alerts.map((v) => `
-    <div class="status-row">
-      <span class="badge ${colorToBadge[v.color_code] || "badge-warn"}">${v.alert_level}</span>
-      <strong>${v.volcano_name}</strong> (${v.observatory})
-      <br><span class="label">As of ${v.sent_utc} UTC -- <a href="${v.notice_url}">USGS notice</a></span>
-    </div>
-  `);
+  if (hasVolcano) {
+    if (sat.volcano_alerts.length === 0) {
+      parts.push('<div class="no-imagery">No US volcano currently above normal status, per USGS.</div>');
+    } else {
+      const colorToBadge = { RED: "badge-danger", ORANGE: "badge-warn", YELLOW: "badge-warn", GREEN: "badge-ok" };
+      const rows = sat.volcano_alerts.map((v) => `
+        <div class="status-row">
+          <span class="badge ${colorToBadge[v.color_code] || "badge-warn"}">${v.alert_level}</span>
+          <strong>${v.volcano_name}</strong> (${v.observatory})
+          <br><span class="label">As of ${v.sent_utc} UTC -- <a href="${v.notice_url}">USGS notice</a></span>
+        </div>
+      `);
+      parts.push(rows.join(""));
+    }
+  }
+
   el.innerHTML = `
-    <p class="panel-note">Real-time USGS alert status, US volcanoes only -- this is the kind of thing thermal-imaging
-    satellites like this one help monitor, not something computed by this site itself.</p>
-    ${rows.join("")}
+    <p class="panel-note">Fire detections are real and global (NASA FIRMS); volcano alerts are real but US-only (USGS) --
+    both are context for what this kind of thermal-imaging satellite is used for, not computed by this site itself.</p>
+    ${parts.join("")}
   `;
 }
 
@@ -493,6 +536,73 @@ function renderPrecipitationForecast(sat) {
     })
     .catch(() => {
       el.innerHTML = '<div class="no-imagery">Could not load Open-Meteo forecast right now.</div>';
+    });
+}
+
+// Fetched client-side, live, at the satellite's current position -- same
+// reasoning as the precipitation forecast above (these satellites move too
+// fast for an hourly server-side snapshot to still be at the right place).
+// "marine" (Sentinel-3A, RADARSAT-2) uses Open-Meteo's real Marine Weather
+// API (sea surface temperature/wave height); "wind" (Metop-B) uses
+// Open-Meteo's regular forecast wind fields, matching ASCAT's real
+// ocean-wind measurement. Real ocean-model/weather-model data either way,
+// not something the satellite itself measured at that exact instant.
+function renderOceanConditions(sat) {
+  const panel = document.getElementById("ocean-panel");
+  const el = document.getElementById("ocean-content");
+
+  if (!sat.ocean_context) {
+    panel.hidden = true;
+    return;
+  }
+
+  const satrec = satrecFor(sat);
+  const pos = satrec ? currentLatLon(satrec, new Date()) : null;
+  if (!pos) {
+    panel.hidden = true;
+    return;
+  }
+
+  panel.hidden = false;
+  el.innerHTML = "Loading ocean conditions from Open-Meteo...";
+
+  const lat = pos.lat.toFixed(2);
+  const lng = pos.lng.toFixed(2);
+  const url = sat.ocean_context === "marine"
+    ? `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lng}&hourly=wave_height,sea_surface_temperature&forecast_days=1&timezone=UTC`
+    : `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=wind_speed_10m,wind_direction_10m&forecast_days=1&timezone=UTC`;
+
+  fetch(url)
+    .then((r) => r.json())
+    .then((data) => {
+      const times = data.hourly.time;
+      const nowHour = new Date().getUTCHours();
+      const idx = Math.max(times.findIndex((t) => new Date(t).getUTCHours() === nowHour), 0);
+      const hour = new Date(times[idx]).toISOString().slice(11, 16);
+
+      let rows;
+      let note;
+      if (sat.ocean_context === "marine") {
+        const wave = data.hourly.wave_height[idx];
+        const sst = data.hourly.sea_surface_temperature[idx];
+        rows = `<div class="status-row"><span class="label">${hour} UTC</span><br>` +
+          `${wave === null ? "n/a (land/no ocean-wave model here)" : wave.toFixed(1) + " m wave height"}, ` +
+          `${sst === null ? "n/a" : sst.toFixed(1) + " °C sea surface temp"}</div>`;
+        note = "Real ocean-model data (Open-Meteo Marine) at this satellite's current position -- " +
+          "context for what this kind of satellite observes, not the satellite's own measurement at this instant.";
+      } else {
+        const speed = data.hourly.wind_speed_10m[idx];
+        const dir = data.hourly.wind_direction_10m[idx];
+        rows = `<div class="status-row"><span class="label">${hour} UTC</span><br>` +
+          `${speed.toFixed(1)} km/h wind, ${dir.toFixed(0)}° direction</div>`;
+        note = "Real weather-model wind data (Open-Meteo) at this satellite's current position -- " +
+          "matches what its real ASCAT instrument measures (ocean wind speed/direction), though not the satellite's own reading at this instant.";
+      }
+
+      el.innerHTML = `<p class="panel-note">${note}</p>${rows}`;
+    })
+    .catch(() => {
+      el.innerHTML = '<div class="no-imagery">Could not load Open-Meteo ocean data right now.</div>';
     });
 }
 
@@ -583,7 +693,10 @@ function fetchEpicPhotos() {
   return fetch("https://epic.gsfc.nasa.gov/api/natural")
     .then((r) => r.json())
     .then((images) =>
-      images.slice(0, 4).map((img) => {
+      // EPIC returns every real photo from the latest available day (often
+      // 10-20+) -- take more than before so the Earth-photo half of the
+      // pool has real variety too, not just the first few.
+      images.slice(0, 8).map((img) => {
         const [year, month, day] = img.date.split(" ")[0].split("-");
         return {
           url: `https://epic.gsfc.nasa.gov/archive/natural/${year}/${month}/${day}/png/${img.image}.png`,
@@ -594,24 +707,45 @@ function fetchEpicPhotos() {
     .catch(() => []); // EPIC unreachable/rate-limited -- just fewer real photos in the pool, not a crash
 }
 
+// A real, varied pool of cosmos search terms -- not just two fixed queries.
+// images-api.nasa.gov's search is a static archive search: the same query
+// string always returns the same deterministic top results, which is why a
+// fixed "hubble nebula" + "james webb space telescope" pair looked like the
+// same 6-7 photos every single visit. Picking a random subset of queries,
+// AND a random results page for each (real, documented pagination -- see
+// https://images.nasa.gov/docs/images.nasa.gov_api_docs.pdf), means two
+// page loads genuinely see different real photos instead of the same
+// deterministic search results every time.
+const DEEP_SPACE_QUERIES = [
+  "hubble nebula", "james webb space telescope", "spiral galaxy hubble",
+  "supernova remnant", "star cluster hubble", "planetary nebula",
+  "black hole simulation nasa", "hubble deep field", "star formation nebula",
+  "saturn rings cassini", "jupiter juno", "solar eclipse nasa",
+  "aurora from space station", "milky way nasa", "exoplanet illustration nasa",
+  "galaxy cluster hubble", "orion nebula", "andromeda galaxy",
+];
+
 function fetchDeepSpacePhotos() {
-  const queries = ["hubble nebula", "james webb space telescope"];
+  // 6 random queries per load (out of 18 real ones), each on a random page
+  // of that query's real results.
+  const queries = [...DEEP_SPACE_QUERIES].sort(() => Math.random() - 0.5).slice(0, 6);
   return Promise.all(
-    queries.map((q) =>
-      fetch(`https://images-api.nasa.gov/search?q=${encodeURIComponent(q)}&media_type=image`)
+    queries.map((q) => {
+      const page = 1 + Math.floor(Math.random() * 3);
+      return fetch(`https://images-api.nasa.gov/search?q=${encodeURIComponent(q)}&media_type=image&page=${page}`)
         .then((r) => r.json())
         .then((result) => {
           const items = (result.collection && result.collection.items) || [];
           return items
-            .slice(0, 3)
+            .slice(0, 4)
             .map((item) => ({
               url: item.links && item.links[0] && item.links[0].href,
               caption: `${(item.data && item.data[0] && item.data[0].title) || "NASA image"} (images.nasa.gov)`,
             }))
             .filter((entry) => entry.url);
         })
-        .catch(() => [])
-    )
+        .catch(() => []);
+    })
   ).then((results) => results.flat());
 }
 
@@ -649,6 +783,7 @@ function selectSatellite(noradId) {
   renderAchievement(sat);
   renderVolcanoStatus(sat);
   renderPrecipitationForecast(sat);
+  renderOceanConditions(sat);
 }
 
 function populateDropdown() {

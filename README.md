@@ -64,9 +64,9 @@ A free static site, deployed on GitHub Pages, that turns the watchlist into
 something you can actually click through instead of reading JSON:
 **https://venkatallu11.github.io/orbital-watch/**
 
-- **Pick a satellite** from a dropdown of 52 real, currently-tracked
-  objects, grouped by category so the list stays browsable instead of one
-  giant flat list:
+- **Pick a satellite** from a dropdown of 56 real, currently-tracked
+  objects (52 Earth-orbiting + 4 deep-space probes), grouped by category so
+  the list stays browsable instead of one giant flat list:
   - **Earth Observation & Weather** (13) — Terra, Aqua, Suomi NPP, NOAA-19,
     NOAA-20, Landsat 8, GOES-16, GOES-18, Meteosat-11, Metop-B, Sentinel-3A,
     RADARSAT-2, Pleiades 1A
@@ -86,9 +86,11 @@ something you can actually click through instead of reading JSON:
   - **Communications Megaconstellations** (7) — Starlink, OneWeb, Iridium
   - **Amateur Radio & CubeSats** (5) — including AO-7, still operating
     since 1974
-  - All 52 were pulled from CelesTrak's live GROUP/NAME catalogs (see
-    `discover.py`/the `discover-candidates` workflow below), not
-    hand-guessed NORAD IDs.
+  - **Deep Space Probes (Not Earth-Orbiting)** (4) — Voyager 1, Voyager 2,
+    Pioneer 10, Pioneer 11 (see below)
+  - All 52 Earth-orbiting objects were pulled from CelesTrak's live
+    GROUP/NAME catalogs (see `discover.py`/the `discover-candidates`
+    workflow below), not hand-guessed NORAD IDs.
   - **Not included: Venus/other-planet orbiters, or anything "watching for
     aliens."** This whole system works by propagating NORAD-cataloged
     Earth-orbit TLEs with SGP4 — that method has no meaning for a
@@ -134,15 +136,19 @@ something you can actually click through instead of reading JSON:
   satellite's residual/maneuver timeline from git's own commit history of
   `state.json` (see `history.py`), precomputed into `docs/history.json`
   every scheduled run so the site doesn't need a database.
-- **Notable Achievement panel** — a real, individually-verified historical
-  milestone (launch date, discovery, "first to...") for the 14 satellites
-  that have one (`achievements.json`), e.g. Hubble's Deep Field, ISS's
-  continuous crewed habitation since Nov 2000, AO-7's 21-year revival.
-  Every fact was checked against NASA/JPL/Wikipedia sources before being
-  written down, not recalled from memory alone. Most of the 52 tracked
-  objects (an individual Starlink, a GPS satellite) don't have one of their
-  own, and the panel just stays hidden for those rather than inventing
-  something.
+- **Notable Achievement panel** — every one of the 52 tracked satellites
+  (plus all 4 deep-space probes) has at least one real, individually
+  fact-checked historical milestone (`achievements.json`): flagship
+  missions get a genuine unique fact (Hubble's Deep Field, ISS's continuous
+  crewed habitation since Nov 2000, AO-7's 21-year revival); individual
+  units of a constellation (a specific Starlink, GPS, Galileo, BeiDou,
+  GLONASS, OneWeb, or Iridium satellite) honestly get the real achievement
+  of the *program* they belong to, rather than a fabricated unique fact for
+  that exact unit. Every fact was checked against NASA/JPL/Wikipedia/agency
+  sources before being written down, not recalled from memory alone. When a
+  satellite has more than one real achievement, the panel cycles through
+  them automatically every 30 seconds (like a hint/tip rotation), with a
+  small "1 / 2" counter.
 - **Deep Space Probes** — Voyager 1, Voyager 2, Pioneer 10, and Pioneer 11
   are real, individually selectable entries in the satellite dropdown,
   under their own "Deep Space Probes" category, exactly like every other
@@ -157,13 +163,18 @@ something you can actually click through instead of reading JSON:
   NASA lost contact with them decades ago. Uses JPL Horizons' own real
   (always-negative) spacecraft ID as a stable pseudo-NORAD-ID, so it can
   never collide with a real satellite's ID.
-- **Volcano Watch panel** — real-time USGS elevated-volcano alert status,
-  shown on the real thermal-imaging Earth observation satellites (Terra,
-  Aqua, Suomi NPP, NOAA-20). Honestly scoped: USGS's feed is US-only
-  (Alaska/Hawaii/Cascades observatories), and it's the latest known status
-  per volcano, not a queryable date-range history — so this shows "current
-  status as of [real timestamp]," not a fabricated "checked in the last 7
-  days" log.
+- **Wildfire & Volcano Watch panel**, on the real thermal-imaging Earth
+  observation satellites (Terra, Aqua, Suomi NPP, NOAA-20):
+  - Real, **global** active-fire detection counts (last 24h) from NASA
+    FIRMS — genuinely worldwide, not US-only. Requires a free
+    `FIRMS_MAP_KEY` (see Setup below); honestly says "not set up yet"
+    rather than silently omitting it or faking a number when that secret
+    isn't configured.
+  - Real-time USGS elevated-volcano alert status. Honestly scoped:
+    USGS's feed is US-only (Alaska/Hawaii/Cascades observatories), and
+    it's the latest known status per volcano, not a queryable date-range
+    history — so this shows "current status as of [real timestamp]," not
+    a fabricated "checked in the last 7 days" log.
 - **Ground Weather Forecast panel** — for GPM/DMSP (the precipitation-watch
   satellites): a real short-term rain/snowfall forecast (Open-Meteo, free,
   keyless) at the satellite's current live position. Fetched client-side
@@ -174,6 +185,12 @@ something you can actually click through instead of reading JSON:
   Labeled honestly as a weather-model forecast, not something the
   satellite itself measured (that's what the real-time GPM rain-rate
   imagery layer above it is for).
+- **Ocean Conditions panel** — for the real ocean-sensing satellites
+  (Sentinel-3A, RADARSAT-2: real wave height/sea-surface temperature via
+  Open-Meteo's free Marine Weather API; Metop-B: real wind speed/direction
+  via Open-Meteo's regular forecast API, matching its actual ASCAT
+  instrument). Same client-side, satellite's-current-position approach as
+  the ground weather forecast, for the same reason.
 - **Imagery** — real pictures, not stock photos, matched honestly to what
   each satellite can actually provide, with a switcher when more than one
   real view exists:
@@ -201,7 +218,12 @@ something you can actually click through instead of reading JSON:
     actually current.
   - **NASA EPIC (DSCOVR)**: real full-Earth photos from 1 million miles
     away, refreshed every 60-100 minutes in reality.
-  - **NASA images.nasa.gov**: real released Hubble/JWST photos.
+  - **NASA images.nasa.gov**: real released photos across 18 different
+    real cosmos search terms (nebulae, galaxies, supernova remnants, star
+    clusters, planets, etc.) — each page load picks a random 6 of those 18
+    queries, each on a random results page, so two visits genuinely see
+    different real photos instead of the same deterministic top search
+    results every time.
   - Honesty note: the 60-second rotation changes *which* real photo is
     displayed every minute — it does not mean each individual photo's own
     capture refreshes that fast (most of these sources genuinely don't;
@@ -210,7 +232,9 @@ something you can actually click through instead of reading JSON:
     a plain dark background rather than showing a broken image or retrying
     forever -- a real bug found and fixed during testing (the original
     error-fallback retried indefinitely instead of giving up after one
-    pass over the photo pool).
+    pass over the photo pool). Also starts on a random photo on page load
+    instead of always the same one -- a real bug found in testing (it
+    always began at pool index 0).
 
 `docs/data.json` and `docs/history.json` are regenerated every hour by the
 same scheduled workflow (via `orbital-watch-site-data` /
@@ -335,7 +359,7 @@ format inside the SOCRATES CSV specifically (not yet seen a real response
 body with an actual conjunction row to confirm against) — `_parse_tca`
 tries ISO 8601 first, falls back to the human-readable format.
 
-**Tested and passing (134 tests, all offline):**
+**Tested and passing (141 tests, all offline):**
 SGP4 residual math and per-object rolling baseline, all parsers (against
 fixtures built from confirmed real schemas), the reentry corridor math
 (`skyfield`, fully offline), the biography generator, the unified digest,
@@ -455,6 +479,18 @@ Optional webhook alerting (Discord/Slack-compatible incoming webhook):
 export ALERT_WEBHOOK_URL=https://discord.com/api/webhooks/...
 ```
 
+Optional real, global wildfire detection counts (NASA FIRMS) on the website's
+Wildfire & Volcano Watch panel. Unlike NASA's APOD (which has a public shared
+DEMO_KEY), FIRMS has no public key — sign up free at
+[firms.modaps.eosdis.nasa.gov/api/map_key](https://firms.modaps.eosdis.nasa.gov/api/map_key/)
+(2 minutes, no cost), then:
+```bash
+export FIRMS_MAP_KEY=your-key-here
+```
+Without this set, that panel still shows real US-only volcano status (USGS,
+no key needed) and honestly says the fire-detection count isn't configured,
+rather than silently omitting it or faking a number.
+
 ### Satellite biography
 
 ```bash
@@ -537,7 +573,7 @@ watchlist.json       52 real NORAD IDs the scheduled workflow watches
 names.json           norad_id -> friendly display name
 categories.json      norad_id -> category key (see "Website" above), used for the site's optgroup dropdown
 instruments.json     norad_id -> real instrument/mission info (see "Website" above)
-tests/               134 tests, fully offline
+tests/               141 tests, fully offline
 pyproject.toml       Packaging + console_scripts (orbital-watch, orbital-watch-biography, orbital-watch-reentry, orbital-watch-history, orbital-watch-site-data, orbital-watch-site-history, orbital-watch-discover, orbital-watch-verify-imagery)
 .github/workflows/orbital-watch.yml         Scheduled run + website deploy (see above)
 .github/workflows/discover-candidates.yml   Manual-only watchlist-curation helper (see "Website" above)

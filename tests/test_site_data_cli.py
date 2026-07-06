@@ -103,7 +103,7 @@ def test_achievements_file_attaches_achievement_per_satellite(tmp_path):
     }))
     achievements_path = tmp_path / "achievements.json"
     achievements_path.write_text(json.dumps({
-        str(NORAD_ID): {"headline": "Test milestone", "detail": "..."},
+        str(NORAD_ID): [{"headline": "Test milestone", "detail": "..."}],
     }))
     out_path = tmp_path / "data.json"
 
@@ -115,7 +115,7 @@ def test_achievements_file_attaches_achievement_per_satellite(tmp_path):
     ])
 
     data = json.loads(out_path.read_text())
-    assert data["satellites"][0]["achievement"]["headline"] == "Test milestone"
+    assert data["satellites"][0]["achievements"][0]["headline"] == "Test milestone"
 
 
 def test_conjunctions_and_crew_are_read_from_state_json(tmp_path):

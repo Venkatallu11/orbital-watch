@@ -1,58 +1,322 @@
 {
-  "20580": {
-    "headline": "Took the Hubble Deep Field (1995)",
-    "detail": "A 10-day exposure of a seemingly empty patch of sky that revealed roughly 3,000 previously unseen galaxies, reshaping how astronomers estimate the number of galaxies in the universe."
-  },
-  "25867": {
-    "headline": "Imaged the neutron star at the heart of Cassiopeia A",
-    "detail": "Chandra's X-ray images of the Cassiopeia A supernova remnant revealed the compact neutron star left behind by the explosion, along with the expanding debris shockwave."
-  },
-  "25989": {
-    "headline": "One of ESA's most productive X-ray observatories",
-    "detail": "Launched in 1999, XMM-Newton carries the largest X-ray mirrors ever built and has been used in thousands of scientific papers on black holes, neutron stars, and galaxy clusters."
-  },
-  "33053": {
-    "headline": "Discovered the 'Fermi Bubbles' (2010)",
-    "detail": "Fermi's gamma-ray survey of the sky revealed two enormous, previously-unknown gamma-ray-emitting structures extending above and below the Milky Way's center."
-  },
-  "36395": {
-    "headline": "Continuous whole-Sun imaging since 2010",
-    "detail": "The Solar Dynamics Observatory has captured the Sun in multiple wavelengths nearly continuously since launch, building one of the largest public archives of solar imagery ever produced."
-  },
-  "49954": {
-    "headline": "First mission dedicated to X-ray polarization (2021)",
-    "detail": "IXPE is the first satellite built specifically to measure the polarization of X-rays from black holes, neutron stars, and supernova remnants -- about 100x more sensitive to it than any earlier mission."
-  },
-  "38358": {
-    "headline": "First focusing high-energy X-ray telescope in orbit",
-    "detail": "NuSTAR uses precisely aligned nested mirrors to focus high-energy X-rays, a first for a space telescope, letting it image black holes and supernova remnants far more sharply than earlier X-ray missions."
-  },
-  "25544": {
-    "headline": "Continuously crewed since November 2, 2000",
-    "detail": "The ISS has hosted an unbroken chain of crews for over two decades -- over 270 people from more than 20 countries have visited it."
-  },
-  "48274": {
-    "headline": "Core module of China's first long-term space station",
-    "detail": "Tianhe launched April 29, 2021 as the first and largest module of Tiangong, China's first space station meant for permanent crewed habitation."
-  },
-  "39084": {
-    "headline": "Part of the longest continuous space-based record of Earth's land surface",
-    "detail": "Landsat 8 continues a program running since 1972 -- the longest continuous satellite record of Earth's land surface, used to track everything from deforestation to urban growth."
-  },
-  "39574": {
-    "headline": "First spaceborne dual-frequency precipitation radar",
-    "detail": "GPM Core Observatory's Ku/Ka-band Dual-frequency Precipitation Radar was the first of its kind in orbit, resolving the 3D structure of rain and snow rather than just a 2D estimate."
-  },
-  "39089": {
-    "headline": "World's first satellite dedicated to hunting asteroids",
-    "detail": "Launched in 2013, NEOSSat was the first space telescope built specifically to detect and track asteroids, comets, and satellites/debris from orbit."
-  },
-  "41866": {
-    "headline": "First of NOAA's GOES-R series",
-    "detail": "GOES-16 carries the first operational Geostationary Lightning Mapper and imagery roughly 4x sharper and 5x faster than the GOES satellites it replaced."
-  },
-  "7530": {
-    "headline": "The 'satellite that refused to die'",
-    "detail": "Launched in 1974, AO-7 went silent after a battery failure in 1981 -- then, in 2002, one of its shorted battery cells failed open, letting it run directly off solar power and come back to life 21+ years later. It's the oldest still-operating amateur radio satellite."
-  }
+  "20580": [
+    {
+      "headline": "Took the Hubble Deep Field (1995)",
+      "detail": "A 10-day exposure of a seemingly empty patch of sky that revealed roughly 3,000 previously unseen galaxies, reshaping how astronomers estimate the number of galaxies in the universe."
+    },
+    {
+      "headline": "Helped pin down the age of the universe",
+      "detail": "Hubble's Key Project measured the universe's expansion rate (the Hubble Constant) precisely enough to put the universe's age at roughly 13.7-13.8 billion years."
+    }
+  ],
+  "25867": [
+    {
+      "headline": "Imaged the neutron star at the heart of Cassiopeia A",
+      "detail": "Chandra's X-ray images of the Cassiopeia A supernova remnant revealed the compact neutron star left behind by the explosion, along with the expanding debris shockwave."
+    }
+  ],
+  "25989": [
+    {
+      "headline": "One of ESA's most productive X-ray observatories",
+      "detail": "Launched in 1999, XMM-Newton carries the largest X-ray mirrors ever built and has been used in thousands of scientific papers on black holes, neutron stars, and galaxy clusters."
+    }
+  ],
+  "33053": [
+    {
+      "headline": "Discovered the 'Fermi Bubbles' (2010)",
+      "detail": "Fermi's gamma-ray survey of the sky revealed two enormous, previously-unknown gamma-ray-emitting structures extending above and below the Milky Way's center."
+    }
+  ],
+  "36395": [
+    {
+      "headline": "Continuous whole-Sun imaging since 2010",
+      "detail": "The Solar Dynamics Observatory has captured the Sun in multiple wavelengths nearly continuously since launch, building one of the largest public archives of solar imagery ever produced."
+    }
+  ],
+  "49954": [
+    {
+      "headline": "First mission dedicated to X-ray polarization (2021)",
+      "detail": "IXPE is the first satellite built specifically to measure the polarization of X-rays from black holes, neutron stars, and supernova remnants -- about 100x more sensitive to it than any earlier mission."
+    }
+  ],
+  "38358": [
+    {
+      "headline": "First focusing high-energy X-ray telescope in orbit",
+      "detail": "NuSTAR uses precisely aligned nested mirrors to focus high-energy X-rays, a first for a space telescope, letting it image black holes and supernova remnants far more sharply than earlier X-ray missions."
+    }
+  ],
+  "28485": [
+    {
+      "headline": "First-of-its-kind autonomous rapid-slewing observatory",
+      "detail": "Launched Nov 20, 2004, Swift can detect a gamma-ray burst and autonomously slew to point its telescopes at it within seconds, and now finds roughly 100 gamma-ray bursts a year."
+    }
+  ],
+  "29479": [
+    {
+      "headline": "High-resolution studies of the Sun's magnetic field",
+      "detail": "Launched Sept 23, 2006 by JAXA as successor to the Yohkoh mission, Hinode simultaneously observes the Sun's photosphere through corona, revealing how magnetic energy drives solar explosions."
+    }
+  ],
+  "25544": [
+    {
+      "headline": "Continuously crewed since November 2, 2000",
+      "detail": "The ISS has hosted an unbroken chain of crews for over two decades -- over 270 people from more than 20 countries have visited it."
+    },
+    {
+      "headline": "Largest human-made structure ever put into space",
+      "detail": "At 109m by 73m with its solar arrays extended, the ISS is roughly the size of a full football field -- the largest single structure humans have ever assembled in orbit."
+    }
+  ],
+  "36086": [
+    {
+      "headline": "First major Russian ISS addition since 2001",
+      "detail": "The Poisk module launched Nov 10, 2009 and docked to Zvezda's zenith port -- Russia's first new ISS module in eight years."
+    }
+  ],
+  "49044": [
+    {
+      "headline": "Russia's largest spacecraft launch since 2000",
+      "detail": "The 20-ton Nauka module launched July 21, 2021 -- Russia's largest single spacecraft sent to the ISS since the original Zvezda service module two decades earlier."
+    }
+  ],
+  "48274": [
+    {
+      "headline": "Core module of China's first long-term space station",
+      "detail": "Tianhe launched April 29, 2021 as the first and largest module of Tiangong, China's first space station meant for permanent crewed habitation."
+    }
+  ],
+  "53239": [
+    {
+      "headline": "Tiangong's first science lab module",
+      "detail": "Wentian launched July 24, 2022, adding a dedicated science airlock and experiment racks to China's Tiangong space station."
+    }
+  ],
+  "54216": [
+    {
+      "headline": "Completed the Tiangong space station",
+      "detail": "Mengtian launched Oct 31, 2022 -- the third and final module, completing Tiangong's basic three-module T-shaped configuration."
+    }
+  ],
+  "39084": [
+    {
+      "headline": "Part of the longest continuous space-based record of Earth's land surface",
+      "detail": "Landsat 8 continues a program running since 1972 -- the longest continuous satellite record of Earth's land surface, used to track everything from deforestation to urban growth."
+    }
+  ],
+  "25994": [
+    {
+      "headline": "Flagship of NASA's Earth Observing System",
+      "detail": "Launched Dec 18, 1999, Terra was the first of the EOS series (followed by Aqua and Aura) and its instruments have produced one of the longest continuous climate data records ever collected by satellite."
+    }
+  ],
+  "27424": [
+    {
+      "headline": "Second EOS flagship, in orbit over 20 years",
+      "detail": "Launched May 2002 carrying six instruments (AIRS, AMSU-A, CERES, MODIS, AMSR-E, HSB), Aqua has run for more than double its planned lifetime, tracking water in Earth's atmosphere, oceans, and ice."
+    }
+  ],
+  "37849": [
+    {
+      "headline": "Bridged NASA's EOS satellites to the next-generation JPSS series",
+      "detail": "Launched Oct 28, 2011, Suomi NPP's VIIRS instrument produced NASA's famous high-resolution 'Black Marble' night-lights image of Earth in 2012."
+    }
+  ],
+  "43013": [
+    {
+      "headline": "First satellite of NOAA's JPSS series",
+      "detail": "Launched Nov 18, 2017 as JPSS-1, NOAA-20 provides roughly an order of magnitude more data than the earlier EOS satellites it helps succeed."
+    }
+  ],
+  "33591": [
+    {
+      "headline": "Last of NOAA's original POES weather-satellite series",
+      "detail": "Launched Feb 6, 2009, NOAA-19 was the fifth and final satellite in NOAA's Polar Operational Environmental Satellite series, which was retired after 47 years of continuous service in August 2025."
+    }
+  ],
+  "41866": [
+    {
+      "headline": "First of NOAA's GOES-R series",
+      "detail": "GOES-16 carries the first operational Geostationary Lightning Mapper and imagery roughly 4x sharper and 5x faster than the GOES satellites it replaced."
+    }
+  ],
+  "51850": [
+    {
+      "headline": "Operational GOES West satellite",
+      "detail": "Launched as GOES-T in March 2022, it became GOES-18 and took over as the operational GOES West satellite on Jan 4, 2023, watching the Pacific and US West Coast."
+    }
+  ],
+  "40732": [
+    {
+      "headline": "Last of the Meteosat Second Generation satellites",
+      "detail": "Launched July 15, 2015 as MSG-4, it was renamed Meteosat-11 after commissioning and held in orbital storage until needed -- the final satellite of Europe's highly successful MSG series."
+    }
+  ],
+  "38771": [
+    {
+      "headline": "Real-time global ocean wind measurements",
+      "detail": "Part of EUMETSAT's Metop series, Metop-B's ASCAT instrument has provided continuous real ocean-surface wind speed/direction data used in operational weather forecasting worldwide."
+    }
+  ],
+  "41335": [
+    {
+      "headline": "First of the Copernicus Sentinel-3 ocean-monitoring satellites",
+      "detail": "Launched Feb 16, 2016, Sentinel-3A was the first of four planned Sentinel-3 satellites dedicated to measuring ocean color, sea/land surface temperature, and sea-level height for Europe's climate program."
+    }
+  ],
+  "32382": [
+    {
+      "headline": "First fully commercial multi-polarization SAR satellite",
+      "detail": "Launched Dec 2007, Canada's RADARSAT-2 was the first fully commercial radar satellite to offer multi-polarization imaging, resolving detail down to 3 meters."
+    }
+  ],
+  "38012": [
+    {
+      "headline": "Sub-meter commercial Earth imagery",
+      "detail": "Launched Dec 17, 2011, Pleiades 1A captures color imagery at 70cm resolution (resampled to 50cm) -- sharp enough to make out individual vehicles from orbit."
+    }
+  ],
+  "39574": [
+    {
+      "headline": "First spaceborne dual-frequency precipitation radar",
+      "detail": "GPM Core Observatory's Ku/Ka-band Dual-frequency Precipitation Radar was the first of its kind in orbit, resolving the 3D structure of rain and snow rather than just a 2D estimate."
+    }
+  ],
+  "35951": [
+    {
+      "headline": "Part of the longest-running production satellite program ever",
+      "detail": "DMSP has flown continuously since the 1960s and provided the first satellite imagery ever used to support tactical military operations, during the Vietnam War."
+    }
+  ],
+  "39089": [
+    {
+      "headline": "World's first satellite dedicated to hunting asteroids",
+      "detail": "Launched in 2013, NEOSSat was the first space telescope built specifically to detect and track asteroids, comets, and satellites/debris from orbit."
+    }
+  ],
+  "26407": [
+    {
+      "headline": "Part of GPS, the world's first global satellite navigation system",
+      "detail": "This Block IIR satellite is one of the workhorses that kept GPS running as the world's original and most widely used GNSS constellation."
+    }
+  ],
+  "36585": [
+    {
+      "headline": "Part of GPS's modernized Block IIF generation",
+      "detail": "Block IIF satellites like this one added the L5 civil safety-of-life signal, improving GPS accuracy and reliability for the world's original GNSS."
+    }
+  ],
+  "40105": [
+    {
+      "headline": "Part of GPS's modernized Block IIF generation",
+      "detail": "Block IIF satellites like this one added the L5 civil safety-of-life signal, improving GPS accuracy and reliability for the world's original GNSS."
+    }
+  ],
+  "37846": [
+    {
+      "headline": "Part of Galileo, Europe's first independent satellite navigation system",
+      "detail": "As one of Galileo's first (In-Orbit Validation) satellites, GSAT0101 helped prove out the design of a constellation that reached its full 26-satellite build-out in July 2018."
+    }
+  ],
+  "40128": [
+    {
+      "headline": "Part of Galileo, Europe's first independent satellite navigation system",
+      "detail": "This satellite helped build out Galileo's constellation, which reached full operational capability with 26 satellites in July 2018."
+    }
+  ],
+  "36828": [
+    {
+      "headline": "Part of BeiDou's regional second generation",
+      "detail": "This BeiDou-2 IGSO satellite helped provide China and the Asia-Pacific region navigation coverage before BeiDou expanded into a full 35-satellite global constellation, completed in 2020."
+    }
+  ],
+  "43001": [
+    {
+      "headline": "Part of BeiDou's completed global constellation",
+      "detail": "This BeiDou-3 satellite is one of the 35 satellites that made BeiDou a fully global GNSS in 2020, using a unique hybrid MEO/GEO/IGSO design for extra Asia-Pacific accuracy."
+    }
+  ],
+  "32275": [
+    {
+      "headline": "Part of GLONASS, Russia's global satellite navigation system",
+      "detail": "This GLONASS-M satellite is one of the workhorses of Russia's independently-operated global GNSS constellation."
+    }
+  ],
+  "36111": [
+    {
+      "headline": "Part of GLONASS, Russia's global satellite navigation system",
+      "detail": "This GLONASS-M satellite is one of the workhorses of Russia's independently-operated global GNSS constellation."
+    }
+  ],
+  "46052": [
+    {
+      "headline": "Part of the largest satellite constellation ever launched",
+      "detail": "Starlink accounts for roughly 69% of all active satellites in Earth orbit as of 2026 -- more than every other satellite operator on Earth combined."
+    }
+  ],
+  "44714": [
+    {
+      "headline": "Part of the largest satellite constellation ever launched",
+      "detail": "Starlink accounts for roughly 69% of all active satellites in Earth orbit as of 2026 -- more than every other satellite operator on Earth combined."
+    }
+  ],
+  "44718": [
+    {
+      "headline": "Part of the largest satellite constellation ever launched",
+      "detail": "Starlink accounts for roughly 69% of all active satellites in Earth orbit as of 2026 -- more than every other satellite operator on Earth combined."
+    }
+  ],
+  "44057": [
+    {
+      "headline": "Part of the OneWeb global broadband constellation",
+      "detail": "OneWeb reached full global coverage in March 2023 after launching its 618th satellite -- this satellite is one of the fleet that made that possible."
+    }
+  ],
+  "45131": [
+    {
+      "headline": "Part of the OneWeb global broadband constellation",
+      "detail": "OneWeb reached full global coverage in March 2023 after launching its 618th satellite -- this satellite is one of the fleet that made that possible."
+    }
+  ],
+  "41917": [
+    {
+      "headline": "Part of the completed Iridium NEXT constellation",
+      "detail": "Iridium NEXT finished its $3 billion, 75-satellite upgrade in February 2019 and carries the real Aireon payload -- the first satellite-based global air-traffic tracking system."
+    }
+  ],
+  "41918": [
+    {
+      "headline": "Part of the completed Iridium NEXT constellation",
+      "detail": "Iridium NEXT finished its $3 billion, 75-satellite upgrade in February 2019 and carries the real Aireon payload -- the first satellite-based global air-traffic tracking system."
+    }
+  ],
+  "24278": [
+    {
+      "headline": "One of the longest-serving amateur radio satellites",
+      "detail": "Launched Aug 17, 1996 from Japan, FO-29 (JAS-2) still carries a working linear transponder for two-way voice/CW contacts nearly three decades later."
+    }
+  ],
+  "26931": [
+    {
+      "headline": "Built by US Naval Academy midshipmen",
+      "detail": "Launched Sept 30, 2001, PCSAT is an APRS digipeater built by student midshipmen, letting anyone with a handheld radio relay location/text messages through it worldwide."
+    }
+  ],
+  "35932": [
+    {
+      "headline": "The first Swiss satellite",
+      "detail": "Launched Sept 23, 2009, SwissCube was Switzerland's first satellite, built by university students to study nightglow in Earth's upper atmosphere."
+    }
+  ],
+  "35933": [
+    {
+      "headline": "First 1U CubeSat with three reaction wheels",
+      "detail": "Launched Sept 23, 2009 (the same rocket as SwissCube), TU Berlin's BEESAT-1 was the first single-unit CubeSat ever flown with a full three-axis reaction wheel attitude control system."
+    }
+  ],
+  "7530": [
+    {
+      "headline": "The 'satellite that refused to die'",
+      "detail": "Launched in 1974, AO-7 went silent after a battery failure in 1981 -- then, in 2002, one of its shorted battery cells failed open, letting it run directly off solar power and come back to life 21+ years later. It's the oldest still-operating amateur radio satellite."
+    }
+  ]
 }
