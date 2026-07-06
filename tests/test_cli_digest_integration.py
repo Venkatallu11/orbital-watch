@@ -73,8 +73,8 @@ def test_digest_combines_socrates_and_satnogs_via_the_real_cli(tmp_path, monkeyp
     )
     monkeypatch.setenv("FIRMS_MAP_KEY", "test-key")
     monkeypatch.setattr(
-        "orbital_watch.firms.fetch_global_fire_count",
-        lambda map_key: 4242,
+        "orbital_watch.firms.fetch_fire_counts_by_source",
+        lambda map_key: {"MODIS_NRT": 4242, "VIIRS_SNPP_NRT": 5000, "VIIRS_NOAA20_NRT": 5100},
     )
 
     cli.main([
@@ -124,11 +124,12 @@ def test_digest_combines_socrates_and_satnogs_via_the_real_cli(tmp_path, monkeyp
     assert state["volcano_alerts"][0]["volcano_name"] == "Great Sitkin"
     assert state["volcano_alerts"][0]["alert_level"] == "WATCH"
 
-    # Global fire count persisted when FIRMS_MAP_KEY is configured.
-    assert state["global_fire_count"] == 4242
+    # Per-instrument fire counts persisted when FIRMS_MAP_KEY is configured.
+    assert state["fire_counts_by_source"]["MODIS_NRT"] == 4242
+    assert state["fire_counts_by_source"]["VIIRS_SNPP_NRT"] == 5000
 
 
-def test_global_fire_count_skipped_without_a_configured_map_key(tmp_path, monkeypatch):
+def test_fire_counts_skipped_without_a_configured_map_key(tmp_path, monkeypatch):
     watchlist_path = tmp_path / "watchlist.json"
     watchlist_path.write_text(json.dumps([NORAD_ID]))
     state_path = tmp_path / "state.json"
@@ -147,4 +148,4 @@ def test_global_fire_count_skipped_without_a_configured_map_key(tmp_path, monkey
     state = json.loads(state_path.read_text())
     # Not just empty/zero -- genuinely absent, so the site can tell "not
     # configured" apart from "fetched, zero fires right now."
-    assert "global_fire_count" not in state
+    assert "fire_counts_by_source" not in state

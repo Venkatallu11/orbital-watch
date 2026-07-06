@@ -428,59 +428,60 @@ function renderAchievement(sat) {
 }
 
 
-function renderVolcanoStatus(sat) {
-  const panel = document.getElementById("volcano-panel");
-  const el = document.getElementById("volcano-content");
+function renderFireDetection(sat) {
+  const panel = document.getElementById("fire-panel");
+  const el = document.getElementById("fire-content");
 
-  // Only shown for the real thermal-imaging Earth observation satellites
-  // (Terra/Aqua/Suomi NPP/NOAA-20 -- see site_data.py). Two independent
-  // real signals, shown together since both come from the same class of
-  // satellite instrument: NASA FIRMS' fire-detection count is genuinely
-  // GLOBAL (needs a free FIRMS_MAP_KEY -- see README -- so may not be set
-  // up on every deployment); USGS's volcano feed is real but US-only.
-  // Neither is something this satellite's own processing produced here --
-  // both are real-world context for what this class of satellite is used for.
-  const hasFire = sat.global_fire_count !== null && sat.global_fire_count !== undefined;
-  const hasVolcano = !!sat.volcano_alerts;
-
-  if (!hasFire && !hasVolcano) {
+  // Shown ONLY for the four satellites whose own instrument genuinely does
+  // active-fire / thermal-hotspot detection -- MODIS on Terra/Aqua, VIIRS
+  // on Suomi NPP/NOAA-20 (see site_data.py's _FIRE_SOURCE_BY_NORAD_ID).
+  // The fire count is this satellite's OWN instrument's product from NASA
+  // FIRMS (genuinely global, not US-only). Because these same thermal
+  // sensors are what spot volcanic eruptions from orbit, the USGS volcano
+  // alerts ride along here -- and ONLY here -- as honest, clearly-labelled
+  // context, not as a claim that this satellite "watches volcanoes".
+  if (!sat.fire_detection) {
     panel.hidden = true;
     return;
   }
 
   panel.hidden = false;
+  const fd = sat.fire_detection;
   const parts = [];
 
-  if (hasFire) {
+  if (fd.count !== null && fd.count !== undefined) {
     parts.push(
-      `<div class="status-row"><span class="label">Global active fire detections, last 24h (NASA FIRMS, worldwide)</span><br>${sat.global_fire_count.toLocaleString()}</div>`
+      `<div class="status-row"><span class="label">Active fires detected worldwide in the last 24h, by this satellite's ${fd.instrument} instrument (NASA FIRMS)</span>` +
+      `<br><strong>${fd.count.toLocaleString()}</strong> fire detections <span class="label">(${fd.source_note})</span></div>`
     );
   } else {
     parts.push(
-      '<div class="status-row"><span class="label">Global fire detections</span><br>' +
-      'Not set up on this deployment -- needs a free NASA FIRMS MAP_KEY (see README).</div>'
+      `<div class="status-row"><span class="label">Active fire detection (${fd.instrument})</span><br>` +
+      'Live count not set up on this deployment yet -- needs a free NASA FIRMS MAP_KEY (see README).</div>'
     );
   }
 
-  if (hasVolcano) {
-    if (sat.volcano_alerts.length === 0) {
-      parts.push('<div class="no-imagery">No US volcano currently above normal status, per USGS.</div>');
-    } else {
-      const colorToBadge = { RED: "badge-danger", ORANGE: "badge-warn", YELLOW: "badge-warn", GREEN: "badge-ok" };
-      const rows = sat.volcano_alerts.map((v) => `
-        <div class="status-row">
-          <span class="badge ${colorToBadge[v.color_code] || "badge-warn"}">${v.alert_level}</span>
-          <strong>${v.volcano_name}</strong> (${v.observatory})
-          <br><span class="label">As of ${v.sent_utc} UTC -- <a href="${v.notice_url}">USGS notice</a></span>
-        </div>
-      `);
-      parts.push(rows.join(""));
-    }
+  // Volcano context -- only shown if there ARE elevated US volcanoes, and
+  // explicitly framed as "this same thermal sensor also detects these".
+  if (sat.volcano_alerts && sat.volcano_alerts.length > 0) {
+    const colorToBadge = { RED: "badge-danger", ORANGE: "badge-warn", YELLOW: "badge-warn", GREEN: "badge-ok" };
+    const rows = sat.volcano_alerts.map((v) => `
+      <div class="status-row">
+        <span class="badge ${colorToBadge[v.color_code] || "badge-warn"}">${v.alert_level}</span>
+        <strong>${v.volcano_name}</strong> (${v.observatory})
+        <br><span class="label">As of ${v.sent_utc} UTC -- <a href="${v.notice_url}">USGS notice</a></span>
+      </div>
+    `);
+    parts.push(
+      '<p class="panel-note" style="margin-top:1rem">Thermal sensors like this also spot volcanic hotspots. ' +
+      'For authoritative alert levels, USGS currently lists these US volcanoes as elevated (US-only feed):</p>' +
+      rows.join("")
+    );
   }
 
   el.innerHTML = `
-    <p class="panel-note">Fire detections are real and global (NASA FIRMS); volcano alerts are real but US-only (USGS) --
-    both are context for what this kind of thermal-imaging satellite is used for, not computed by this site itself.</p>
+    <p class="panel-note">This is real data from this satellite's own ${fd.instrument} instrument, via NASA FIRMS --
+    the actual global count of fires it detected in the last 24 hours.</p>
     ${parts.join("")}
   `;
 }
@@ -781,7 +782,7 @@ function selectSatellite(noradId) {
   renderCrew(sat);
   renderHistory(sat);
   renderAchievement(sat);
-  renderVolcanoStatus(sat);
+  renderFireDetection(sat);
   renderPrecipitationForecast(sat);
   renderOceanConditions(sat);
 }

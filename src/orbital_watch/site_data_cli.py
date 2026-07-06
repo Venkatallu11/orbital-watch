@@ -97,7 +97,7 @@ def main(argv=None) -> int:
     crew_by_craft = store.get("crew_by_craft", {})
     deep_space_probes = store.get("deep_space_probes", [])
     volcano_alerts = store.get("volcano_alerts", [])
-    global_fire_count = store.get("global_fire_count")
+    fire_counts_by_source = store.get("fire_counts_by_source")
 
     data = build_site_data(
         generated_at=datetime.now(timezone.utc).isoformat(),
@@ -115,7 +115,7 @@ def main(argv=None) -> int:
         deep_space_probes=deep_space_probes,
         achievements=achievements,
         volcano_alerts=volcano_alerts,
-        global_fire_count=global_fire_count,
+        fire_counts_by_source=fire_counts_by_source,
     )
 
     with open(args.out, "w") as f:

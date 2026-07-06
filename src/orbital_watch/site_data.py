@@ -74,30 +74,42 @@ _SPACE_STATION_CRAFT: dict[int, str] = {
     54216: "Tiangong",  # CSS (Mengtian)
 }
 
-# Real Earth observation satellites whose own instrument (MODIS/VIIRS) does
-# thermal-anomaly detection -- the kind of satellite actually used for
-# volcano/wildfire hotspot monitoring (see the "Active Fires & Thermal
-# Anomalies" GIBS layers above for these same four). USGS's volcano feed
-# itself isn't produced by this pipeline's own satellite processing --
-# see volcano.py's docstring for exactly what's real here vs. context.
-_THERMAL_IMAGING_NORAD_IDS: set[int] = {25994, 27424, 37849, 43013}  # Terra, Aqua, Suomi NPP, NOAA-20
+# Active-fire / thermal-hotspot detection is a REAL product of these four
+# satellites' own instruments (MODIS on Terra/Aqua, VIIRS on Suomi
+# NPP/NOAA-20) -- and only these four. Each maps to the FIRMS "source" that
+# is literally that instrument's fire product, so the site shows each
+# satellite the fire count IT detected, not one generic global number.
+# (MODIS_NRT is Terra+Aqua combined -- FIRMS doesn't split MODIS by
+# satellite -- which is stated honestly in the UI.) These thermal sensors
+# are also what detect volcanic hotspots from orbit, which is why the
+# USGS volcano note is attached here and NOWHERE ELSE -- no other satellite
+# on this watchlist watches for fires or volcanoes.
+_FIRE_SOURCE_BY_NORAD_ID: dict[int, dict] = {
+    25994: {"instrument": "MODIS", "source": "MODIS_NRT", "note": "Terra + Aqua combined, as FIRMS reports MODIS"},
+    27424: {"instrument": "MODIS", "source": "MODIS_NRT", "note": "Terra + Aqua combined, as FIRMS reports MODIS"},
+    37849: {"instrument": "VIIRS", "source": "VIIRS_SNPP_NRT", "note": "Suomi NPP's VIIRS instrument"},
+    43013: {"instrument": "VIIRS", "source": "VIIRS_NOAA20_NRT", "note": "NOAA-20's VIIRS instrument"},
+}
 
-# Real ocean-sensing satellites, mapped to which real Open-Meteo dataset
-# actually matches their own instrument -- fetched client-side (see app.js)
+# Real ocean-sensing satellites, mapped to the real Open-Meteo dataset that
+# actually matches their OWN instrument -- fetched client-side (see app.js)
 # since these satellites orbit fast enough that a value computed once an
 # hour server-side would already be stale by the time someone loads the
 # page (same reasoning as the precipitation-watch ground forecast).
-# "marine" -> Open-Meteo's Marine Weather API (sea surface temp/wave
-#   height) -- matches Sentinel-3A's OLCI/SLSTR ocean-color/SST instruments,
-#   and used as general ocean-condition context for RADARSAT-2's SAR
-#   sea-ice/ship monitoring (not the same as ice detection, but the closest
-#   real, free, keyless ocean data available).
-# "wind" -> Open-Meteo's regular forecast API's wind fields -- matches
-#   Metop-B's ASCAT ocean-wind instrument directly.
+#   "marine" -> Open-Meteo's Marine Weather API (sea-surface temp + wave
+#     height). Attached ONLY to Sentinel-3A, whose SLSTR genuinely measures
+#     sea-surface temperature and whose SRAL altimeter genuinely measures
+#     significant wave height -- so both numbers correspond to real
+#     instruments it carries.
+#   "wind" -> Open-Meteo's regular forecast wind fields. Attached ONLY to
+#     Metop-B, whose ASCAT instrument's whole job is measuring ocean-surface
+#     wind speed and direction.
+# NOTE: RADARSAT-2 is deliberately NOT here. It's a SAR radar imager (sea-ice
+# and ship detection); it does not measure sea-surface temperature or wave
+# height, so showing that data would misrepresent what it does.
 _OCEAN_CONTEXT_NORAD_IDS: dict[int, str] = {
-    41335: "marine",  # Sentinel-3A
-    32382: "marine",  # RADARSAT-2
-    38771: "wind",     # Metop-B
+    41335: "marine",  # Sentinel-3A -- SLSTR (SST) + SRAL (wave height)
+    38771: "wind",     # Metop-B -- ASCAT (ocean wind)
 }
 
 # Human-readable labels for categories.json's category keys -- kept here
@@ -124,6 +136,20 @@ def imagery_descriptor(norad_id: int) -> dict:
     if norad_id in _APOD_NORAD_IDS:
         return {"kind": "apod"}
     return {"kind": "none"}
+
+
+def fire_detection_for(norad_id: int, fire_counts_by_source: dict[str, int] | None) -> dict | None:
+    """Real active-fire detection count for this satellite's OWN instrument
+    (MODIS or VIIRS), or None if this isn't one of the four fire-detecting
+    satellites. `count` is None (not 0) when FIRMS_MAP_KEY isn't configured,
+    so the site can distinguish "not set up" from "genuinely zero fires."""
+    spec = _FIRE_SOURCE_BY_NORAD_ID.get(norad_id)
+    if spec is None:
+        return None
+    count = None
+    if fire_counts_by_source is not None:
+        count = fire_counts_by_source.get(spec["source"])
+    return {"instrument": spec["instrument"], "source_note": spec["note"], "count": count}
 
 
 def conjunctions_for(norad_id: int, all_conjunctions: list[dict]) -> list[dict]:
@@ -168,7 +194,7 @@ class SiteSatellite:
     volcano_alerts: list[dict] | None
     deep_space_status: dict | None
     ocean_context: str | None
-    global_fire_count: int | None
+    fire_detection: dict | None
 
 
 @dataclass
@@ -193,7 +219,7 @@ def build_site_data(
     deep_space_probes: list[dict] | None = None,
     achievements: dict[int, list[dict]] | None = None,
     volcano_alerts: list[dict] | None = None,
-    global_fire_count: int | None = None,
+    fire_counts_by_source: dict[str, int] | None = None,
 ) -> dict:
     """Pure function, no I/O -- takes already-loaded data (from state.json,
     watchlist.json, etc.) and shapes it into the JSON the website expects.
@@ -231,10 +257,14 @@ def build_site_data(
                 conjunctions=conjunctions_for(norad_id, conjunctions),
                 crew_aboard=crew_by_craft.get(_SPACE_STATION_CRAFT.get(norad_id, "")),
                 achievements=achievements.get(norad_id),
-                volcano_alerts=volcano_alerts if norad_id in _THERMAL_IMAGING_NORAD_IDS else None,
+                # USGS volcano context is attached ONLY to the four fire-
+                # detecting satellites, since thermal sensors are what
+                # actually spot volcanic hotspots -- no other satellite here
+                # watches for volcanoes.
+                volcano_alerts=volcano_alerts if norad_id in _FIRE_SOURCE_BY_NORAD_ID else None,
                 deep_space_status=None,
                 ocean_context=_OCEAN_CONTEXT_NORAD_IDS.get(norad_id),
-                global_fire_count=global_fire_count if norad_id in _THERMAL_IMAGING_NORAD_IDS else None,
+                fire_detection=fire_detection_for(norad_id, fire_counts_by_source),
             )
         )
 
@@ -276,7 +306,7 @@ def build_site_data(
                     "speed_km_s": probe["speed_km_s"],
                 },
                 ocean_context=None,
-                global_fire_count=None,
+                fire_detection=None,
             )
         )
 
@@ -302,7 +332,7 @@ def build_site_data(
                 "volcano_alerts": s.volcano_alerts,
                 "deep_space_status": s.deep_space_status,
                 "ocean_context": s.ocean_context,
-                "global_fire_count": s.global_fire_count,
+                "fire_detection": s.fire_detection,
             }
             for s in satellites
         ],

@@ -102,6 +102,7 @@
     ],
     "data_products": [
       "true-color imagery",
+      "active fire / thermal-anomaly detection",
       "atmospheric temperature & humidity profiles",
       "sea surface temperature",
       "cloud properties"
@@ -277,6 +278,7 @@
     ],
     "data_products": [
       "true-color imagery",
+      "active fire / thermal-anomaly detection",
       "atmospheric soundings",
       "ozone monitoring"
     ],
@@ -450,6 +452,7 @@
     ],
     "data_products": [
       "true-color imagery",
+      "active fire / thermal-anomaly detection",
       "atmospheric soundings",
       "ozone monitoring"
     ],

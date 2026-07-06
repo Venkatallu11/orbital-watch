@@ -6,7 +6,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from orbital_watch.firms import fetch_global_fire_count  # noqa: E402
+from orbital_watch.firms import (  # noqa: E402
+    FIRMS_SOURCE_BY_INSTRUMENT,
+    fetch_fire_counts_by_source,
+    fetch_global_fire_count,
+)
 
 REAL_SHAPE_CSV = (
     "latitude,longitude,bright_ti4,scan,track,acq_date,acq_time,satellite,instrument,confidence,version,bright_ti5,frp,daynight\n"
@@ -53,3 +57,11 @@ def test_fetch_global_fire_count_raises_on_invalid_key():
         assert False, "expected RuntimeError"
     except RuntimeError:
         pass
+
+
+def test_fetch_fire_counts_by_source_returns_one_count_per_instrument():
+    session = _FakeSession(REAL_SHAPE_CSV)
+    counts = fetch_fire_counts_by_source("testkey", session=session)
+    # One count per real FIRMS source (MODIS, VIIRS/SNPP, VIIRS/NOAA-20)
+    assert set(counts.keys()) == set(FIRMS_SOURCE_BY_INSTRUMENT.values())
+    assert all(v == 2 for v in counts.values())

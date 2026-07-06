@@ -45,3 +45,25 @@ def fetch_global_fire_count(map_key: str, source: str = "VIIRS_SNPP_NRT", day_ra
     if not rows:
         return 0
     return max(len(rows) - 1, 0)  # minus the header row
+
+
+# The real FIRMS "source" for each satellite's own fire-detecting instrument.
+# MODIS_NRT is Terra + Aqua combined (FIRMS doesn't split MODIS by
+# satellite), so both map to it; VIIRS is split per satellite.
+FIRMS_SOURCE_BY_INSTRUMENT: dict[str, str] = {
+    "MODIS": "MODIS_NRT",
+    "VIIRS_SNPP": "VIIRS_SNPP_NRT",
+    "VIIRS_NOAA20": "VIIRS_NOAA20_NRT",
+}
+
+
+def fetch_fire_counts_by_source(map_key: str, day_range: int = 1, session=None) -> dict[str, int]:
+    """Fetches a real fire-detection count for each distinct FIRMS source
+    (MODIS, VIIRS/Suomi-NPP, VIIRS/NOAA-20) so each satellite can show the
+    count from its OWN instrument, not one generic global number. Keyed by
+    the FIRMS source string. A single source failing raises (best-effort
+    handling is the caller's job, see cli.py)."""
+    return {
+        source: fetch_global_fire_count(map_key, source=source, day_range=day_range, session=session)
+        for source in FIRMS_SOURCE_BY_INSTRUMENT.values()
+    }

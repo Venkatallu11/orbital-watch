@@ -79,20 +79,22 @@ def _fetch_deep_space_probes_safely() -> list:
         return []
 
 
-def _fetch_global_fire_count_safely() -> int | None:
-    """NASA FIRMS' real, GLOBAL (not US-only) active-fire detection count
-    for the last 24h. Requires a free FIRMS_MAP_KEY (see firms.py's
-    docstring for why -- unlike NASA's APOD, FIRMS has no public shared
-    key). Returns None (not 0) when no key is configured, so the site can
-    tell "not set up yet" apart from "genuinely zero fires detected"."""
+def _fetch_fire_counts_safely() -> dict | None:
+    """NASA FIRMS' real, GLOBAL (not US-only) active-fire detection counts,
+    one per instrument (MODIS, VIIRS/Suomi-NPP, VIIRS/NOAA-20), so each
+    satellite can show the count from its OWN instrument. Requires a free
+    FIRMS_MAP_KEY (see firms.py's docstring for why -- unlike NASA's APOD,
+    FIRMS has no public shared key). Returns None (not {}) when no key is
+    configured, so the site can tell "not set up yet" apart from "genuinely
+    zero fires detected right now"."""
     map_key = os.environ.get("FIRMS_MAP_KEY")
     if not map_key:
         return None
 
-    from orbital_watch.firms import fetch_global_fire_count
+    from orbital_watch.firms import fetch_fire_counts_by_source
 
     try:
-        return fetch_global_fire_count(map_key)
+        return fetch_fire_counts_by_source(map_key)
     except Exception as exc:  # noqa: BLE001 - deliberately broad, see docstring
         print(f"Warning: NASA FIRMS fire-count fetch failed ({exc}), skipping.")
         return None
@@ -284,7 +286,7 @@ def main(argv=None) -> int:
     # No CLI flag for this one -- gated purely by whether FIRMS_MAP_KEY is
     # set (same idea as the SPACETRACK_USER/PASS fallback above), since
     # there's nothing to configure beyond the free key itself.
-    global_fire_count = _fetch_global_fire_count_safely()
+    fire_counts_by_source = _fetch_fire_counts_safely()
 
     if args.include_socrates or args.include_satnogs:
         digest = generate_digest(object_names, maneuver_alerts, conjunctions, satnogs_healths, tle_ages_days)
@@ -326,11 +328,11 @@ def main(argv=None) -> int:
     if volcano_alerts:
         store.set("volcano_alerts", volcano_alerts)
 
-    # Written whenever a real count came back, including a real 0 -- not
-    # just when truthy -- so the site can tell "FIRMS_MAP_KEY isn't set up"
-    # apart from "genuinely zero fires detected in the last 24h."
-    if global_fire_count is not None:
-        store.set("global_fire_count", global_fire_count)
+    # Written whenever real counts came back (a dict, possibly with 0s) --
+    # not just when truthy -- so the site can tell "FIRMS_MAP_KEY isn't set
+    # up" apart from "genuinely zero fires detected in the last 24h."
+    if fire_counts_by_source is not None:
+        store.set("fire_counts_by_source", fire_counts_by_source)
 
     store.set("previous_tles", previous_tles)
     store.set("baseline_history", baseline.to_dict())

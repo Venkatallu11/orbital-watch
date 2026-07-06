@@ -313,29 +313,41 @@ def test_ocean_context_attached_only_to_real_ocean_sensing_satellites():
         maneuver_events={}, satnogs_healths_by_id={},
     )
     by_id = {s["norad_id"]: s for s in result["satellites"]}
-    assert by_id[41335]["ocean_context"] == "marine"
-    assert by_id[32382]["ocean_context"] == "marine"
-    assert by_id[38771]["ocean_context"] == "wind"
+    assert by_id[41335]["ocean_context"] == "marine"  # Sentinel-3A genuinely measures SST + wave height
+    assert by_id[38771]["ocean_context"] == "wind"     # Metop-B's ASCAT genuinely measures ocean wind
+    # RADARSAT-2 is a SAR radar imager (sea-ice/ship detection) -- it does
+    # NOT measure SST/waves, so it must not get the ocean panel.
+    assert by_id[32382]["ocean_context"] is None
     assert by_id[20580]["ocean_context"] is None  # Hubble doesn't sense the ocean
 
 
-def test_global_fire_count_attached_only_to_thermal_imaging_satellites():
+def test_fire_detection_is_per_satellite_instrument():
     result = build_site_data(
         generated_at="x",
-        watchlist=[25994, 20580],  # Terra (thermal-imaging), Hubble (not)
+        watchlist=[25994, 37849, 43013, 20580],  # Terra(MODIS), Suomi NPP(VIIRS), NOAA-20(VIIRS), Hubble(none)
         object_names={}, previous_tles={}, tle_ages_days={},
         maneuver_events={}, satnogs_healths_by_id={},
-        global_fire_count=1234,
+        fire_counts_by_source={"MODIS_NRT": 1000, "VIIRS_SNPP_NRT": 2000, "VIIRS_NOAA20_NRT": 3000},
     )
     by_id = {s["norad_id"]: s for s in result["satellites"]}
-    assert by_id[25994]["global_fire_count"] == 1234
-    assert by_id[20580]["global_fire_count"] is None
+    # each satellite shows the count from ITS OWN instrument, not one shared number
+    assert by_id[25994]["fire_detection"]["instrument"] == "MODIS"
+    assert by_id[25994]["fire_detection"]["count"] == 1000
+    assert by_id[37849]["fire_detection"]["instrument"] == "VIIRS"
+    assert by_id[37849]["fire_detection"]["count"] == 2000
+    assert by_id[43013]["fire_detection"]["count"] == 3000
+    # Hubble isn't a fire-detecting satellite -- no panel at all
+    assert by_id[20580]["fire_detection"] is None
 
 
-def test_global_fire_count_none_when_not_configured():
+def test_fire_detection_count_none_when_not_configured():
     result = build_site_data(
         generated_at="x",
         watchlist=[25994], object_names={}, previous_tles={},
         tle_ages_days={}, maneuver_events={}, satnogs_healths_by_id={},
     )
-    assert result["satellites"][0]["global_fire_count"] is None
+    # Terra is still flagged as a fire-detecting satellite, but count is None
+    # (FIRMS_MAP_KEY not configured) -- so the UI can say "not set up yet".
+    fd = result["satellites"][0]["fire_detection"]
+    assert fd["instrument"] == "MODIS"
+    assert fd["count"] is None

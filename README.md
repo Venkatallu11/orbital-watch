@@ -163,18 +163,24 @@ something you can actually click through instead of reading JSON:
   NASA lost contact with them decades ago. Uses JPL Horizons' own real
   (always-negative) spacecraft ID as a stable pseudo-NORAD-ID, so it can
   never collide with a real satellite's ID.
-- **Wildfire & Volcano Watch panel**, on the real thermal-imaging Earth
-  observation satellites (Terra, Aqua, Suomi NPP, NOAA-20):
+- **Active Fire & Thermal Detection panel**, shown on the **only** four
+  satellites whose own instrument actually does this — Terra & Aqua (MODIS)
+  and Suomi NPP & NOAA-20 (VIIRS):
   - Real, **global** active-fire detection counts (last 24h) from NASA
-    FIRMS — genuinely worldwide, not US-only. Requires a free
-    `FIRMS_MAP_KEY` (see Setup below); honestly says "not set up yet"
-    rather than silently omitting it or faking a number when that secret
-    isn't configured.
-  - Real-time USGS elevated-volcano alert status. Honestly scoped:
-    USGS's feed is US-only (Alaska/Hawaii/Cascades observatories), and
-    it's the latest known status per volcano, not a queryable date-range
-    history — so this shows "current status as of [real timestamp]," not
-    a fabricated "checked in the last 7 days" log.
+    FIRMS, using the FIRMS source that is literally **that satellite's own
+    instrument** — MODIS for Terra/Aqua, VIIRS for Suomi NPP/NOAA-20 — so
+    each satellite shows the fires *it* detected, not one generic global
+    number. (MODIS_NRT is Terra+Aqua combined, which FIRMS doesn't split by
+    satellite; the UI says so.) Genuinely worldwide, not US-only. Requires a
+    free `FIRMS_MAP_KEY` (see Setup below); honestly says "not set up yet"
+    rather than faking a number when that secret isn't configured.
+  - Because these same thermal sensors are what spot volcanic hotspots from
+    orbit, real-time USGS elevated-volcano alerts ride along here — **and
+    only here** — as clearly-labelled context, not as a claim that these
+    satellites "watch volcanoes." (USGS's feed is US-only and is the latest
+    known status per volcano, both stated honestly.) No other satellite on
+    the site shows fire or volcano data, because no other satellite on the
+    watchlist detects either.
 - **Ground Weather Forecast panel** — for GPM/DMSP (the precipitation-watch
   satellites): a real short-term rain/snowfall forecast (Open-Meteo, free,
   keyless) at the satellite's current live position. Fetched client-side
@@ -185,12 +191,16 @@ something you can actually click through instead of reading JSON:
   Labeled honestly as a weather-model forecast, not something the
   satellite itself measured (that's what the real-time GPM rain-rate
   imagery layer above it is for).
-- **Ocean Conditions panel** — for the real ocean-sensing satellites
-  (Sentinel-3A, RADARSAT-2: real wave height/sea-surface temperature via
-  Open-Meteo's free Marine Weather API; Metop-B: real wind speed/direction
-  via Open-Meteo's regular forecast API, matching its actual ASCAT
-  instrument). Same client-side, satellite's-current-position approach as
-  the ground weather forecast, for the same reason.
+- **Ocean Conditions panel** — shown only where the satellite's own
+  instrument genuinely measures the quantity: **Sentinel-3A** (real
+  sea-surface temperature + wave height via Open-Meteo's free Marine
+  Weather API, matching its SLSTR and SRAL instruments) and **Metop-B**
+  (real wind speed/direction via Open-Meteo's forecast API, matching its
+  ASCAT ocean-wind instrument). RADARSAT-2 is deliberately **excluded** —
+  it's a SAR radar imager (sea-ice/ship detection) and does not measure
+  sea-surface temperature or waves, so showing that data would misrepresent
+  it. Same client-side, satellite's-current-position approach as the ground
+  weather forecast, for the same reason.
 - **Imagery** — real pictures, not stock photos, matched honestly to what
   each satellite can actually provide, with a switcher when more than one
   real view exists:
@@ -480,8 +490,8 @@ export ALERT_WEBHOOK_URL=https://discord.com/api/webhooks/...
 ```
 
 Optional real, global wildfire detection counts (NASA FIRMS) on the website's
-Wildfire & Volcano Watch panel. Unlike NASA's APOD (which has a public shared
-DEMO_KEY), FIRMS has no public key — sign up free at
+Active Fire & Thermal Detection panel. Unlike NASA's APOD (which has a public
+shared DEMO_KEY), FIRMS has no public key — sign up free at
 [firms.modaps.eosdis.nasa.gov/api/map_key](https://firms.modaps.eosdis.nasa.gov/api/map_key/)
 (2 minutes, no cost), then:
 ```bash
