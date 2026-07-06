@@ -348,6 +348,14 @@ function renderImagery(sat) {
     return;
   }
 
+  if (sat.imagery.kind === "commercial") {
+    // This satellite genuinely takes Earth imagery, but it's sold
+    // commercially -- so we say exactly why there's nothing to show,
+    // instead of a bare "no imagery" that looks like a gap.
+    el.innerHTML = `<div class="no-imagery">${sat.imagery.reason}</div>`;
+    return;
+  }
+
   el.innerHTML = '<div class="no-imagery">No public imagery source available for this satellite.</div>';
 }
 

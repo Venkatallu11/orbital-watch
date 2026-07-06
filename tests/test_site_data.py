@@ -10,13 +10,32 @@ def test_gibs_satellites_get_the_confirmed_real_layer_names():
     terra = imagery_descriptor(25994)
     assert terra["kind"] == "gibs"
     labels = {opt["label"] for opt in terra["options"]}
-    assert labels == {"True Color", "Active Fires & Thermal Anomalies"}
+    # Terra now offers a full set of live-verified MODIS science layers, not
+    # just true-color + fire.
+    assert {"True Color", "Active Fires & Thermal Anomalies", "Aerosol Optical Depth",
+            "Land Surface Temp (Day)", "Water Vapor"}.issubset(labels)
     true_color = next(o for o in terra["options"] if o["label"] == "True Color")
     assert true_color["layer"] == "MODIS_Terra_CorrectedReflectance_TrueColor"
 
     noaa20 = imagery_descriptor(43013)
     fire = next(o for o in noaa20["options"] if "Fire" in o["label"])
     assert fire["layer"] == "VIIRS_NOAA20_Thermal_Anomalies_375m_Day"
+
+
+def test_goes16_gets_real_geocolor_imagery():
+    result = imagery_descriptor(41866)  # GOES-16
+    assert result["kind"] == "gibs"
+    assert result["options"][0]["layer"] == "GOES-East_ABI_GeoColor"
+
+
+def test_commercial_satellites_explain_why_no_free_imagery():
+    # RADARSAT-2 and Pleiades genuinely take imagery, but it's sold
+    # commercially -- the panel must say so, not just "none".
+    radarsat = imagery_descriptor(32382)
+    assert radarsat["kind"] == "commercial"
+    assert "commercial" in radarsat["reason"].lower()
+    pleiades = imagery_descriptor(38012)
+    assert pleiades["kind"] == "commercial"
 
 
 def test_landsat_is_honestly_labeled_annual_not_daily():

@@ -7,10 +7,16 @@ IMAGERY MAPPING: honestly scoped, not "every satellite gets a pretty
 picture." Every layer identifier below was confirmed live to return a real
 image (not an error page) via verify_imagery.py/the verify-gibs-layers
 workflow before being hardcoded here -- not guessed.
-  - Terra, Aqua, Suomi NPP, NOAA-20: real daily true-color AND real active
-    fire/thermal-anomaly layers, both from that satellite's own instrument
-    (MODIS/VIIRS). Each satellite offers both as separate "options" the
-    site can switch between, not just one picked for you.
+  - Terra & Aqua (MODIS): a whole set of real daily science layers, each
+    live-verified and each genuinely a MODIS product matching what the
+    instruments panel says the satellite measures -- true color, active
+    fire/thermal anomalies, aerosol optical depth, land-surface temperature,
+    cloud-top temperature, water vapor, and snow/ice cover -- switchable.
+  - Suomi NPP, NOAA-20 (VIIRS): real daily true-color AND active fire/
+    thermal-anomaly layers from their own instrument.
+  - GOES-16 (ABI): real GeoColor (GOES-East). GOES-18/West is intentionally
+    omitted -- at the global bounding box the site requests, the GOES-West
+    disc rendered near-blank, so it's left out rather than shown empty.
   - Landsat 8: GIBS only has an ANNUAL composite for Landsat (WELD product),
     not a daily layer like the others -- labeled as such, not claimed to be
     "live" when it isn't.
@@ -36,30 +42,63 @@ from dataclasses import dataclass, field
 # choice (e.g. true-color vs. active-fire detection) where more than one
 # genuinely exists for that satellite's own instrument.
 _GIBS_LAYERS: dict[int, list[dict]] = {
-    25994: [  # Terra
+    25994: [  # Terra -- MODIS. Every layer below was live-verified (see the
+             # verify-gibs-layers workflow runs) to return a real image and
+             # to be genuinely a MODIS/Terra product, matching what its
+             # instruments panel says it measures.
         {"label": "True Color", "layer": "MODIS_Terra_CorrectedReflectance_TrueColor", "cadence": "daily"},
         {"label": "Active Fires & Thermal Anomalies", "layer": "MODIS_Terra_Thermal_Anomalies_All", "cadence": "daily"},
+        {"label": "Aerosol Optical Depth", "layer": "MODIS_Terra_Aerosol", "cadence": "daily"},
+        {"label": "Land Surface Temp (Day)", "layer": "MODIS_Terra_Land_Surface_Temp_Day", "cadence": "daily"},
+        {"label": "Cloud Top Temp (Day)", "layer": "MODIS_Terra_Cloud_Top_Temp_Day", "cadence": "daily"},
+        {"label": "Water Vapor", "layer": "MODIS_Terra_Water_Vapor_5km_Day", "cadence": "daily"},
+        {"label": "Snow & Ice Cover", "layer": "MODIS_Terra_NDSI_Snow_Cover", "cadence": "daily"},
     ],
-    27424: [  # Aqua
+    27424: [  # Aqua -- MODIS (same instrument family as Terra)
         {"label": "True Color", "layer": "MODIS_Aqua_CorrectedReflectance_TrueColor", "cadence": "daily"},
         {"label": "Active Fires & Thermal Anomalies", "layer": "MODIS_Aqua_Thermal_Anomalies_All", "cadence": "daily"},
+        {"label": "Aerosol Optical Depth", "layer": "MODIS_Aqua_Aerosol", "cadence": "daily"},
+        {"label": "Land Surface Temp (Day)", "layer": "MODIS_Aqua_Land_Surface_Temp_Day", "cadence": "daily"},
+        {"label": "Cloud Top Temp (Day)", "layer": "MODIS_Aqua_Cloud_Top_Temp_Day", "cadence": "daily"},
+        {"label": "Water Vapor", "layer": "MODIS_Aqua_Water_Vapor_5km_Day", "cadence": "daily"},
+        {"label": "Snow & Ice Cover", "layer": "MODIS_Aqua_NDSI_Snow_Cover", "cadence": "daily"},
     ],
-    37849: [  # Suomi NPP
+    37849: [  # Suomi NPP -- VIIRS
         {"label": "True Color", "layer": "VIIRS_SNPP_CorrectedReflectance_TrueColor", "cadence": "daily"},
         {"label": "Active Fires & Thermal Anomalies", "layer": "VIIRS_SNPP_Thermal_Anomalies_375m_Day", "cadence": "daily"},
     ],
-    43013: [  # NOAA-20
+    43013: [  # NOAA-20 -- VIIRS
         {"label": "True Color", "layer": "VIIRS_NOAA20_CorrectedReflectance_TrueColor", "cadence": "daily"},
         {"label": "Active Fires & Thermal Anomalies", "layer": "VIIRS_NOAA20_Thermal_Anomalies_375m_Day", "cadence": "daily"},
     ],
     39084: [  # Landsat 8
         {"label": "True Color (Annual Composite)", "layer": "Landsat_WELD_CorrectedReflectance_TrueColor_Global_Annual", "cadence": "annual"},
     ],
+    41866: [  # GOES-16 -- ABI GeoColor (GOES-East; covers the Americas/Atlantic)
+        {"label": "GeoColor (GOES-East)", "layer": "GOES-East_ABI_GeoColor", "cadence": "daily"},
+    ],
     39574: [  # GPM Core Observatory
         {"label": "Rain/Snowfall Rate", "layer": "IMERG_Precipitation_Rate_30min", "cadence": "realtime"},
     ],
 }
 _APOD_NORAD_IDS = {20580}  # Hubble Space Telescope
+
+# Satellites that genuinely take Earth imagery, but whose imagery is sold
+# commercially -- so there is no free public API for their data, and the
+# imagery panel says exactly that instead of just "none". This is an honest
+# explanation, not a data gap we're hiding.
+_COMMERCIAL_NO_FREE_IMAGERY: dict[int, str] = {
+    32382: (
+        "RADARSAT-2 is a commercial radar satellite (MDA / Canada). Its all-weather "
+        "SAR imagery, ship-detection, and sea-ice products are sold commercially, so "
+        "there is no free public API for its own data to show here."
+    ),
+    38012: (
+        "Pleiades 1A is a commercial very-high-resolution optical satellite (Airbus). "
+        "Its sub-meter imagery is sold commercially, so there is no free public feed "
+        "of its own data to show here."
+    ),
+}
 
 # Which real crewed-spacecraft "craft" name (as Open Notify's API reports
 # it, see crew.py) each space-station module belongs to -- lets the
@@ -135,6 +174,8 @@ def imagery_descriptor(norad_id: int) -> dict:
         return {"kind": "gibs", "options": _GIBS_LAYERS[norad_id]}
     if norad_id in _APOD_NORAD_IDS:
         return {"kind": "apod"}
+    if norad_id in _COMMERCIAL_NO_FREE_IMAGERY:
+        return {"kind": "commercial", "reason": _COMMERCIAL_NO_FREE_IMAGERY[norad_id]}
     return {"kind": "none"}
 
 

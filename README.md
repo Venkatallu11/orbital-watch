@@ -204,12 +204,19 @@ something you can actually click through instead of reading JSON:
 - **Imagery** — real pictures, not stock photos, matched honestly to what
   each satellite can actually provide, with a switcher when more than one
   real view exists:
-  - Terra, Aqua, Suomi NPP, and NOAA-20 each offer **two** real GIBS
-    layers from their own instrument: true-color imagery and active
-    fire/thermal-anomaly detections — switchable, not just one picked for
-    you. Every layer identifier was live-verified to return a real image
-    (see `verify_imagery.py`/the `verify-gibs-layers` workflow) before
-    being hardcoded.
+  - Terra and Aqua (MODIS) each offer a **whole set** of real, switchable
+    GIBS science layers from their own instrument — true color, active
+    fire/thermal anomalies, aerosol optical depth, land-surface temperature,
+    cloud-top temperature, water vapor, and snow/ice cover — each one
+    matching a capability the "What This Satellite Does" panel lists.
+  - Suomi NPP and NOAA-20 (VIIRS) offer true-color and active-fire layers.
+  - GOES-16 (ABI) shows real GeoColor imagery (GOES-East). GOES-18/West is
+    intentionally left out — at the global bounding box the site requests,
+    its disc rendered near-blank, so it's omitted rather than shown empty.
+  - Every layer identifier was **live-verified** to return a real image
+    (see `verify_imagery.py`/the `verify-gibs-layers` workflow) before being
+    hardcoded — layers that returned an error (various SST/ozone IDs) were
+    dropped, not shipped broken.
   - Landsat 8: GIBS only has an annual composite (WELD product), labeled
     as such rather than claimed to be "live."
   - GPM Core Observatory gets GIBS' real IMERG rain/snowfall-rate layer,
@@ -218,8 +225,12 @@ something you can actually click through instead of reading JSON:
   - Hubble gets NASA's Astronomy Picture of the Day (APOD) — real deep-space
     imagery, honestly captioned as "may or may not be from Hubble
     specifically" since APOD isn't Hubble-exclusive.
-  - Everything else honestly shows "No public imagery source available"
-    rather than faking a picture.
+  - **RADARSAT-2 and Pleiades 1A are commercial** (MDA/Airbus). They
+    genuinely take imagery, but it's sold — there's no free public API for
+    it — so their panel says exactly that instead of a bare "no imagery."
+  - Everything else (navigation, comms, space stations, most telescopes)
+    honestly shows "No public imagery source available" rather than faking
+    a picture — those objects don't produce Earth imagery at all.
 - **Rotating background of real satellite-captured photos** — cycles every
   60 seconds through a pool of real photos, none stock/fabricated:
   - **GOES-16/18 GeoColor** (NOAA/NESDIS): a fixed CDN URL that always
