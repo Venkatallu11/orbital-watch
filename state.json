@@ -73,12 +73,12 @@
       "line2": "2 29479  98.0548 207.8324 0016693 208.0803 151.9503 14.68654917 58377"
     },
     "32275": {
-      "line1": "1 32275U 07052A   26191.37850435 -.00000061  00000+0  00000+0 0  9993",
-      "line2": "2 32275  65.5627 315.1539 0003332 202.4667 157.5232  2.13104289145552"
+      "line1": "1 32275U 07052A   26191.84776337 -.00000062  00000+0  00000+0 0  9994",
+      "line2": "2 32275  65.5625 315.1381 0003393 203.0239 156.9646  2.13104163145568"
     },
     "32382": {
-      "line1": "1 32382U 07061A   26191.82790986 -.00000047  00000+0 -12851-5 0  9994",
-      "line2": "2 32382  98.5786 198.4222 0001323  84.4428 275.6905 14.29982263969330"
+      "line1": "1 32382U 07061A   26192.17776391  .00000126  00000+0  65823-4 0  9999",
+      "line2": "2 32382  98.5785 198.7675 0001328  84.3002 275.8332 14.29982890969383"
     },
     "33053": {
       "line1": "1 33053U 08029A   26191.79991928  .00002325  00000+0  79613-4 0  9997",
@@ -321,7 +321,6 @@
       0.08880565484827906
     ],
     "32382": [
-      0.531673224301731,
       1.005010145510821,
       0.3465490592597217,
       1.341096409507127,
@@ -330,7 +329,8 @@
       0.32193343886087894,
       0.8511873105071227,
       0.5693630035269738,
-      1.2521968609279894
+      1.2521968609279894,
+      0.7064257170836464
     ],
     "33053": [
       1.1047446585377958,
@@ -651,7 +651,8 @@
       0.4765453422656254,
       0.23609439376453667,
       0.27969779758024377,
-      0.5269300592972318
+      0.5269300592972318,
+      1.9915976260913473
     ],
     "35933": [
       0.4681565286324969,
@@ -981,6 +982,16 @@
         "z_score": 21.87308994745862,
         "reason": "residual 1.154 km/day is 21.9 sigma above this object's recent baseline (0.144 km/day avg)"
       }
+    ],
+    "32275": [
+      {
+        "timestamp": "2026-07-11T10:55:39.887685+00:00",
+        "residual_km": 0.9345751502539521,
+        "residual_km_per_day": 1.9915976260913473,
+        "epoch_gap_days": 0.46925902,
+        "z_score": 12.979813904629703,
+        "reason": "residual 1.992 km/day is 13.0 sigma above this object's recent baseline (0.380 km/day avg)"
+      }
     ]
   },
   "satnogs_health": {
@@ -1097,12 +1108,12 @@
     "24278": {
       "norad_id": 24278,
       "total_observations": 25,
-      "good_count": 5,
+      "good_count": 3,
       "bad_count": 2,
-      "unvetted_count": 18,
-      "success_rate": 0.7142857142857143,
+      "unvetted_count": 20,
+      "success_rate": 0.6,
       "is_degraded": false,
-      "reason": "5/7 recent vetted observations were good (71%)"
+      "reason": "3/5 recent vetted observations were good (60%)"
     },
     "25867": {
       "norad_id": 25867,
@@ -1438,11 +1449,11 @@
       "norad_id": 48274,
       "total_observations": 25,
       "good_count": 2,
-      "bad_count": 11,
-      "unvetted_count": 12,
-      "success_rate": 0.15384615384615385,
+      "bad_count": 10,
+      "unvetted_count": 13,
+      "success_rate": 0.16666666666666666,
       "is_degraded": true,
-      "reason": "only 2/13 recent vetted observations were good (15%) -- worth checking against the TLE-residual signal"
+      "reason": "only 2/12 recent vetted observations were good (17%) -- worth checking against the TLE-residual signal"
     },
     "49044": {
       "norad_id": 49044,
@@ -1550,10 +1561,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Jul-11 09:19:00.0000",
-      "distance_from_earth_km": 25494165197.76189,
-      "distance_from_earth_au": 170.41796837394352,
-      "speed_km_s": 38.95277339038385
+      "epoch": "2026-Jul-11 10:56:00.0000",
+      "distance_from_earth_km": 25494337847.40857,
+      "distance_from_earth_au": 170.41912246554838,
+      "speed_km_s": 38.963463867787354
     },
     {
       "key": "voyager_2",
@@ -1571,10 +1582,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Jul-11 09:19:00.0000",
-      "distance_from_earth_km": 21329998271.1936,
-      "distance_from_earth_au": 142.58223176162895,
-      "speed_km_s": 32.175201984106764
+      "epoch": "2026-Jul-11 10:56:00.0000",
+      "distance_from_earth_km": 21330081558.77834,
+      "distance_from_earth_au": 142.58278850474534,
+      "speed_km_s": 32.18601189527546
     },
     {
       "key": "pioneer_10",
@@ -1586,10 +1597,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-11 09:19:00.0000",
-      "distance_from_earth_km": 21282410649.6508,
-      "distance_from_earth_au": 142.26412815948456,
-      "speed_km_s": 26.619932233095835
+      "epoch": "2026-Jul-11 10:56:00.0000",
+      "distance_from_earth_km": 21282398347.85912,
+      "distance_from_earth_au": 142.26404592708633,
+      "speed_km_s": 26.606559315542288
     },
     {
       "key": "pioneer_11",
@@ -1601,10 +1612,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-11 09:19:00.0000",
-      "distance_from_earth_km": 17420090949.92763,
-      "distance_from_earth_au": 116.44611563263135,
-      "speed_km_s": 30.82101839029096
+      "epoch": "2026-Jul-11 10:56:00.0000",
+      "distance_from_earth_km": 17420167459.10312,
+      "distance_from_earth_au": 116.44662706488054,
+      "speed_km_s": 30.83301875332279
     }
   ],
   "volcano_alerts": [
