@@ -1,8 +1,8 @@
 {
   "previous_tles": {
     "46052": {
-      "line1": "1 46052U 20055AB  26193.58254964  .00492837  12457-3  70179-3 0  9995",
-      "line2": "2 46052  53.1474 221.5110 0011654  13.4804 346.6537 16.04872553328617"
+      "line1": "1 46052U 20055AB  26194.01839574  .00558286  15997-3  77144-3 0  9992",
+      "line2": "2 46052  53.1469 219.2474 0011561  14.8719 345.2652 16.05358640328682"
     },
     "27424": {
       "line1": "1 27424U 02022A   26193.91276689  .00000389  00000+0  87043-4 0  9999",
@@ -606,7 +606,6 @@
       0.08149758759243846
     ],
     "46052": [
-      11.523096672367211,
       0.8720682255923928,
       9.456037774938967,
       8.843945491551523,
@@ -615,7 +614,8 @@
       1.3947350132811602,
       132.01727045027502,
       1.1415457582487059,
-      6.9612829431311125
+      6.9612829431311125,
+      9.785725365651416
     ],
     "49044": [
       0.33939554486762213,
@@ -1227,12 +1227,12 @@
     "25994": {
       "norad_id": 25994,
       "total_observations": 25,
-      "good_count": 0,
-      "bad_count": 4,
-      "unvetted_count": 21,
-      "success_rate": 0.0,
+      "good_count": 2,
+      "bad_count": 17,
+      "unvetted_count": 6,
+      "success_rate": 0.10526315789473684,
       "is_degraded": true,
-      "reason": "only 0/4 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 2/19 recent vetted observations were good (11%) -- worth checking against the TLE-residual signal"
     },
     "27424": {
       "norad_id": 27424,
@@ -1258,11 +1258,11 @@
       "norad_id": 37849,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 25,
-      "unvetted_count": 0,
+      "bad_count": 24,
+      "unvetted_count": 1,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/25 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/24 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "39084": {
       "norad_id": 39084,
@@ -1308,21 +1308,21 @@
       "norad_id": 7530,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 2,
-      "unvetted_count": 23,
-      "success_rate": 0.0,
+      "bad_count": 0,
+      "unvetted_count": 25,
+      "success_rate": null,
       "is_degraded": false,
-      "reason": "0/2 recent vetted observations were good (0%)"
+      "reason": "not enough vetted observations yet to judge"
     },
     "24278": {
       "norad_id": 24278,
       "total_observations": 25,
-      "good_count": 5,
-      "bad_count": 6,
-      "unvetted_count": 14,
-      "success_rate": 0.45454545454545453,
-      "is_degraded": true,
-      "reason": "only 5/11 recent vetted observations were good (45%) -- worth checking against the TLE-residual signal"
+      "good_count": 6,
+      "bad_count": 1,
+      "unvetted_count": 18,
+      "success_rate": 0.8571428571428571,
+      "is_degraded": false,
+      "reason": "6/7 recent vetted observations were good (86%)"
     },
     "25867": {
       "norad_id": 25867,
@@ -1428,11 +1428,11 @@
       "norad_id": 35933,
       "total_observations": 25,
       "good_count": 5,
-      "bad_count": 5,
-      "unvetted_count": 15,
-      "success_rate": 0.5,
-      "is_degraded": false,
-      "reason": "5/10 recent vetted observations were good (50%)"
+      "bad_count": 6,
+      "unvetted_count": 14,
+      "success_rate": 0.45454545454545453,
+      "is_degraded": true,
+      "reason": "only 5/11 recent vetted observations were good (45%) -- worth checking against the TLE-residual signal"
     },
     "36086": {
       "norad_id": 36086,
@@ -1658,21 +1658,21 @@
       "norad_id": 48274,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 7,
-      "unvetted_count": 18,
+      "bad_count": 10,
+      "unvetted_count": 15,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/7 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/10 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "49044": {
       "norad_id": 49044,
       "total_observations": 25,
-      "good_count": 12,
+      "good_count": 5,
       "bad_count": 6,
-      "unvetted_count": 7,
-      "success_rate": 0.6666666666666666,
-      "is_degraded": false,
-      "reason": "12/18 recent vetted observations were good (67%)"
+      "unvetted_count": 14,
+      "success_rate": 0.45454545454545453,
+      "is_degraded": true,
+      "reason": "only 5/11 recent vetted observations were good (45%) -- worth checking against the TLE-residual signal"
     },
     "49954": {
       "norad_id": 49954,
@@ -1770,10 +1770,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Jul-13 01:53:00.0000",
-      "distance_from_earth_km": 25498538311.92491,
-      "distance_from_earth_au": 170.44720083656188,
-      "speed_km_s": 39.21790495491287
+      "epoch": "2026-Jul-13 05:29:00.0000",
+      "distance_from_earth_km": 25498930479.38333,
+      "distance_from_earth_au": 170.44982231410418,
+      "speed_km_s": 39.241103844166474
     },
     {
       "key": "voyager_2",
@@ -1791,10 +1791,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Jul-13 01:54:00.0000",
-      "distance_from_earth_km": 21332135574.49324,
-      "distance_from_earth_au": 142.5965187517421,
-      "speed_km_s": 32.44547379519848
+      "epoch": "2026-Jul-13 05:29:00.0000",
+      "distance_from_earth_km": 21332328948.98573,
+      "distance_from_earth_au": 142.59781138038437,
+      "speed_km_s": 32.46921136379445
     },
     {
       "key": "pioneer_10",
@@ -1806,10 +1806,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-13 01:54:00.0000",
-      "distance_from_earth_km": 21282050372.64939,
-      "distance_from_earth_au": 142.2617198564805,
-      "speed_km_s": 26.28354090383097
+      "epoch": "2026-Jul-13 05:29:00.0000",
+      "distance_from_earth_km": 21282013438.48853,
+      "distance_from_earth_au": 142.26147296686443,
+      "speed_km_s": 26.253771050471
     },
     {
       "key": "pioneer_11",
@@ -1821,10 +1821,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-13 01:54:00.0000",
-      "distance_from_earth_km": 17422069209.24117,
-      "distance_from_earth_au": 116.45933947936312,
-      "speed_km_s": 31.120728149284584
+      "epoch": "2026-Jul-13 05:29:00.0000",
+      "distance_from_earth_km": 17422249647.67769,
+      "distance_from_earth_au": 116.46054563581225,
+      "speed_km_s": 31.147020211792224
     }
   ],
   "volcano_alerts": [
