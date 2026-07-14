@@ -1436,11 +1436,11 @@
       "norad_id": 24278,
       "total_observations": 25,
       "good_count": 2,
-      "bad_count": 5,
-      "unvetted_count": 18,
-      "success_rate": 0.2857142857142857,
+      "bad_count": 4,
+      "unvetted_count": 19,
+      "success_rate": 0.3333333333333333,
       "is_degraded": true,
-      "reason": "only 2/7 recent vetted observations were good (29%) -- worth checking against the TLE-residual signal"
+      "reason": "only 2/6 recent vetted observations were good (33%) -- worth checking against the TLE-residual signal"
     },
     "25867": {
       "norad_id": 25867,
@@ -1546,11 +1546,11 @@
       "norad_id": 35933,
       "total_observations": 25,
       "good_count": 5,
-      "bad_count": 5,
-      "unvetted_count": 15,
-      "success_rate": 0.5,
+      "bad_count": 4,
+      "unvetted_count": 16,
+      "success_rate": 0.5555555555555556,
       "is_degraded": false,
-      "reason": "5/10 recent vetted observations were good (50%)"
+      "reason": "5/9 recent vetted observations were good (56%)"
     },
     "36086": {
       "norad_id": 36086,
@@ -1888,10 +1888,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Jul-14 20:51:00.0000",
-      "distance_from_earth_km": 25503261780.32934,
-      "distance_from_earth_au": 170.47877527263057,
-      "speed_km_s": 39.49103096518172
+      "epoch": "2026-Jul-14 21:48:00.0000",
+      "distance_from_earth_km": 25503367267.25855,
+      "distance_from_earth_au": 170.4794804091991,
+      "speed_km_s": 39.49697534622453
     },
     {
       "key": "voyager_2",
@@ -1909,10 +1909,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Jul-14 20:51:00.0000",
-      "distance_from_earth_km": 21334503188.13525,
-      "distance_from_earth_au": 142.612345271404,
-      "speed_km_s": 32.728353290775686
+      "epoch": "2026-Jul-14 21:48:00.0000",
+      "distance_from_earth_km": 21334556785.51435,
+      "distance_from_earth_au": 142.61270354775414,
+      "speed_km_s": 32.73456744860903
     },
     {
       "key": "pioneer_10",
@@ -1924,10 +1924,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-14 20:51:00.0000",
-      "distance_from_earth_km": 21281553560.15198,
-      "distance_from_earth_au": 142.25839887005813,
-      "speed_km_s": 25.92612458499645
+      "epoch": "2026-Jul-14 21:48:00.0000",
+      "distance_from_earth_km": 21281541244.29659,
+      "distance_from_earth_au": 142.25831654364978,
+      "speed_km_s": 25.918207273088967
     },
     {
       "key": "pioneer_11",
@@ -1939,10 +1939,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-14 20:51:00.0000",
-      "distance_from_earth_km": 17424293471.75676,
-      "distance_from_earth_au": 116.47420775593139,
-      "speed_km_s": 31.433747423410626
+      "epoch": "2026-Jul-14 21:48:00.0000",
+      "distance_from_earth_km": 17424344185.43623,
+      "distance_from_earth_au": 116.4745467559401,
+      "speed_km_s": 31.440616454271268
     }
   ],
   "volcano_alerts": [
@@ -1951,24 +1951,24 @@
       "observatory": "Alaska Volcano Observatory",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
-      "sent_utc": "2026-07-13 20:22:40",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-07-13T20:18:40+00:00"
+      "sent_utc": "2026-07-14 21:22:17",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-07-14T21:20:43+00:00"
     },
     {
       "volcano_name": "Kupreanof",
       "observatory": "Alaska Volcano Observatory",
       "alert_level": "ADVISORY",
       "color_code": "YELLOW",
-      "sent_utc": "2026-07-13 20:22:40",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-07-13T20:18:40+00:00"
+      "sent_utc": "2026-07-14 21:22:17",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-07-14T21:20:43+00:00"
     },
     {
       "volcano_name": "Shishaldin",
       "observatory": "Alaska Volcano Observatory",
       "alert_level": "ADVISORY",
       "color_code": "YELLOW",
-      "sent_utc": "2026-07-13 20:22:40",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-07-13T20:18:40+00:00"
+      "sent_utc": "2026-07-14 21:22:17",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-07-14T21:20:43+00:00"
     },
     {
       "volcano_name": "Kilauea",
