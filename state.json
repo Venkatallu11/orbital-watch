@@ -1,8 +1,8 @@
 {
   "previous_tles": {
     "46052": {
-      "line1": "1 46052U 20055AB  26196.25790547  .00588516  18448-3  70092-3 0  9994",
-      "line2": "2 46052  53.1459 207.5911 0009778  21.7633 338.3815 16.07767975329048"
+      "line1": "1 46052U 20055AB  26196.50652728  .00617631  20441-3  72186-3 0  9993",
+      "line2": "2 46052  53.1459 206.2943 0009581  22.7064 337.4392 16.08067604329087"
     },
     "27424": {
       "line1": "1 27424U 02022A   26195.50499725  .00000358  00000+0  80864-4 0  9994",
@@ -608,7 +608,6 @@
       0.9200428481445794
     ],
     "46052": [
-      132.01727045027502,
       1.1415457582487059,
       6.9612829431311125,
       9.785725365651416,
@@ -617,7 +616,8 @@
       3.0243592700413817,
       1.9131898457218595,
       4.657582281159135,
-      4.916670951766306
+      4.916670951766306,
+      3.8077842471178935
     ],
     "49044": [
       0.875973239976279,
@@ -1409,11 +1409,11 @@
       "norad_id": 37849,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 25,
-      "unvetted_count": 0,
+      "bad_count": 24,
+      "unvetted_count": 1,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/25 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/24 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "39084": {
       "norad_id": 39084,
@@ -1469,11 +1469,11 @@
       "norad_id": 24278,
       "total_observations": 25,
       "good_count": 2,
-      "bad_count": 3,
-      "unvetted_count": 20,
-      "success_rate": 0.4,
+      "bad_count": 4,
+      "unvetted_count": 19,
+      "success_rate": 0.3333333333333333,
       "is_degraded": true,
-      "reason": "only 2/5 recent vetted observations were good (40%) -- worth checking against the TLE-residual signal"
+      "reason": "only 2/6 recent vetted observations were good (33%) -- worth checking against the TLE-residual signal"
     },
     "25867": {
       "norad_id": 25867,
@@ -1579,11 +1579,11 @@
       "norad_id": 35933,
       "total_observations": 25,
       "good_count": 6,
-      "bad_count": 5,
-      "unvetted_count": 14,
-      "success_rate": 0.5454545454545454,
+      "bad_count": 6,
+      "unvetted_count": 13,
+      "success_rate": 0.5,
       "is_degraded": false,
-      "reason": "6/11 recent vetted observations were good (55%)"
+      "reason": "6/12 recent vetted observations were good (50%)"
     },
     "36086": {
       "norad_id": 36086,
@@ -1809,11 +1809,11 @@
       "norad_id": 48274,
       "total_observations": 25,
       "good_count": 1,
-      "bad_count": 12,
-      "unvetted_count": 12,
-      "success_rate": 0.07692307692307693,
+      "bad_count": 13,
+      "unvetted_count": 11,
+      "success_rate": 0.07142857142857142,
       "is_degraded": true,
-      "reason": "only 1/13 recent vetted observations were good (8%) -- worth checking against the TLE-residual signal"
+      "reason": "only 1/14 recent vetted observations were good (7%) -- worth checking against the TLE-residual signal"
     },
     "49044": {
       "norad_id": 49044,
