@@ -1540,11 +1540,11 @@
       "norad_id": 7530,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 0,
-      "unvetted_count": 25,
-      "success_rate": null,
+      "bad_count": 1,
+      "unvetted_count": 24,
+      "success_rate": 0.0,
       "is_degraded": false,
-      "reason": "not enough vetted observations yet to judge"
+      "reason": "0/1 recent vetted observations were good (0%)"
     },
     "24278": {
       "norad_id": 24278,
@@ -1659,12 +1659,12 @@
     "35933": {
       "norad_id": 35933,
       "total_observations": 25,
-      "good_count": 4,
-      "bad_count": 6,
-      "unvetted_count": 15,
-      "success_rate": 0.4,
-      "is_degraded": true,
-      "reason": "only 4/10 recent vetted observations were good (40%) -- worth checking against the TLE-residual signal"
+      "good_count": 8,
+      "bad_count": 4,
+      "unvetted_count": 13,
+      "success_rate": 0.6666666666666666,
+      "is_degraded": false,
+      "reason": "8/12 recent vetted observations were good (67%)"
     },
     "36086": {
       "norad_id": 36086,
@@ -2002,10 +2002,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Jul-16 22:50:00.0000",
-      "distance_from_earth_km": 25508872529.08526,
-      "distance_from_earth_au": 170.51628081151065,
-      "speed_km_s": 39.79818165963194
+      "epoch": "2026-Jul-16 23:52:00.0000",
+      "distance_from_earth_km": 25508989815.35689,
+      "distance_from_earth_au": 170.51706482181163,
+      "speed_km_s": 39.80441233701042
     },
     {
       "key": "voyager_2",
@@ -2023,10 +2023,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Jul-16 22:50:00.0000",
-      "distance_from_earth_km": 21337395295.96754,
-      "distance_from_earth_au": 142.63167781817594,
-      "speed_km_s": 33.05266404027739
+      "epoch": "2026-Jul-16 23:52:00.0000",
+      "distance_from_earth_km": 21337456636.08604,
+      "distance_from_earth_au": 142.63208785154214,
+      "speed_km_s": 33.05931249802048
     },
     {
       "key": "pioneer_10",
@@ -2038,10 +2038,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-16 22:50:00.0000",
-      "distance_from_earth_km": 21280828724.15593,
-      "distance_from_earth_au": 142.25355364069318,
-      "speed_km_s": 25.509416098393352
+      "epoch": "2026-Jul-16 23:52:00.0000",
+      "distance_from_earth_km": 21280812099.99191,
+      "distance_from_earth_au": 142.25344251502045,
+      "speed_km_s": 25.50080546757752
     },
     {
       "key": "pioneer_11",
@@ -2053,10 +2053,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-16 22:50:00.0000",
-      "distance_from_earth_km": 17427050500.10796,
-      "distance_from_earth_au": 116.49263735214355,
-      "speed_km_s": 31.791828155720285
+      "epoch": "2026-Jul-16 23:52:00.0000",
+      "distance_from_earth_km": 17427109402.90939,
+      "distance_from_earth_au": 116.49303109305146,
+      "speed_km_s": 31.79916013133759
     }
   ],
   "volcano_alerts": [
