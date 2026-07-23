@@ -1,8 +1,8 @@
 {
   "previous_tles": {
     "46052": {
-      "line1": "1 46052U 20055AB  26204.36801545  .03280295  11976-4  97142-3 0  9998",
-      "line2": "2 46052  53.1396 164.8990 0001260 225.4510 134.6430 16.26446387330353"
+      "line1": "1 46052U 20055AB  26204.73639036  .03817224  12050-4  87885-3 0  9998",
+      "line2": "2 46052  53.1394 162.9225 0002112 241.6727 118.4103 16.29222576330417"
     },
     "27424": {
       "line1": "1 27424U 02022A   26204.60223932  .00000630  00000+0  13511-3 0  9998",
@@ -97,8 +97,8 @@
       "line2": "2 36086  51.6313 121.6296 0006905 328.4486  31.6087 15.49111598576632"
     },
     "36111": {
-      "line1": "1 36111U 09070A   26204.23253628 -.00000046  00000+0  00000+0 0  9992",
-      "line2": "2 36111  65.0330  69.7429 0003408 344.4113 204.7963  2.13103544129199"
+      "line1": "1 36111U 09070A   26204.24251524 -.00000046  00000+0  00000+0 0  9996",
+      "line2": "2 36111  65.0327  69.7425 0003079 345.9694 210.8988  2.13103733129190"
     },
     "36395": {
       "line1": "1 36395U 10005A   26204.18438020 -.00000101  00000+0  00000+0 0  9993",
@@ -611,7 +611,6 @@
       0.9337031012066265
     ],
     "46052": [
-      12.532995480590957,
       18.776822083558915,
       1.4159485848494542,
       10.979418882236972,
@@ -620,7 +619,8 @@
       95.41464899688054,
       0.22370049362797614,
       1.398623277477566,
-      34.671765582378555
+      34.671765582378555,
+      53.621141246899114
     ],
     "49044": [
       0.42272969749535233,
@@ -790,7 +790,6 @@
       0.34761021682586657
     ],
     "36111": [
-      6.225551347855846,
       0.24167730479613628,
       0.49262577626961257,
       3.3077032487076248,
@@ -799,7 +798,8 @@
       0.19122351711759294,
       0.14401738131154565,
       4.906870563088456,
-      0.30787274525991665
+      0.30787274525991665,
+      85.16138869585944
     ],
     "40128": [
       0.7756615324806241,
@@ -1614,6 +1614,14 @@
         "epoch_gap_days": 0.04945823999999999,
         "z_score": 17.976519365658266,
         "reason": "residual 6.226 km/day is 18.0 sigma above this object's recent baseline (0.476 km/day avg)"
+      },
+      {
+        "timestamp": "2026-07-23T21:57:31.410004+00:00",
+        "residual_km": 3.54839119566081,
+        "residual_km_per_day": 85.16138869585944,
+        "epoch_gap_days": 0.009978959999999981,
+        "z_score": 38.48214198946138,
+        "reason": "residual 85.161 km/day is 38.5 sigma above this object's recent baseline (1.659 km/day avg)"
       }
     ],
     "7530": [
@@ -2006,11 +2014,11 @@
       "norad_id": 26931,
       "total_observations": 25,
       "good_count": 1,
-      "bad_count": 15,
-      "unvetted_count": 9,
-      "success_rate": 0.0625,
+      "bad_count": 16,
+      "unvetted_count": 8,
+      "success_rate": 0.058823529411764705,
       "is_degraded": true,
-      "reason": "only 1/16 recent vetted observations were good (6%) -- worth checking against the TLE-residual signal"
+      "reason": "only 1/17 recent vetted observations were good (6%) -- worth checking against the TLE-residual signal"
     },
     "28485": {
       "norad_id": 28485,
@@ -2076,11 +2084,11 @@
       "norad_id": 35933,
       "total_observations": 25,
       "good_count": 10,
-      "bad_count": 3,
-      "unvetted_count": 12,
-      "success_rate": 0.7692307692307693,
+      "bad_count": 2,
+      "unvetted_count": 13,
+      "success_rate": 0.8333333333333334,
       "is_degraded": false,
-      "reason": "10/13 recent vetted observations were good (77%)"
+      "reason": "10/12 recent vetted observations were good (83%)"
     },
     "36086": {
       "norad_id": 36086,
@@ -2306,11 +2314,11 @@
       "norad_id": 48274,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 11,
-      "unvetted_count": 14,
+      "bad_count": 12,
+      "unvetted_count": 13,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/11 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/12 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "49044": {
       "norad_id": 49044,
@@ -2418,10 +2426,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Jul-23 20:17:00.0000",
-      "distance_from_earth_km": 25528289419.82683,
-      "distance_from_earth_au": 170.64607470931625,
-      "speed_km_s": 40.74086054157182
+      "epoch": "2026-Jul-23 21:58:00.0000",
+      "distance_from_earth_km": 25528493335.89817,
+      "distance_from_earth_au": 170.64743780406076,
+      "speed_km_s": 40.749932940234395
     },
     {
       "key": "voyager_2",
@@ -2439,10 +2447,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Jul-23 20:17:00.0000",
-      "distance_from_earth_km": 21348010526.53539,
-      "distance_from_earth_au": 142.7026362517297,
-      "speed_km_s": 34.093364435529
+      "epoch": "2026-Jul-23 21:58:00.0000",
+      "distance_from_earth_km": 21348126680.8665,
+      "distance_from_earth_au": 142.70341269547563,
+      "speed_km_s": 34.103747168908114
     },
     {
       "key": "pioneer_10",
@@ -2454,10 +2462,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-23 20:17:00.0000",
-      "distance_from_earth_km": 21277353116.13306,
-      "distance_from_earth_au": 142.23032063606144,
-      "speed_km_s": 24.14758240077751
+      "epoch": "2026-Jul-23 21:58:00.0000",
+      "distance_from_earth_km": 21277309596.26976,
+      "distance_from_earth_au": 142.23002972374366,
+      "speed_km_s": 24.133990062153245
     },
     {
       "key": "pioneer_11",
@@ -2469,10 +2477,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-23 20:17:00.0000",
-      "distance_from_earth_km": 17437452297.20309,
-      "distance_from_earth_au": 116.56216907105411,
-      "speed_km_s": 32.934723862324695
+      "epoch": "2026-Jul-23 21:58:00.0000",
+      "distance_from_earth_km": 17437568054.66613,
+      "distance_from_earth_au": 116.56294286190085,
+      "speed_km_s": 32.946073578522615
     }
   ],
   "volcano_alerts": [
@@ -2481,24 +2489,24 @@
       "observatory": "Alaska Volcano Observatory",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
-      "sent_utc": "2026-07-22 19:07:40",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-07-22T19:06:32+00:00"
+      "sent_utc": "2026-07-23 21:08:26",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-07-23T21:06:49+00:00"
     },
     {
       "volcano_name": "Kupreanof",
       "observatory": "Alaska Volcano Observatory",
       "alert_level": "ADVISORY",
       "color_code": "YELLOW",
-      "sent_utc": "2026-07-22 19:07:40",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-07-22T19:06:32+00:00"
+      "sent_utc": "2026-07-23 21:08:26",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-07-23T21:06:49+00:00"
     },
     {
       "volcano_name": "Shishaldin",
       "observatory": "Alaska Volcano Observatory",
       "alert_level": "ADVISORY",
       "color_code": "YELLOW",
-      "sent_utc": "2026-07-22 19:07:40",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-07-22T19:06:32+00:00"
+      "sent_utc": "2026-07-23 21:08:26",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-07-23T21:06:49+00:00"
     },
     {
       "volcano_name": "Kilauea",
