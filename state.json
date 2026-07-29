@@ -2158,11 +2158,11 @@
       "norad_id": 33591,
       "total_observations": 25,
       "good_count": 6,
-      "bad_count": 7,
-      "unvetted_count": 12,
-      "success_rate": 0.46153846153846156,
-      "is_degraded": true,
-      "reason": "only 6/13 recent vetted observations were good (46%) -- worth checking against the TLE-residual signal"
+      "bad_count": 6,
+      "unvetted_count": 13,
+      "success_rate": 0.5,
+      "is_degraded": false,
+      "reason": "6/12 recent vetted observations were good (50%)"
     },
     "37849": {
       "norad_id": 37849,
@@ -2268,11 +2268,11 @@
       "norad_id": 26931,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 9,
-      "unvetted_count": 16,
+      "bad_count": 8,
+      "unvetted_count": 17,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/9 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/8 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "28485": {
       "norad_id": 28485,
@@ -2680,10 +2680,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Jul-29 18:59:00.0000",
-      "distance_from_earth_km": 25545999848.91554,
-      "distance_from_earth_au": 170.76446161553247,
-      "speed_km_s": 41.47734432771548
+      "epoch": "2026-Jul-29 20:13:00.0000",
+      "distance_from_earth_km": 25546156530.42038,
+      "distance_from_earth_au": 170.76550896670204,
+      "speed_km_s": 41.48343559722019
     },
     {
       "key": "voyager_2",
@@ -2701,10 +2701,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Jul-29 18:59:00.0000",
-      "distance_from_earth_km": 21358431325.595,
-      "distance_from_earth_au": 142.77229499092732,
-      "speed_km_s": 34.96236423211007
+      "epoch": "2026-Jul-29 20:13:00.0000",
+      "distance_from_earth_km": 21358526415.83985,
+      "distance_from_earth_au": 142.7729306299535,
+      "speed_km_s": 34.96978696206958
     },
     {
       "key": "pioneer_10",
@@ -2716,10 +2716,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-29 18:59:00.0000",
-      "distance_from_earth_km": 21273114920.99477,
-      "distance_from_earth_au": 142.20199005141836,
-      "speed_km_s": 23.022987953352207
+      "epoch": "2026-Jul-29 20:13:00.0000",
+      "distance_from_earth_km": 21273073589.95652,
+      "distance_from_earth_au": 142.20171377049235,
+      "speed_km_s": 23.013542215638605
     },
     {
       "key": "pioneer_11",
@@ -2731,10 +2731,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-29 18:59:00.0000",
-      "distance_from_earth_km": 17447958955.99621,
-      "distance_from_earth_au": 116.63240174712065,
-      "speed_km_s": 33.88071379107345
+      "epoch": "2026-Jul-29 20:13:00.0000",
+      "distance_from_earth_km": 17448055811.36329,
+      "distance_from_earth_au": 116.63304918526016,
+      "speed_km_s": 33.888758770189476
     }
   ],
   "volcano_alerts": [
@@ -2767,8 +2767,8 @@
       "observatory": "Hawaiian Volcano Observatory",
       "alert_level": "ADVISORY",
       "color_code": "YELLOW",
-      "sent_utc": "2026-07-29 13:19:12",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-07-29T13:10:51+00:00"
+      "sent_utc": "2026-07-29 19:10:38",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-07-29T18:22:55+00:00"
     },
     {
       "volcano_name": "Ahyi Seamount",
