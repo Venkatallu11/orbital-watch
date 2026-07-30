@@ -2243,12 +2243,12 @@
     "24278": {
       "norad_id": 24278,
       "total_observations": 25,
-      "good_count": 4,
+      "good_count": 5,
       "bad_count": 5,
-      "unvetted_count": 16,
-      "success_rate": 0.4444444444444444,
-      "is_degraded": true,
-      "reason": "only 4/9 recent vetted observations were good (44%) -- worth checking against the TLE-residual signal"
+      "unvetted_count": 15,
+      "success_rate": 0.5,
+      "is_degraded": false,
+      "reason": "5/10 recent vetted observations were good (50%)"
     },
     "25867": {
       "norad_id": 25867,
@@ -2284,11 +2284,11 @@
       "norad_id": 26931,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 7,
-      "unvetted_count": 18,
+      "bad_count": 8,
+      "unvetted_count": 17,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/7 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/8 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "28485": {
       "norad_id": 28485,
@@ -2444,11 +2444,11 @@
       "norad_id": 38771,
       "total_observations": 25,
       "good_count": 2,
-      "bad_count": 7,
-      "unvetted_count": 16,
-      "success_rate": 0.2222222222222222,
+      "bad_count": 8,
+      "unvetted_count": 15,
+      "success_rate": 0.2,
       "is_degraded": true,
-      "reason": "only 2/9 recent vetted observations were good (22%) -- worth checking against the TLE-residual signal"
+      "reason": "only 2/10 recent vetted observations were good (20%) -- worth checking against the TLE-residual signal"
     },
     "39089": {
       "norad_id": 39089,
@@ -2584,11 +2584,11 @@
       "norad_id": 48274,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 10,
-      "unvetted_count": 15,
+      "bad_count": 9,
+      "unvetted_count": 16,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/10 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/9 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "49044": {
       "norad_id": 49044,
@@ -2696,10 +2696,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Jul-30 19:11:00.0000",
-      "distance_from_earth_km": 25549085038.60043,
-      "distance_from_earth_au": 170.78508483476986,
-      "speed_km_s": 41.59604577437037
+      "epoch": "2026-Jul-30 20:57:00.0000",
+      "distance_from_earth_km": 25549311155.3069,
+      "distance_from_earth_au": 170.78659633159407,
+      "speed_km_s": 41.60464393134907
     },
     {
       "key": "voyager_2",
@@ -2717,10 +2717,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Jul-30 19:11:00.0000",
-      "distance_from_earth_km": 21360312733.10447,
-      "distance_from_earth_au": 142.78487142333685,
-      "speed_km_s": 35.107765488165455
+      "epoch": "2026-Jul-30 20:57:00.0000",
+      "distance_from_earth_km": 21360451365.3485,
+      "distance_from_earth_au": 142.78579812265002,
+      "speed_km_s": 35.11836014362753
     },
     {
       "key": "pioneer_10",
@@ -2732,10 +2732,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-30 19:11:00.0000",
-      "distance_from_earth_km": 21272289739.79673,
-      "distance_from_earth_au": 142.1964740558084,
-      "speed_km_s": 22.83859959360899
+      "epoch": "2026-Jul-30 20:57:00.0000",
+      "distance_from_earth_km": 21272228333.66581,
+      "distance_from_earth_au": 142.19606358117645,
+      "speed_km_s": 22.82521821436855
     },
     {
       "key": "pioneer_11",
@@ -2747,10 +2747,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Jul-30 19:11:00.0000",
-      "distance_from_earth_km": 17449878085.32799,
-      "distance_from_earth_au": 116.64523033433785,
-      "speed_km_s": 34.038192308933034
+      "epoch": "2026-Jul-30 20:57:00.0000",
+      "distance_from_earth_km": 17450019724.75567,
+      "distance_from_earth_au": 116.64617713543211,
+      "speed_km_s": 34.04965775387224
     }
   ],
   "volcano_alerts": [
@@ -2783,8 +2783,8 @@
       "observatory": "Hawaiian Volcano Observatory",
       "alert_level": "ADVISORY",
       "color_code": "YELLOW",
-      "sent_utc": "2026-07-29 19:10:38",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-07-29T18:22:55+00:00"
+      "sent_utc": "2026-07-30 19:32:16",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-07-30T18:03:31+00:00"
     },
     {
       "volcano_name": "Ahyi Seamount",
