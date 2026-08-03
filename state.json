@@ -2393,22 +2393,22 @@
     "7530": {
       "norad_id": 7530,
       "total_observations": 25,
-      "good_count": 1,
-      "bad_count": 3,
-      "unvetted_count": 21,
-      "success_rate": 0.25,
-      "is_degraded": true,
-      "reason": "only 1/4 recent vetted observations were good (25%) -- worth checking against the TLE-residual signal"
+      "good_count": 0,
+      "bad_count": 2,
+      "unvetted_count": 23,
+      "success_rate": 0.0,
+      "is_degraded": false,
+      "reason": "0/2 recent vetted observations were good (0%)"
     },
     "24278": {
       "norad_id": 24278,
       "total_observations": 25,
-      "good_count": 0,
-      "bad_count": 0,
-      "unvetted_count": 25,
-      "success_rate": null,
+      "good_count": 2,
+      "bad_count": 1,
+      "unvetted_count": 22,
+      "success_rate": 0.6666666666666666,
       "is_degraded": false,
-      "reason": "not enough vetted observations yet to judge"
+      "reason": "2/3 recent vetted observations were good (67%)"
     },
     "25867": {
       "norad_id": 25867,
@@ -2504,21 +2504,21 @@
       "norad_id": 35932,
       "total_observations": 25,
       "good_count": 1,
-      "bad_count": 3,
-      "unvetted_count": 21,
-      "success_rate": 0.25,
+      "bad_count": 4,
+      "unvetted_count": 20,
+      "success_rate": 0.2,
       "is_degraded": true,
-      "reason": "only 1/4 recent vetted observations were good (25%) -- worth checking against the TLE-residual signal"
+      "reason": "only 1/5 recent vetted observations were good (20%) -- worth checking against the TLE-residual signal"
     },
     "35933": {
       "norad_id": 35933,
       "total_observations": 25,
-      "good_count": 2,
-      "bad_count": 3,
-      "unvetted_count": 20,
-      "success_rate": 0.4,
+      "good_count": 3,
+      "bad_count": 4,
+      "unvetted_count": 18,
+      "success_rate": 0.42857142857142855,
       "is_degraded": true,
-      "reason": "only 2/5 recent vetted observations were good (40%) -- worth checking against the TLE-residual signal"
+      "reason": "only 3/7 recent vetted observations were good (43%) -- worth checking against the TLE-residual signal"
     },
     "36086": {
       "norad_id": 36086,
@@ -2603,12 +2603,12 @@
     "38771": {
       "norad_id": 38771,
       "total_observations": 25,
-      "good_count": 2,
-      "bad_count": 3,
-      "unvetted_count": 20,
-      "success_rate": 0.4,
-      "is_degraded": true,
-      "reason": "only 2/5 recent vetted observations were good (40%) -- worth checking against the TLE-residual signal"
+      "good_count": 4,
+      "bad_count": 2,
+      "unvetted_count": 19,
+      "success_rate": 0.6666666666666666,
+      "is_degraded": false,
+      "reason": "4/6 recent vetted observations were good (67%)"
     },
     "39089": {
       "norad_id": 39089,
@@ -2856,10 +2856,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Aug-03 05:34:00.0000",
-      "distance_from_earth_km": 25559754498.74112,
-      "distance_from_earth_au": 170.85640577062787,
-      "speed_km_s": 41.987221424734415
+      "epoch": "2026-Aug-03 09:23:00.0000",
+      "distance_from_earth_km": 25560254853.61996,
+      "distance_from_earth_au": 170.85975043640752,
+      "speed_km_s": 42.0048508863979
     },
     {
       "key": "voyager_2",
@@ -2877,10 +2877,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Aug-03 05:34:00.0000",
-      "distance_from_earth_km": 21366962207.60204,
-      "distance_from_earth_au": 142.82932041493316,
-      "speed_km_s": 35.59886091236107
+      "epoch": "2026-Aug-03 09:23:00.0000",
+      "distance_from_earth_km": 21367279371.54863,
+      "distance_from_earth_au": 142.83144052496618,
+      "speed_km_s": 35.62145619301872
     },
     {
       "key": "pioneer_10",
@@ -2892,10 +2892,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Aug-03 05:34:00.0000",
-      "distance_from_earth_km": 21269261468.99357,
-      "distance_from_earth_au": 142.17623131579487,
-      "speed_km_s": 22.226499571499897
+      "epoch": "2026-Aug-03 09:23:00.0000",
+      "distance_from_earth_km": 21269113169.68767,
+      "distance_from_earth_au": 142.1752399961644,
+      "speed_km_s": 22.198740686562683
     },
     {
       "key": "pioneer_11",
@@ -2907,10 +2907,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Aug-03 05:34:00.0000",
-      "distance_from_earth_km": 17456703575.45706,
-      "distance_from_earth_au": 116.69085591775782,
-      "speed_km_s": 34.56833889960621
+      "epoch": "2026-Aug-03 09:23:00.0000",
+      "distance_from_earth_km": 17457030630.90866,
+      "distance_from_earth_au": 116.69304214841785,
+      "speed_km_s": 34.59266702812088
     }
   ],
   "volcano_alerts": [
