@@ -2612,11 +2612,11 @@
       "norad_id": 38771,
       "total_observations": 25,
       "good_count": 6,
-      "bad_count": 1,
-      "unvetted_count": 18,
-      "success_rate": 0.8571428571428571,
+      "bad_count": 2,
+      "unvetted_count": 17,
+      "success_rate": 0.75,
       "is_degraded": false,
-      "reason": "6/7 recent vetted observations were good (86%)"
+      "reason": "6/8 recent vetted observations were good (75%)"
     },
     "39089": {
       "norad_id": 39089,
@@ -2864,10 +2864,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Aug-04 17:30:00.0000",
-      "distance_from_earth_km": 25564485809.78628,
-      "distance_from_earth_au": 170.8880326315118,
-      "speed_km_s": 42.15137926503807
+      "epoch": "2026-Aug-04 19:19:00.0000",
+      "distance_from_earth_km": 25564726217.41129,
+      "distance_from_earth_au": 170.889639657226,
+      "speed_km_s": 42.15956782694964
     },
     {
       "key": "voyager_2",
@@ -2885,10 +2885,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Aug-04 17:30:00.0000",
-      "distance_from_earth_km": 21369979966.53683,
-      "distance_from_earth_au": 142.8494928874468,
-      "speed_km_s": 35.810947675439785
+      "epoch": "2026-Aug-04 19:19:00.0000",
+      "distance_from_earth_km": 21370134414.27521,
+      "distance_from_earth_au": 142.85052530680983,
+      "speed_km_s": 35.8216291858199
     },
     {
       "key": "pioneer_10",
@@ -2900,10 +2900,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Aug-04 17:30:00.0000",
-      "distance_from_earth_km": 21267837957.14783,
-      "distance_from_earth_au": 142.16671572684245,
-      "speed_km_s": 21.967263862064584
+      "epoch": "2026-Aug-04 19:19:00.0000",
+      "distance_from_earth_km": 21267764380.81017,
+      "distance_from_earth_au": 142.1662238994032,
+      "speed_km_s": 21.95428276426342
     },
     {
       "key": "pioneer_11",
@@ -2915,10 +2915,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Aug-04 17:30:00.0000",
-      "distance_from_earth_km": 17459820377.37264,
-      "distance_from_earth_au": 116.71169045170534,
-      "speed_km_s": 34.79647569685145
+      "epoch": "2026-Aug-04 19:19:00.0000",
+      "distance_from_earth_km": 17459980180.87109,
+      "distance_from_earth_au": 116.71275867211318,
+      "speed_km_s": 34.807952974032304
     }
   ],
   "volcano_alerts": [
@@ -2927,24 +2927,24 @@
       "observatory": "Alaska Volcano Observatory",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
-      "sent_utc": "2026-08-03 20:05:11",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-08-03T18:29:48+00:00"
+      "sent_utc": "2026-08-04 18:34:46",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-08-04T17:28:10+00:00"
     },
     {
       "volcano_name": "Kupreanof",
       "observatory": "Alaska Volcano Observatory",
       "alert_level": "ADVISORY",
       "color_code": "YELLOW",
-      "sent_utc": "2026-08-03 20:05:11",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-08-03T18:29:48+00:00"
+      "sent_utc": "2026-08-04 18:34:46",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-08-04T17:28:10+00:00"
     },
     {
       "volcano_name": "Shishaldin",
       "observatory": "Alaska Volcano Observatory",
       "alert_level": "ADVISORY",
       "color_code": "YELLOW",
-      "sent_utc": "2026-08-03 20:05:11",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-08-03T18:29:48+00:00"
+      "sent_utc": "2026-08-04 18:34:46",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-08-04T17:28:10+00:00"
     },
     {
       "volcano_name": "Kilauea",
