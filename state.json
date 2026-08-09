@@ -2744,11 +2744,11 @@
       "norad_id": 26931,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 14,
-      "unvetted_count": 11,
+      "bad_count": 13,
+      "unvetted_count": 12,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/14 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/13 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "28485": {
       "norad_id": 28485,
@@ -2813,12 +2813,12 @@
     "35933": {
       "norad_id": 35933,
       "total_observations": 25,
-      "good_count": 5,
+      "good_count": 6,
       "bad_count": 5,
-      "unvetted_count": 15,
-      "success_rate": 0.5,
+      "unvetted_count": 14,
+      "success_rate": 0.5454545454545454,
       "is_degraded": false,
-      "reason": "5/10 recent vetted observations were good (50%)"
+      "reason": "6/11 recent vetted observations were good (55%)"
     },
     "36086": {
       "norad_id": 36086,
