@@ -1,68 +1,72 @@
 # Orbital Watch Digest
 
 ## Maneuvers detected (TLE residual analysis)
-Nothing flagged this run.
+- **NORAD 25994**: residual 0.447 km/day is 3.9 sigma above this object's recent baseline (0.130 km/day avg) (0.06 km residual, 0.45 km/day over 0.14 day(s) between TLEs, 3.9 sigma)
+- **NORAD 27424**: residual 1.361 km/day is 9.5 sigma above this object's recent baseline (0.197 km/day avg) (0.12 km residual, 1.36 km/day over 0.09 day(s) between TLEs, 9.5 sigma)
+- **NORAD 39089**: residual 0.155 km/day is 3.6 sigma above this object's recent baseline (0.071 km/day avg) (0.01 km residual, 0.15 km/day over 0.00 day(s) between TLEs, 3.6 sigma)
+- **NORAD 48274**: residual 19.992 km/day is 3.3 sigma above this object's recent baseline (4.427 km/day avg) (2.56 km residual, 19.99 km/day over 0.13 day(s) between TLEs, 3.3 sigma)
+- **NORAD 54216**: residual 19.992 km/day is 3.3 sigma above this object's recent baseline (4.427 km/day avg) (2.56 km residual, 19.99 km/day over 0.13 day(s) between TLEs, 3.3 sigma)
 
 ## Data freshness (how old is the TLE behind each number)
-- **NORAD 7530**: TLE is 0.4 day(s) old
+- **NORAD 7530**: TLE is 0.2 day(s) old
 - **NORAD 20580**: TLE is 0.6 day(s) old
-- **NORAD 24278**: TLE is 0.5 day(s) old
-- **NORAD 25544**: TLE is 0.2 day(s) old
-- **NORAD 25867**: TLE epoch is 1.8 day(s) ahead of fetch time (catalog/clock-skew artifact, not stale data)
-- **NORAD 25989**: TLE epoch is 0.8 day(s) ahead of fetch time (catalog/clock-skew artifact, not stale data)
-- **NORAD 25994**: TLE is 0.3 day(s) old
-- **NORAD 26407**: TLE is 0.2 day(s) old
-- **NORAD 26931**: TLE is 0.4 day(s) old
+- **NORAD 24278**: TLE is 0.3 day(s) old
+- **NORAD 25544**: TLE is 0.3 day(s) old
+- **NORAD 25867**: TLE epoch is 1.7 day(s) ahead of fetch time (catalog/clock-skew artifact, not stale data)
+- **NORAD 25989**: TLE epoch is 0.7 day(s) ahead of fetch time (catalog/clock-skew artifact, not stale data)
+- **NORAD 25994**: TLE is 0.2 day(s) old
+- **NORAD 26407**: TLE is 0.3 day(s) old
+- **NORAD 26931**: TLE is 0.5 day(s) old
 - **NORAD 27424**: TLE is 0.2 day(s) old
 - **NORAD 28485**: TLE is 0.6 day(s) old
-- **NORAD 29479**: TLE is 0.4 day(s) old
+- **NORAD 29479**: TLE is 0.5 day(s) old
 - **NORAD 32275**: TLE is 2.8 day(s) old
-- **NORAD 32382**: TLE is 0.3 day(s) old
+- **NORAD 32382**: TLE is 0.2 day(s) old
 - **NORAD 33053**: TLE is 0.3 day(s) old
-- **NORAD 33591**: TLE is 0.3 day(s) old
-- **NORAD 35932**: TLE is 0.3 day(s) old
+- **NORAD 33591**: TLE is 0.2 day(s) old
+- **NORAD 35932**: TLE is 0.2 day(s) old
 - **NORAD 35933**: TLE is 0.8 day(s) old
 - **NORAD 35951**: TLE is 0.2 day(s) old
-- **NORAD 36086**: TLE is 0.2 day(s) old
+- **NORAD 36086**: TLE is 0.3 day(s) old
 - **NORAD 36111**: TLE is 0.3 day(s) old
 - **NORAD 36395**: TLE is 0.3 day(s) old
 - **NORAD 36585**: TLE is 0.9 day(s) old
-- **NORAD 36828**: TLE is 0.5 day(s) old
+- **NORAD 36828**: TLE is 0.6 day(s) old
 - **NORAD 37846**: TLE is 3.1 day(s) old
 - **NORAD 37849**: TLE is 0.2 day(s) old
 - **NORAD 38012**: TLE is 0.2 day(s) old
-- **NORAD 38358**: TLE is 0.2 day(s) old
-- **NORAD 38771**: TLE is 0.3 day(s) old
+- **NORAD 38358**: TLE is 0.1 day(s) old
+- **NORAD 38771**: TLE is 0.2 day(s) old
 - **NORAD 39084**: TLE is 0.2 day(s) old
 - **NORAD 39089**: TLE is 0.4 day(s) old
 - **NORAD 39574**: TLE is 0.3 day(s) old
-- **NORAD 40105**: TLE is 0.5 day(s) old
-- **NORAD 40128**: TLE is 3.4 day(s) old
+- **NORAD 40105**: TLE is 0.6 day(s) old
+- **NORAD 40128**: TLE is 3.5 day(s) old
 - **NORAD 40732**: TLE is 0.3 day(s) old
 - **NORAD 41335**: TLE is 0.2 day(s) old
-- **NORAD 41866**: TLE is 0.3 day(s) old
+- **NORAD 41866**: TLE is 0.2 day(s) old
 - **NORAD 41917**: TLE is 0.4 day(s) old
-- **NORAD 41918**: TLE is 0.4 day(s) old
-- **NORAD 43001**: TLE is 5.5 day(s) old
-- **NORAD 43013**: TLE is 0.3 day(s) old
-- **NORAD 44057**: TLE is 0.2 day(s) old
+- **NORAD 41918**: TLE is 0.2 day(s) old
+- **NORAD 43001**: TLE is 5.6 day(s) old
+- **NORAD 43013**: TLE is 0.2 day(s) old
+- **NORAD 44057**: TLE is 0.3 day(s) old
 - **NORAD 44714**: TLE is 0.4 day(s) old
 - **NORAD 44718**: TLE is 0.2 day(s) old
-- **NORAD 45131**: TLE is 0.4 day(s) old
-- **NORAD 48274**: TLE is 0.2 day(s) old
-- **NORAD 49044**: TLE is 0.2 day(s) old
-- **NORAD 49954**: TLE is 0.2 day(s) old
+- **NORAD 45131**: TLE is 0.2 day(s) old
+- **NORAD 48274**: TLE is 0.1 day(s) old
+- **NORAD 49044**: TLE is 0.3 day(s) old
+- **NORAD 49954**: TLE is 0.1 day(s) old
 - **NORAD 51850**: TLE is 0.2 day(s) old
-- **NORAD 53239**: TLE is 0.7 day(s) old
-- **NORAD 54216**: TLE is 0.2 day(s) old
+- **NORAD 53239**: TLE is 0.1 day(s) old
+- **NORAD 54216**: TLE is 0.1 day(s) old
 
 ## Conjunction risk (CelesTrak SOCRATES, filtered to your watchlist)
 No conjunctions involving your watchlist in the current 7-day SOCRATES run.
 
 ## Observation health (SatNOGS cross-check, where available)
-- **NORAD 7530**: only 1/3 recent vetted observations were good (33%) -- worth checking against the TLE-residual signal -- DEGRADED
+- **NORAD 7530**: 1/2 recent vetted observations were good (50%)
 - **NORAD 20580**: not enough vetted observations yet to judge
-- **NORAD 24278**: 1/2 recent vetted observations were good (50%)
+- **NORAD 24278**: 2/3 recent vetted observations were good (67%)
 - **NORAD 25544**: not enough vetted observations yet to judge
 - **NORAD 25867**: not enough vetted observations yet to judge
 - **NORAD 25989**: not enough vetted observations yet to judge
@@ -75,9 +79,9 @@ No conjunctions involving your watchlist in the current 7-day SOCRATES run.
 - **NORAD 32275**: not enough vetted observations yet to judge
 - **NORAD 32382**: not enough vetted observations yet to judge
 - **NORAD 33053**: not enough vetted observations yet to judge
-- **NORAD 33591**: only 2/9 recent vetted observations were good (22%) -- worth checking against the TLE-residual signal -- DEGRADED
+- **NORAD 33591**: only 3/11 recent vetted observations were good (27%) -- worth checking against the TLE-residual signal -- DEGRADED
 - **NORAD 35932**: only 1/9 recent vetted observations were good (11%) -- worth checking against the TLE-residual signal -- DEGRADED
-- **NORAD 35933**: 5/10 recent vetted observations were good (50%)
+- **NORAD 35933**: 5/9 recent vetted observations were good (56%)
 - **NORAD 35951**: only 0/3 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal -- DEGRADED
 - **NORAD 36086**: not enough vetted observations yet to judge
 - **NORAD 36111**: not enough vetted observations yet to judge
@@ -88,7 +92,7 @@ No conjunctions involving your watchlist in the current 7-day SOCRATES run.
 - **NORAD 37849**: only 0/25 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal -- DEGRADED
 - **NORAD 38012**: not enough vetted observations yet to judge
 - **NORAD 38358**: not enough vetted observations yet to judge
-- **NORAD 38771**: only 3/17 recent vetted observations were good (18%) -- worth checking against the TLE-residual signal -- DEGRADED
+- **NORAD 38771**: only 3/18 recent vetted observations were good (17%) -- worth checking against the TLE-residual signal -- DEGRADED
 - **NORAD 39084**: not enough vetted observations yet to judge
 - **NORAD 39089**: not enough vetted observations yet to judge
 - **NORAD 39574**: only 0/5 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal -- DEGRADED
