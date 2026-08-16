@@ -3306,11 +3306,11 @@
       "norad_id": 24278,
       "total_observations": 25,
       "good_count": 3,
-      "bad_count": 1,
-      "unvetted_count": 21,
-      "success_rate": 0.75,
+      "bad_count": 0,
+      "unvetted_count": 22,
+      "success_rate": 1.0,
       "is_degraded": false,
-      "reason": "3/4 recent vetted observations were good (75%)"
+      "reason": "3/3 recent vetted observations were good (100%)"
     },
     "25867": {
       "norad_id": 25867,
@@ -3758,10 +3758,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Aug-16 20:12:00.0000",
-      "distance_from_earth_km": 25604275541.98075,
-      "distance_from_earth_au": 171.15401056293746,
-      "speed_km_s": 43.280064153995475
+      "epoch": "2026-Aug-16 21:12:00.0000",
+      "distance_from_earth_km": 25604416455.75808,
+      "distance_from_earth_au": 171.15495251335875,
+      "speed_km_s": 43.28322751291088
     },
     {
       "key": "voyager_2",
@@ -3779,10 +3779,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Aug-16 20:12:00.0000",
-      "distance_from_earth_km": 21396933441.63528,
-      "distance_from_earth_au": 143.02966573999026,
-      "speed_km_s": 37.42011935645566
+      "epoch": "2026-Aug-16 21:12:00.0000",
+      "distance_from_earth_km": 21397033676.67286,
+      "distance_from_earth_au": 143.03033576983165,
+      "speed_km_s": 37.42519749499271
     },
     {
       "key": "pioneer_10",
@@ -3794,10 +3794,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Aug-16 20:12:00.0000",
-      "distance_from_earth_km": 21254275619.85311,
-      "distance_from_earth_au": 142.0760571016143,
-      "speed_km_s": 20.04267323562008
+      "epoch": "2026-Aug-16 21:12:00.0000",
+      "distance_from_earth_km": 21254223382.0894,
+      "distance_from_earth_au": 142.07570791373172,
+      "speed_km_s": 20.036681708136037
     },
     {
       "key": "pioneer_11",
@@ -3809,10 +3809,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Aug-16 20:12:00.0000",
-      "distance_from_earth_km": 17488018317.75618,
-      "distance_from_earth_au": 116.90018204086765,
-      "speed_km_s": 36.51400751180671
+      "epoch": "2026-Aug-16 21:12:00.0000",
+      "distance_from_earth_km": 17488124046.34108,
+      "distance_from_earth_au": 116.90088879280474,
+      "speed_km_s": 36.51939282528405
     }
   ],
   "volcano_alerts": [
@@ -3845,8 +3845,8 @@
       "observatory": "Hawaiian Volcano Observatory",
       "alert_level": "ADVISORY",
       "color_code": "YELLOW",
-      "sent_utc": "2026-08-15 19:39:52",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-08-15T18:58:44+00:00"
+      "sent_utc": "2026-08-16 21:06:34",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-08-16T20:23:32+00:00"
     },
     {
       "volcano_name": "Ahyi Seamount",
