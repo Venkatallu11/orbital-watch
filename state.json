@@ -3296,11 +3296,11 @@
       "norad_id": 7530,
       "total_observations": 25,
       "good_count": 1,
-      "bad_count": 1,
-      "unvetted_count": 23,
-      "success_rate": 0.5,
-      "is_degraded": false,
-      "reason": "1/2 recent vetted observations were good (50%)"
+      "bad_count": 2,
+      "unvetted_count": 22,
+      "success_rate": 0.3333333333333333,
+      "is_degraded": true,
+      "reason": "only 1/3 recent vetted observations were good (33%) -- worth checking against the TLE-residual signal"
     },
     "24278": {
       "norad_id": 24278,
@@ -3346,11 +3346,11 @@
       "norad_id": 26931,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 14,
-      "unvetted_count": 11,
+      "bad_count": 15,
+      "unvetted_count": 10,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/14 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/15 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "28485": {
       "norad_id": 28485,
@@ -3506,11 +3506,11 @@
       "norad_id": 38771,
       "total_observations": 25,
       "good_count": 3,
-      "bad_count": 15,
-      "unvetted_count": 7,
-      "success_rate": 0.16666666666666666,
+      "bad_count": 14,
+      "unvetted_count": 8,
+      "success_rate": 0.17647058823529413,
       "is_degraded": true,
-      "reason": "only 3/18 recent vetted observations were good (17%) -- worth checking against the TLE-residual signal"
+      "reason": "only 3/17 recent vetted observations were good (18%) -- worth checking against the TLE-residual signal"
     },
     "39089": {
       "norad_id": 39089,
@@ -3758,10 +3758,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Aug-16 12:20:00.0000",
-      "distance_from_earth_km": 25603167850.63564,
-      "distance_from_earth_au": 171.1466061036365,
-      "speed_km_s": 43.25501231545133
+      "epoch": "2026-Aug-16 13:24:00.0000",
+      "distance_from_earth_km": 25603317959.32886,
+      "distance_from_earth_au": 171.14760951827412,
+      "speed_km_s": 43.25842658379922
     },
     {
       "key": "voyager_2",
@@ -3779,10 +3779,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Aug-16 12:20:00.0000",
-      "distance_from_earth_km": 21396146649.17918,
-      "distance_from_earth_au": 143.02440635727032,
-      "speed_km_s": 37.38006213500871
+      "epoch": "2026-Aug-16 13:24:00.0000",
+      "distance_from_earth_km": 21396253153.47391,
+      "distance_from_earth_au": 143.02511829450734,
+      "speed_km_s": 37.38550503755248
     },
     {
       "key": "pioneer_10",
@@ -3794,10 +3794,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Aug-16 12:20:00.0000",
-      "distance_from_earth_km": 21254685379.28069,
-      "distance_from_earth_au": 142.07879617420713,
-      "speed_km_s": 20.090003281492262
+      "epoch": "2026-Aug-16 13:24:00.0000",
+      "distance_from_earth_km": 21254629941.60502,
+      "distance_from_earth_au": 142.07842559623424,
+      "speed_km_s": 20.083565347135842
     },
     {
       "key": "pioneer_11",
@@ -3809,10 +3809,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Aug-16 12:20:00.0000",
-      "distance_from_earth_km": 17487188566.20954,
-      "distance_from_earth_au": 116.89463549436431,
-      "speed_km_s": 36.47151843038172
+      "epoch": "2026-Aug-16 13:24:00.0000",
+      "distance_from_earth_km": 17487300868.66137,
+      "distance_from_earth_au": 116.8953861898876,
+      "speed_km_s": 36.47729268137381
     }
   ],
   "volcano_alerts": [
