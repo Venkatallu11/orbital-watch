@@ -3244,11 +3244,11 @@
       "norad_id": 33591,
       "total_observations": 25,
       "good_count": 1,
-      "bad_count": 11,
-      "unvetted_count": 13,
-      "success_rate": 0.08333333333333333,
+      "bad_count": 12,
+      "unvetted_count": 12,
+      "success_rate": 0.07692307692307693,
       "is_degraded": true,
-      "reason": "only 1/12 recent vetted observations were good (8%) -- worth checking against the TLE-residual signal"
+      "reason": "only 1/13 recent vetted observations were good (8%) -- worth checking against the TLE-residual signal"
     },
     "37849": {
       "norad_id": 37849,
@@ -3354,11 +3354,11 @@
       "norad_id": 26931,
       "total_observations": 25,
       "good_count": 4,
-      "bad_count": 10,
-      "unvetted_count": 11,
-      "success_rate": 0.2857142857142857,
+      "bad_count": 9,
+      "unvetted_count": 12,
+      "success_rate": 0.3076923076923077,
       "is_degraded": true,
-      "reason": "only 4/14 recent vetted observations were good (29%) -- worth checking against the TLE-residual signal"
+      "reason": "only 4/13 recent vetted observations were good (31%) -- worth checking against the TLE-residual signal"
     },
     "28485": {
       "norad_id": 28485,
@@ -3766,10 +3766,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Aug-17 14:19:00.0000",
-      "distance_from_earth_km": 25606832065.47577,
-      "distance_from_earth_au": 171.17109986697005,
-      "speed_km_s": 43.33664201283545
+      "epoch": "2026-Aug-17 17:19:00.0000",
+      "distance_from_earth_km": 25607256142.69341,
+      "distance_from_earth_au": 171.17393464807793,
+      "speed_km_s": 43.345862953028266
     },
     {
       "key": "voyager_2",
@@ -3787,10 +3787,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Aug-17 14:19:00.0000",
-      "distance_from_earth_km": 21398756993.28615,
-      "distance_from_earth_au": 143.04185542987247,
-      "speed_km_s": 37.51164122026757
+      "epoch": "2026-Aug-17 17:19:00.0000",
+      "distance_from_earth_km": 21399060514.07949,
+      "distance_from_earth_au": 143.04388434105897,
+      "speed_km_s": 37.52670047503825
     },
     {
       "key": "pioneer_10",
@@ -3802,10 +3802,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Aug-17 14:19:00.0000",
-      "distance_from_earth_km": 21253324075.96082,
-      "distance_from_earth_au": 142.0696964235656,
-      "speed_km_s": 19.935022525532982
+      "epoch": "2026-Aug-17 17:19:00.0000",
+      "distance_from_earth_km": 21253165460.85539,
+      "distance_from_earth_au": 142.06863614707444,
+      "speed_km_s": 19.917382567327405
     },
     {
       "key": "pioneer_11",
@@ -3817,10 +3817,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Aug-17 14:19:00.0000",
-      "distance_from_earth_km": 17489942521.88777,
-      "distance_from_earth_au": 116.9130445510263,
-      "speed_km_s": 36.61102603939774
+      "epoch": "2026-Aug-17 17:19:00.0000",
+      "distance_from_earth_km": 17490262938.22777,
+      "distance_from_earth_au": 116.91518640196644,
+      "speed_km_s": 36.62698158261633
     }
   ],
   "volcano_alerts": [
