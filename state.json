@@ -3649,12 +3649,12 @@
     "24278": {
       "norad_id": 24278,
       "total_observations": 25,
-      "good_count": 4,
+      "good_count": 1,
       "bad_count": 0,
-      "unvetted_count": 21,
+      "unvetted_count": 24,
       "success_rate": 1.0,
       "is_degraded": false,
-      "reason": "4/4 recent vetted observations were good (100%)"
+      "reason": "1/1 recent vetted observations were good (100%)"
     },
     "25867": {
       "norad_id": 25867,
@@ -3759,12 +3759,12 @@
     "35933": {
       "norad_id": 35933,
       "total_observations": 25,
-      "good_count": 1,
+      "good_count": 2,
       "bad_count": 9,
-      "unvetted_count": 15,
-      "success_rate": 0.1,
+      "unvetted_count": 14,
+      "success_rate": 0.18181818181818182,
       "is_degraded": true,
-      "reason": "only 1/10 recent vetted observations were good (10%) -- worth checking against the TLE-residual signal"
+      "reason": "only 2/11 recent vetted observations were good (18%) -- worth checking against the TLE-residual signal"
     },
     "36086": {
       "norad_id": 36086,
@@ -3850,11 +3850,11 @@
       "norad_id": 38771,
       "total_observations": 25,
       "good_count": 2,
-      "bad_count": 4,
-      "unvetted_count": 19,
-      "success_rate": 0.3333333333333333,
+      "bad_count": 3,
+      "unvetted_count": 20,
+      "success_rate": 0.4,
       "is_degraded": true,
-      "reason": "only 2/6 recent vetted observations were good (33%) -- worth checking against the TLE-residual signal"
+      "reason": "only 2/5 recent vetted observations were good (40%) -- worth checking against the TLE-residual signal"
     },
     "39089": {
       "norad_id": 39089,
@@ -3990,11 +3990,11 @@
       "norad_id": 48274,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 9,
-      "unvetted_count": 16,
+      "bad_count": 15,
+      "unvetted_count": 10,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/9 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/15 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "49044": {
       "norad_id": 49044,
@@ -4102,10 +4102,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Aug-26 05:25:00.0000",
-      "distance_from_earth_km": 25636531910.29351,
-      "distance_from_earth_au": 171.3696310671721,
-      "speed_km_s": 43.8832769145613
+      "epoch": "2026-Aug-26 06:31:00.0000",
+      "distance_from_earth_km": 25636691640.3812,
+      "distance_from_earth_au": 171.37069879685927,
+      "speed_km_s": 43.88573034848445
     },
     {
       "key": "voyager_2",
@@ -4123,10 +4123,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Aug-26 05:25:00.0000",
-      "distance_from_earth_km": 21420705120.39417,
-      "distance_from_earth_au": 143.1885695976966,
-      "speed_km_s": 38.49481448266363
+      "epoch": "2026-Aug-26 06:31:00.0000",
+      "distance_from_earth_km": 21420826883.27731,
+      "distance_from_earth_au": 143.18938353229723,
+      "speed_km_s": 38.499763935346664
     },
     {
       "key": "pioneer_10",
@@ -4138,10 +4138,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Aug-26 05:25:00.0000",
-      "distance_from_earth_km": 21241753341.5976,
-      "distance_from_earth_au": 141.99235084164604,
-      "speed_km_s": 18.8624678961316
+      "epoch": "2026-Aug-26 06:31:00.0000",
+      "distance_from_earth_km": 21241688894.42115,
+      "distance_from_earth_au": 141.9919200388803,
+      "speed_km_s": 18.857651569405554
     },
     {
       "key": "pioneer_11",
@@ -4153,10 +4153,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Aug-26 05:25:00.0000",
-      "distance_from_earth_km": 17513192639.64482,
-      "distance_from_earth_au": 117.0684619887763,
-      "speed_km_s": 37.647038909530814
+      "epoch": "2026-Aug-26 06:31:00.0000",
+      "distance_from_earth_km": 17513321970.89355,
+      "distance_from_earth_au": 117.06932651477607,
+      "speed_km_s": 37.652221322996624
     }
   ],
   "volcano_alerts": [
@@ -4187,10 +4187,10 @@
     {
       "volcano_name": "Kilauea",
       "observatory": "Hawaiian Volcano Observatory",
-      "alert_level": "WATCH",
-      "color_code": "ORANGE",
-      "sent_utc": "2026-08-25 22:23:33",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-08-25T21:01:34+00:00"
+      "alert_level": "ADVISORY",
+      "color_code": "YELLOW",
+      "sent_utc": "2026-08-26 06:22:43",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-08-26T05:56:38+00:00"
     },
     {
       "volcano_name": "Ahyi Seamount",
