@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>orbital-watch — Black Hole Simulation</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #000; color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  #gl { display: block; width: 100vw; height: 100vh; touch-action: none; cursor: grab; }
+  #gl:active { cursor: grabbing; }
+
+  .overlay { position: fixed; left: 0; right: 0; pointer-events: none; }
+  #top { top: 0; padding: 1rem 1.25rem; background: linear-gradient(180deg, rgba(0,0,0,0.7), rgba(0,0,0,0)); }
+  #top h1 { margin: 0; font-size: 1.25rem; text-shadow: 0 0 18px rgba(120,180,255,0.5); }
+  #top .sub { margin: 0.2rem 0 0; font-size: 0.85rem; color: #8b949e; max-width: 70ch; }
+  #top a { color: #58a6ff; pointer-events: auto; }
+
+  #panel { position: fixed; bottom: 0; left: 0; right: 0; padding: 0.9rem 1.25rem 1.1rem;
+    background: linear-gradient(0deg, rgba(0,0,0,0.72), rgba(0,0,0,0)); }
+  .controls { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .controls button, .controls label {
+    background: rgba(22,27,34,0.85); color: #c9d1d9; border: 1px solid #30363d;
+    border-radius: 999px; padding: 0.3rem 0.75rem; font-size: 0.8rem; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 0.4rem; }
+  .controls button.active { color: #58a6ff; border-color: #58a6ff; }
+  .controls input[type=range] { accent-color: #58a6ff; cursor: pointer; }
+  .note { margin: 0.6rem 0 0; font-size: 0.78rem; color: #8b949e; max-width: 90ch; }
+  .note strong { color: #c9d1d9; }
+  #fps { font-size: 0.75rem; color: #8b949e; margin-left: auto; }
+  #fallback { position: fixed; inset: 0; display: none; place-items: center; padding: 2rem;
+    text-align: center; }
+</style>
+</head>
+<body>
+  <canvas id="gl"></canvas>
+
+  <div id="fallback">
+    <div>
+      <h1>WebGL not available</h1>
+      <p>This black-hole simulation needs WebGL, which your browser/device isn't providing.
+      Try a desktop browser with hardware acceleration enabled.
+      <br><a href="index.html" style="color:#58a6ff">← back to orbital-watch</a></p>
+    </div>
+  </div>
+
+  <div id="top" class="overlay">
+    <h1>Black Hole — live physics simulation</h1>
+    <p class="sub">
+      Every frame, light rays are bent by the curvature of spacetime around a
+      non-rotating (Schwarzschild) black hole and traced back to what they hit.
+      This is computed live from general relativity in your browser — it is
+      <em>not</em> a photograph and not telescope data.
+      <a href="index.html">← back to orbital-watch</a>
+    </p>
+  </div>
+
+  <div id="panel" class="overlay">
+    <div class="controls" style="pointer-events:auto">
+      <button id="btn-spin" class="active">⏸ Pause rotation</button>
+      <button id="btn-disk" class="active">Accretion disk</button>
+      <button id="btn-doppler" class="active">Doppler beaming</button>
+      <label>Mass <input id="mass" type="range" min="0.6" max="2.0" step="0.05" value="1.0"></label>
+      <span id="fps"></span>
+    </div>
+    <p class="note">
+      <strong>What's physically real here:</strong> gravitational lensing (the ring of
+      distorted background stars), the <strong>photon ring / black shadow</strong> at ~2.6×
+      the event-horizon radius, the <strong>Einstein ring</strong>, and
+      <strong>relativistic Doppler beaming</strong> — the disk side rotating toward you looks
+      brighter and bluer (the same asymmetry in the 2019 Event Horizon Telescope image and in
+      <em>Interstellar</em>'s Gargantua). <strong>What's simplified:</strong> photon paths use a
+      standard post-Newtonian light-bending approximation (not a full geodesic integrator), the
+      hole is non-spinning, and the accretion disk and starfield are procedural, not measured.
+      Drag to orbit · scroll / pinch to zoom.
+    </p>
+  </div>
+
+<script>
+"use strict";
+(function () {
+  const canvas = document.getElementById("gl");
+  const gl = canvas.getContext("webgl2", { antialias: false, powerPreference: "high-performance" });
+  if (!gl) {
+    document.getElementById("fallback").style.display = "grid";
+    document.getElementById("gl").style.display = "none";
+    return;
+  }
+
+  // ---- Fullscreen-quad vertex shader ----
+  const VERT = `#version 300 es
+  precision highp float;
+  const vec2 verts[3] = vec2[3](vec2(-1.0,-1.0), vec2(3.0,-1.0), vec2(-1.0,3.0));
+  void main(){ gl_Position = vec4(verts[gl_VertexID], 0.0, 1.0); }`;
+
+  // ---- Ray-marching fragment shader ----
+  // Units: the Schwarzschild radius (event horizon) is r = 1.
+  // Photon paths are bent with the standard "starless" light-bending
+  // acceleration a = -1.5 * h^2 * r_vec / |r|^5, where h = |r x v| is the
+  // conserved specific angular momentum. This reproduces the photon sphere,
+  // the shadow, and the Einstein ring; it is a post-Newtonian approximation,
+  // not a full null-geodesic integration.
+  const FRAG = `#version 300 es
+  precision highp float;
+  out vec4 fragColor;
+  uniform vec2  uRes;
+  uniform float uTime;
+  uniform vec3  uCamPos;
+  uniform mat3  uCamRot;
+  uniform float uMass;      // scales the horizon / bending strength
+  uniform float uDisk;      // 1.0 = accretion disk on
+  uniform float uDoppler;   // 1.0 = relativistic beaming on
+
+  // --- hash / procedural noise for the starfield & disk texture ---
+  float hash13(vec3 p){
+    p = fract(p * 0.1031);
+    p += dot(p, p.yzx + 33.33);
+    return fract((p.x + p.y) * p.z);
+  }
+  float noise3(vec3 p){
+    vec3 i = floor(p); vec3 f = fract(p);
+    f = f*f*(3.0-2.0*f);
+    float n000=hash13(i+vec3(0,0,0)), n100=hash13(i+vec3(1,0,0));
+    float n010=hash13(i+vec3(0,1,0)), n110=hash13(i+vec3(1,1,0));
+    float n001=hash13(i+vec3(0,0,1)), n101=hash13(i+vec3(1,0,1));
+    float n011=hash13(i+vec3(0,1,1)), n111=hash13(i+vec3(1,1,1));
+    return mix(mix(mix(n000,n100,f.x),mix(n010,n110,f.x),f.y),
+               mix(mix(n001,n101,f.x),mix(n011,n111,f.x),f.y),f.z);
+  }
+
+  // Distant sky: sparse stars + a faint milky band, sampled by ray direction.
+  vec3 sampleSky(vec3 dir){
+    vec3 col = vec3(0.0);
+    // three layers of stars at increasing density
+    for(int k=0;k<3;k++){
+      float scale = 180.0 + float(k)*260.0;
+      vec3 q = dir * scale;
+      vec3 cell = floor(q);
+      float h = hash13(cell + float(k)*7.1);
+      if(h > 0.982){
+        vec3 center = cell + 0.5 + 0.5*vec3(hash13(cell+1.3),hash13(cell+2.7),hash13(cell+3.9));
+        float d = length(q - center);
+        float star = smoothstep(0.9, 0.0, d);
+        float tw = 0.7 + 0.3*sin(uTime*2.0 + h*40.0);
+        vec3 tint = mix(vec3(0.7,0.8,1.0), vec3(1.0,0.9,0.75), hash13(cell+9.0));
+        col += star * tw * tint * (0.6 + (h-0.982)*30.0);
+      }
+    }
+    // faint galactic band + nebula haze
+    float band = exp(-abs(dir.y)*3.5) * 0.06;
+    float neb = noise3(dir*4.0 + 10.0) * noise3(dir*9.0);
+    col += band * mix(vec3(0.10,0.13,0.22), vec3(0.20,0.12,0.22), neb);
+    col += neb*neb * 0.02 * vec3(0.2,0.25,0.4);
+    return col;
+  }
+
+  // Accretion-disk emission at a point in the equatorial (xz) plane.
+  vec3 diskColor(vec3 p, vec3 rayDir){
+    float r = length(p.xz);
+    float inner = 2.6*uMass;   // ~ innermost stable circular orbit region
+    float outer = 9.0*uMass;
+    if(r < inner || r > outer) return vec3(0.0);
+    float t = (r - inner)/(outer - inner);      // 0 inner .. 1 outer
+    // temperature falls with radius -> white/blue hot inside, orange/red outside
+    vec3 hot  = vec3(1.0, 0.95, 0.85);
+    vec3 warm = vec3(1.0, 0.55, 0.18);
+    vec3 cool = vec3(0.75, 0.2, 0.08);
+    vec3 base = mix(mix(hot, warm, smoothstep(0.0,0.5,t)), cool, smoothstep(0.5,1.0,t));
+    // swirling turbulence, advected in time along the orbit
+    float ang = atan(p.z, p.x);
+    float swirl = noise3(vec3(r*1.6, ang*2.5 + uTime*0.6 - r*0.5, 0.0)*1.5);
+    float bright = (1.0 - t)*(1.0 - t) * (0.6 + 0.8*swirl);
+    // relativistic Doppler beaming: disk orbits (right-handed about +y).
+    // velocity direction at p is perpendicular to radius in the plane.
+    if(uDoppler > 0.5){
+      vec3 vel = normalize(vec3(-p.z, 0.0, p.x));
+      float beta = 0.42 * inner / max(r, 0.1);         // faster (bluer/brighter) inside
+      float mu = dot(vel, -normalize(rayDir));         // approaching viewer -> +
+      float dopp = 1.0 / (1.0 - beta*mu);              // Doppler factor
+      bright *= pow(clamp(dopp,0.2,3.0), 2.2);         // beaming ~ D^(3..4)
+      base = mix(base, vec3(0.7,0.85,1.0), clamp((dopp-1.0)*0.5,0.0,0.6)); // blue-shift tint
+    }
+    float edge = smoothstep(0.0,0.15,t) * smoothstep(1.0,0.85,t); // soft edges
+    return base * bright * edge * 2.4;
+  }
+
+  void main(){
+    vec2 uv = (gl_FragCoord.xy - 0.5*uRes) / uRes.y;
+    vec3 rayDir = normalize(uCamRot * vec3(uv, -1.4));
+    vec3 pos = uCamPos;
+    vec3 vel = rayDir;
+
+    float h2 = dot(cross(pos, vel), cross(pos, vel)); // (specific angular momentum)^2
+    vec3 color = vec3(0.0);
+    float horizon = 1.0*uMass;
+
+    bool captured = false;
+    bool hitSky = false;
+    vec3 prev = pos;
+
+    // Adaptive-ish fixed stepping; more steps = smoother ring but slower.
+    const int STEPS = 260;
+    for(int i=0;i<STEPS;i++){
+      float r = length(pos);
+      // step smaller near the hole (where bending is strong), larger far away
+      float dt = clamp(0.018*r, 0.02, 0.35);
+      prev = pos;
+      // light-bending acceleration (Schwarzschild, post-Newtonian form)
+      vec3 accel = -1.5 * h2 * pos / pow(dot(pos,pos), 2.5);
+      vel += accel * dt;
+      pos += vel * dt;
+
+      if(length(pos) < horizon){ captured = true; break; }
+
+      // accretion disk: detect crossing of the equatorial (y=0) plane
+      if(uDisk > 0.5 && (prev.y * pos.y < 0.0)){
+        float f = prev.y / (prev.y - pos.y);        // interpolate crossing point
+        vec3 hit = mix(prev, pos, f);
+        vec3 dc = diskColor(hit, vel);
+        color += dc;                                 // additive, glowing
+      }
+
+      if(length(pos) > 60.0){ hitSky = true; break; }
+    }
+
+    if(captured){
+      // Falls through the horizon: black shadow, with a faint hot rim from
+      // the last disk light picked up just outside.
+      fragColor = vec4(color * 0.6, 1.0);
+      return;
+    }
+
+    vec3 sky = sampleSky(normalize(vel));
+    color += hitSky ? sky : sky * 0.4;
+
+    // gentle tone map + vignette
+    color = color / (color + vec3(0.8));
+    color = pow(color, vec3(0.85));
+    float vig = smoothstep(1.25, 0.2, length(uv));
+    color *= mix(0.75, 1.0, vig);
+    fragColor = vec4(color, 1.0);
+  }`;
+
+  function compile(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.error(gl.getShaderInfoLog(s));
+      throw new Error("shader compile failed: " + gl.getShaderInfoLog(s));
+    }
+    return s;
+  }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
+  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    throw new Error("link failed: " + gl.getProgramInfoLog(prog));
+  }
+  gl.useProgram(prog);
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+
+  const U = {
+    res: gl.getUniformLocation(prog, "uRes"),
+    time: gl.getUniformLocation(prog, "uTime"),
+    camPos: gl.getUniformLocation(prog, "uCamPos"),
+    camRot: gl.getUniformLocation(prog, "uCamRot"),
+    mass: gl.getUniformLocation(prog, "uMass"),
+    disk: gl.getUniformLocation(prog, "uDisk"),
+    doppler: gl.getUniformLocation(prog, "uDoppler"),
+  };
+
+  // ---- Camera (orbit controls) ----
+  const cam = { dist: 13.0, yaw: 0.4, pitch: 0.22, spin: true, mass: 1.0, disk: 1.0, doppler: 1.0 };
+  window.__cam = cam; // test/debug hook for headless render verification
+
+  function resize() {
+    // Cap the backing resolution so software renderers / phones stay smooth.
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const w = Math.floor(canvas.clientWidth * dpr);
+    const h = Math.floor(canvas.clientHeight * dpr);
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h;
+    }
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  window.addEventListener("resize", resize);
+
+  // Build a camera rotation matrix (columns = right, up, forward-ish) from
+  // yaw/pitch, and place the camera on a sphere looking at the origin.
+  function camMatrix() {
+    const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
+    const cy = Math.cos(cam.yaw), sy = Math.sin(cam.yaw);
+    const pos = [cam.dist * cp * sy, cam.dist * sp, cam.dist * cp * cy];
+    // forward = normalize(-pos)
+    let fx = -pos[0], fy = -pos[1], fz = -pos[2];
+    const fl = Math.hypot(fx, fy, fz); fx /= fl; fy /= fl; fz /= fl;
+    // right = normalize(cross(forward, worldUp))
+    const ux = 0, uy = 1, uz = 0;
+    let rx = fy * uz - fz * uy, ry = fz * ux - fx * uz, rz = fx * uy - fy * ux;
+    const rl = Math.hypot(rx, ry, rz); rx /= rl; ry /= rl; rz /= rl;
+    // up = cross(right, forward)
+    const upx = ry * fz - rz * fy, upy = rz * fx - rx * fz, upz = rx * fy - ry * fx;
+    // column-major mat3 for GLSL: [right, up, -forward] so vec3(uv,-1.4)*rot points along forward
+    const m = new Float32Array([
+      rx, ry, rz,
+      upx, upy, upz,
+      -fx, -fy, -fz,
+    ]);
+    return { pos, m };
+  }
+
+  // ---- Interaction ----
+  let dragging = false, lastX = 0, lastY = 0;
+  canvas.addEventListener("pointerdown", (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; canvas.setPointerCapture(e.pointerId); });
+  canvas.addEventListener("pointerup", (e) => { dragging = false; });
+  canvas.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    cam.yaw -= (e.clientX - lastX) * 0.006;
+    cam.pitch += (e.clientY - lastY) * 0.006;
+    cam.pitch = Math.max(-1.4, Math.min(1.4, cam.pitch));
+    lastX = e.clientX; lastY = e.clientY;
+  });
+  canvas.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    cam.dist *= Math.exp(e.deltaY * 0.0012);
+    cam.dist = Math.max(4.0, Math.min(40.0, cam.dist));
+  }, { passive: false });
+
+  const btnSpin = document.getElementById("btn-spin");
+  const btnDisk = document.getElementById("btn-disk");
+  const btnDop = document.getElementById("btn-doppler");
+  btnSpin.addEventListener("click", () => {
+    cam.spin = !cam.spin;
+    btnSpin.classList.toggle("active", cam.spin);
+    btnSpin.textContent = cam.spin ? "⏸ Pause rotation" : "▶ Resume rotation";
+  });
+  btnDisk.addEventListener("click", () => {
+    cam.disk = cam.disk > 0.5 ? 0.0 : 1.0;
+    btnDisk.classList.toggle("active", cam.disk > 0.5);
+  });
+  btnDop.addEventListener("click", () => {
+    cam.doppler = cam.doppler > 0.5 ? 0.0 : 1.0;
+    btnDop.classList.toggle("active", cam.doppler > 0.5);
+  });
+  document.getElementById("mass").addEventListener("input", (e) => { cam.mass = parseFloat(e.target.value); });
+
+  // ---- Render loop ----
+  let t0 = performance.now();
+  let frames = 0, fpsT = t0;
+  const fpsEl = document.getElementById("fps");
+
+  function frame(now) {
+    resize();
+    const t = (now - t0) / 1000;
+    if (cam.spin) cam.yaw += 0.0018;
+    const { pos, m } = camMatrix();
+
+    gl.uniform2f(U.res, canvas.width, canvas.height);
+    gl.uniform1f(U.time, t);
+    gl.uniform3f(U.camPos, pos[0], pos[1], pos[2]);
+    gl.uniformMatrix3fv(U.camRot, false, m);
+    gl.uniform1f(U.mass, cam.mass);
+    gl.uniform1f(U.disk, cam.disk);
+    gl.uniform1f(U.doppler, cam.doppler);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    frames++;
+    if (now - fpsT > 500) {
+      fpsEl.textContent = Math.round((frames * 1000) / (now - fpsT)) + " fps";
+      frames = 0; fpsT = now;
+    }
+    window.__bhFrames = (window.__bhFrames || 0) + 1; // used by the headless render check
+    requestAnimationFrame(frame);
+  }
+  resize();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

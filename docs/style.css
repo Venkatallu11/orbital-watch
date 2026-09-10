@@ -92,6 +92,29 @@ header h1 {
   font-size: 0.95rem;
 }
 
+.lab-links {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.lab-links a {
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  white-space: nowrap;
+}
+
+.lab-links a:hover {
+  border-color: var(--accent);
+}
+
+.lab-links .lab-sep {
+  margin: 0 0.5rem;
+  color: var(--text-dim);
+}
+
 main {
   padding: 0 1.5rem 1.5rem;
   max-width: 1100px;

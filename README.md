@@ -292,6 +292,41 @@ real objects, not guesses. Similarly, `verify_imagery_cli.py` (via the
 manual-only `verify-gibs-layers` workflow) confirms a candidate NASA GIBS
 layer identifier actually returns a real image before it's hardcoded.
 
+## Physics Lab (`blackhole.html`, `galaxy.html`)
+
+Two self-contained WebGL pages, linked from the top of the main site. They're
+labelled clearly as **physics simulations, not observations** — the whole
+point of the project is honesty, so these never pretend to be photographs or
+measured data. Both run entirely client-side with **no external dependencies**
+(raw WebGL, no CDN) and no backend.
+
+- **Black-hole gravitational lensing** (`blackhole.html`) — a real-time ray
+  tracer for a non-rotating (Schwarzschild) black hole. Each frame, light rays
+  are bent by spacetime curvature and traced back to what they hit, producing
+  the **shadow**, the **photon ring**, the **Einstein ring**, and — on the
+  accretion disk — **relativistic Doppler beaming** (the side rotating toward
+  you is brighter and bluer, the same asymmetry in the 2019 Event Horizon
+  Telescope image and in *Interstellar*'s Gargantua). Honest about its limits:
+  photon paths use a standard post-Newtonian light-bending approximation (not a
+  full null-geodesic integrator), the hole is non-spinning, and the disk and
+  starfield are procedural. Drag to orbit, scroll to zoom, toggle the disk /
+  Doppler / rotation.
+- **N-body galaxy** (`galaxy.html`) — a direct-summation **N-body gravity
+  simulation**: every star attracts every other via softened Newtonian gravity,
+  integrated with a leapfrog scheme, so momentum and orbital dynamics are
+  correct and the disk structure is *emergent*, not scripted. Includes a
+  "collide two galaxies" mode that produces real tidal debris. Simplified: a
+  few hundred–thousand particles stand in for billions, gravity is softened at
+  short range, and there's no gas, dark-matter halo, or relativity.
+
+**Why these and not the rest of the "interstellar" wishlist:** a black-hole ray
+tracer and an N-body simulation are *pure physics computed live* — no data
+source to fabricate, no server needed — so they fit a static, real-data-only
+site perfectly. Features that would need a live backend or invented data
+(multiplayer "observers", a hosted AI narrator with a secret API key) were
+deliberately left out rather than faked; the shareable **Time Machine** lens
+link is the honest, backend-free stand-in for "share exactly what I'm seeing".
+
 ## Accuracy: what's a real fix vs. a hard ceiling
 
 Public TLE data has a real, permanent precision ceiling no amount of code

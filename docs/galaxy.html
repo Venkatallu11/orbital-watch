@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>orbital-watch — N-body Galaxy Simulation</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #000; color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  #gl { display: block; width: 100vw; height: 100vh; touch-action: none; }
+
+  .overlay { position: fixed; left: 0; right: 0; pointer-events: none; }
+  #top { top: 0; padding: 1rem 1.25rem; background: linear-gradient(180deg, rgba(0,0,0,0.7), rgba(0,0,0,0)); }
+  #top h1 { margin: 0; font-size: 1.25rem; text-shadow: 0 0 18px rgba(160,140,255,0.5); }
+  #top .sub { margin: 0.2rem 0 0; font-size: 0.85rem; color: #8b949e; max-width: 72ch; }
+  #top a { color: #58a6ff; pointer-events: auto; }
+
+  #panel { position: fixed; bottom: 0; left: 0; right: 0; padding: 0.9rem 1.25rem 1.1rem;
+    background: linear-gradient(0deg, rgba(0,0,0,0.72), rgba(0,0,0,0)); }
+  .controls { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .controls button, .controls label {
+    background: rgba(22,27,34,0.85); color: #c9d1d9; border: 1px solid #30363d;
+    border-radius: 999px; padding: 0.3rem 0.75rem; font-size: 0.8rem; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 0.4rem; pointer-events: auto; }
+  .controls button.active { color: #a394ff; border-color: #a394ff; }
+  .controls input[type=range] { accent-color: #a394ff; cursor: pointer; }
+  .note { margin: 0.6rem 0 0; font-size: 0.78rem; color: #8b949e; max-width: 92ch; }
+  .note strong { color: #c9d1d9; }
+  #stats { font-size: 0.75rem; color: #8b949e; margin-left: auto; }
+  #fallback { position: fixed; inset: 0; display: none; place-items: center; padding: 2rem; text-align: center; }
+</style>
+</head>
+<body>
+  <canvas id="gl"></canvas>
+
+  <div id="fallback">
+    <div>
+      <h1>WebGL not available</h1>
+      <p>This simulation needs WebGL. Try a desktop browser with hardware acceleration.
+      <br><a href="index.html" style="color:#58a6ff">← back to orbital-watch</a></p>
+    </div>
+  </div>
+
+  <div id="top" class="overlay">
+    <h1>N-body Galaxy — live gravity simulation</h1>
+    <p class="sub">
+      Every star here pulls on every other star through Newton's law of gravity,
+      re-integrated each frame. The spiral structure, the central bar, and the
+      orbits all emerge from that — nothing is scripted. This is a <em>simulation</em>
+      of gravitational dynamics, <em>not</em> the real Milky Way's measured positions.
+      <a href="index.html">← back to orbital-watch</a>
+    </p>
+  </div>
+
+  <div id="panel" class="overlay">
+    <div class="controls">
+      <button id="btn-pause">⏸ Pause</button>
+      <button id="btn-reset">↻ Reset disk</button>
+      <button id="btn-collide">✦ Collide two galaxies</button>
+      <label>Gravity <input id="grav" type="range" min="0.2" max="2.5" step="0.05" value="1.0"></label>
+      <label>Trails <input id="trail" type="range" min="0.0" max="0.95" step="0.05" value="0.82"></label>
+      <span id="stats"></span>
+    </div>
+    <p class="note">
+      <strong>What's physically real here:</strong> this is a direct-summation
+      <strong>N-body simulation</strong> — the same method used in computational
+      astrophysics — using softened Newtonian gravity and a leapfrog integrator, so
+      momentum and orbital dynamics behave correctly. Spiral density waves and the
+      central bar are <em>emergent</em>, not drawn in. <strong>What's simplified:</strong> a
+      few hundred–thousand "stars" stand in for billions, gravity is softened at short
+      range to keep it stable, and there's no gas, dark-matter halo, or relativity.
+      Drag to rotate the view · scroll to zoom.
+    </p>
+  </div>
+
+<script>
+"use strict";
+(function () {
+  const canvas = document.getElementById("gl");
+  const gl = canvas.getContext("webgl2", { antialias: true, premultipliedAlpha: false });
+  if (!gl) {
+    document.getElementById("fallback").style.display = "grid";
+    canvas.style.display = "none";
+    return;
+  }
+
+  // ---------- N-body physics (CPU, direct sum, leapfrog) ----------
+  // Units are arbitrary/self-consistent. Every body attracts every other with
+  // F = G m_i m_j (r_j - r_i) / (|r|^2 + eps^2)^(3/2)  -- eps is a softening
+  // length that removes the singularity of point masses at close range (a
+  // standard, honest technique in collisionless N-body astrophysics).
+  const sim = {
+    n: 900,
+    G: 1.0,
+    eps2: 0.02,          // softening^2
+    dt: 0.004,
+    px: null, py: null, pz: null,
+    vx: null, vy: null, vz: null,
+    m: null,
+    running: true,
+    gravMul: 1.0,
+  };
+
+  function alloc(n) {
+    sim.n = n;
+    sim.px = new Float32Array(n); sim.py = new Float32Array(n); sim.pz = new Float32Array(n);
+    sim.vx = new Float32Array(n); sim.vy = new Float32Array(n); sim.vz = new Float32Array(n);
+    sim.m = new Float32Array(n);
+    sim.ax = new Float32Array(n); sim.ay = new Float32Array(n); sim.az = new Float32Array(n);
+    sim.col = new Float32Array(n * 3);
+  }
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  // Seed a rotating disk around a heavy central mass so orbits are stable and
+  // the disk visibly rotates instead of just collapsing.
+  function makeDisk(cx, cy, cz, vxc, vyc, spin, tint) {
+    const n = sim.n;
+    const centralM = 220.0;
+    for (let i = 0; i < n; i++) {
+      const isCenter = (i === 0 || (cx !== 0 && i === Math.floor(n / 2)));
+      if (i === 0) {
+        // one heavy central body (galactic bulge / central mass)
+        sim.px[i] = cx; sim.py[i] = cy; sim.pz[i] = cz;
+        sim.vx[i] = vxc; sim.vy[i] = vyc; sim.vz[i] = 0;
+        sim.m[i] = centralM;
+        sim.col[i*3] = 1.0; sim.col[i*3+1] = 0.95; sim.col[i*3+2] = 0.8;
+        continue;
+      }
+      // exponential-ish disk: more stars toward the center
+      const r = Math.pow(Math.random(), 0.5) * 1.15 + 0.05;
+      const a = rand(0, Math.PI * 2);
+      const zr = (Math.random() - 0.5) * 0.05 * r; // thin disk
+      const x = Math.cos(a) * r, y = Math.sin(a) * r;
+      sim.px[i] = cx + x; sim.py[i] = cy + y; sim.pz[i] = cz + zr;
+      // circular-orbit speed about the enclosed (mostly central) mass
+      const vc = Math.sqrt(sim.G * centralM / Math.sqrt(r*r + sim.eps2));
+      // tangential direction (spin handedness), plus the galaxy's bulk motion
+      sim.vx[i] = vxc + (-Math.sin(a)) * vc * spin;
+      sim.vy[i] = vyc + ( Math.cos(a)) * vc * spin;
+      sim.vz[i] = 0;
+      sim.m[i] = rand(0.4, 1.2);
+      // color by radius: hot blue-white inside, warmer gold outside
+      const t = Math.min(r / 1.2, 1.0);
+      sim.col[i*3]   = tint[0] * (0.7 + 0.3*t);
+      sim.col[i*3+1] = tint[1] * (0.75 + 0.15*(1.0-t));
+      sim.col[i*3+2] = tint[2] * (1.0 - 0.5*t);
+    }
+  }
+
+  function initSingle() {
+    alloc(1100);
+    makeDisk(0, 0, 0, 0, 0, 1.0, [0.75, 0.8, 1.0]);
+  }
+
+  function initCollision() {
+    // Two disks on a collision course -- classic interacting-galaxies setup.
+    const total = 1200;
+    alloc(total);
+    // temporarily build first half as one disk, second half as another by
+    // filling arrays in two passes with an offset.
+    const half = Math.floor(total / 2);
+    // Disk A
+    const save = sim.n; sim.n = half;
+    makeDisk(-1.6, -0.4, 0, 0.9, 0.15, 1.0, [0.7, 0.85, 1.0]);
+    // shift Disk A arrays into place already done in-place for [0,half)
+    const ax = sim.px.slice(0, half), ay = sim.py.slice(0, half), az = sim.pz.slice(0, half);
+    const avx = sim.vx.slice(0, half), avy = sim.vy.slice(0, half), avz = sim.vz.slice(0, half);
+    const am = sim.m.slice(0, half), acol = sim.col.slice(0, half*3);
+    // Disk B
+    makeDisk(1.6, 0.4, 0, -0.9, -0.15, -1.0, [1.0, 0.7, 0.6]);
+    const bx = sim.px.slice(0, half), by = sim.py.slice(0, half), bz = sim.pz.slice(0, half);
+    const bvx = sim.vx.slice(0, half), bvy = sim.vy.slice(0, half), bvz = sim.vz.slice(0, half);
+    const bm = sim.m.slice(0, half), bcol = sim.col.slice(0, half*3);
+    sim.n = save;
+    // merge
+    sim.px.set(ax, 0); sim.px.set(bx, half);
+    sim.py.set(ay, 0); sim.py.set(by, half);
+    sim.pz.set(az, 0); sim.pz.set(bz, half);
+    sim.vx.set(avx, 0); sim.vx.set(bvx, half);
+    sim.vy.set(avy, 0); sim.vy.set(bvy, half);
+    sim.vz.set(avz, 0); sim.vz.set(bvz, half);
+    sim.m.set(am, 0); sim.m.set(bm, half);
+    sim.col.set(acol, 0); sim.col.set(bcol, half*3);
+  }
+
+  function computeAccel() {
+    const n = sim.n, px = sim.px, py = sim.py, pz = sim.pz, m = sim.m;
+    const ax = sim.ax, ay = sim.ay, az = sim.az;
+    const G = sim.G * sim.gravMul, eps2 = sim.eps2;
+    for (let i = 0; i < n; i++) { ax[i] = 0; ay[i] = 0; az[i] = 0; }
+    for (let i = 0; i < n; i++) {
+      const xi = px[i], yi = py[i], zi = pz[i];
+      let axi = 0, ayi = 0, azi = 0;
+      for (let j = 0; j < n; j++) {
+        if (j === i) continue;
+        const dx = px[j] - xi, dy = py[j] - yi, dz = pz[j] - zi;
+        const r2 = dx*dx + dy*dy + dz*dz + eps2;
+        const inv = 1.0 / Math.sqrt(r2);
+        const inv3 = inv * inv * inv;
+        const f = G * m[j] * inv3;
+        axi += f * dx; ayi += f * dy; azi += f * dz;
+      }
+      ax[i] += axi; ay[i] += ayi; az[i] += azi;
+    }
+  }
+
+  function step() {
+    const n = sim.n, dt = sim.dt;
+    // leapfrog kick-drift-kick
+    computeAccel();
+    for (let i = 0; i < n; i++) {
+      sim.vx[i] += 0.5 * dt * sim.ax[i];
+      sim.vy[i] += 0.5 * dt * sim.ay[i];
+      sim.vz[i] += 0.5 * dt * sim.az[i];
+      sim.px[i] += dt * sim.vx[i];
+      sim.py[i] += dt * sim.vy[i];
+      sim.pz[i] += dt * sim.vz[i];
+    }
+    computeAccel();
+    for (let i = 0; i < n; i++) {
+      sim.vx[i] += 0.5 * dt * sim.ax[i];
+      sim.vy[i] += 0.5 * dt * sim.ay[i];
+      sim.vz[i] += 0.5 * dt * sim.az[i];
+    }
+  }
+
+  // ---------- WebGL point rendering (additive glow) ----------
+  const VERT = `#version 300 es
+  precision highp float;
+  layout(location=0) in vec3 aPos;
+  layout(location=1) in vec3 aCol;
+  layout(location=2) in float aMass;
+  uniform mat3 uRot;
+  uniform float uScale;
+  uniform vec2 uAspect;
+  out vec3 vCol;
+  void main(){
+    vec3 p = uRot * aPos;
+    gl_Position = vec4(p.xy * uScale * uAspect, 0.0, 1.0);
+    gl_PointSize = clamp(3.0 + aMass*2.4, 2.0, 13.0);
+    vCol = aCol;
+  }`;
+
+  const FRAG = `#version 300 es
+  precision highp float;
+  in vec3 vCol;
+  out vec4 fragColor;
+  void main(){
+    vec2 d = gl_PointCoord - vec2(0.5);
+    float r = length(d);
+    float a = smoothstep(0.5, 0.0, r);   // soft round star
+    float core = pow(a, 3.0);            // bright hot core
+    vec3 c = vCol * 1.6 + vec3(core * 0.5);
+    fragColor = vec4(c * a, a);
+  }`;
+
+  function compile(type, src){
+    const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+    if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
+  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
+  gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+  gl.useProgram(prog);
+
+  const vao = gl.createVertexArray(); gl.bindVertexArray(vao);
+  const posBuf = gl.createBuffer(), colBuf = gl.createBuffer(), massBuf = gl.createBuffer();
+  const U = {
+    rot: gl.getUniformLocation(prog, "uRot"),
+    scale: gl.getUniformLocation(prog, "uScale"),
+    aspect: gl.getUniformLocation(prog, "uAspect"),
+  };
+
+  function uploadStatic() {
+    gl.bindBuffer(gl.ARRAY_BUFFER, colBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, sim.col, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, massBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, sim.m, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(2); gl.vertexAttribPointer(2, 1, gl.FLOAT, false, 0, 0);
+  }
+
+  const posInterleaved = () => {
+    const n = sim.n; const arr = new Float32Array(n*3);
+    for (let i=0;i<n;i++){ arr[i*3]=sim.px[i]; arr[i*3+1]=sim.py[i]; arr[i*3+2]=sim.pz[i]; }
+    return arr;
+  };
+
+  // view
+  const view = { yaw: 0.0, pitch: 0.5, scale: 0.42, trail: 0.82 };
+  window.__gal = { sim, view }; // test/debug hook
+
+  function rotMatrix(){
+    const cy=Math.cos(view.yaw), sy=Math.sin(view.yaw);
+    const cp=Math.cos(view.pitch), sp=Math.sin(view.pitch);
+    // rotate about Y then X
+    return new Float32Array([
+      cy, sp*sy, -cp*sy,
+      0,  cp,     sp,
+      sy, -sp*cy, cp*cy,
+    ]);
+  }
+
+  function resize(){
+    const dpr = Math.min(window.devicePixelRatio||1, 1.5);
+    const w = Math.floor(canvas.clientWidth*dpr), h = Math.floor(canvas.clientHeight*dpr);
+    if(canvas.width!==w||canvas.height!==h){ canvas.width=w; canvas.height=h; }
+    gl.viewport(0,0,canvas.width,canvas.height);
+  }
+  window.addEventListener("resize", resize);
+
+  // interaction
+  let drag=false,lx=0,ly=0;
+  canvas.addEventListener("pointerdown",e=>{drag=true;lx=e.clientX;ly=e.clientY;canvas.setPointerCapture(e.pointerId);});
+  canvas.addEventListener("pointerup",()=>{drag=false;});
+  canvas.addEventListener("pointermove",e=>{ if(!drag)return;
+    view.yaw += (e.clientX-lx)*0.006; view.pitch += (e.clientY-ly)*0.006;
+    view.pitch=Math.max(-1.55,Math.min(1.55,view.pitch)); lx=e.clientX; ly=e.clientY; });
+  canvas.addEventListener("wheel",e=>{ e.preventDefault(); view.scale*=Math.exp(-e.deltaY*0.0012);
+    view.scale=Math.max(0.12,Math.min(2.5,view.scale)); },{passive:false});
+
+  document.getElementById("btn-pause").addEventListener("click", e=>{
+    sim.running=!sim.running; e.target.textContent = sim.running?"⏸ Pause":"▶ Play";
+    e.target.classList.toggle("active", !sim.running);
+  });
+  document.getElementById("btn-reset").addEventListener("click", ()=>{ initSingle(); uploadStatic(); clearScreen(); });
+  document.getElementById("btn-collide").addEventListener("click", ()=>{ initCollision(); uploadStatic(); clearScreen(); });
+  document.getElementById("grav").addEventListener("input", e=>{ sim.gravMul=parseFloat(e.target.value); });
+  document.getElementById("trail").addEventListener("input", e=>{ view.trail=parseFloat(e.target.value); });
+
+  function clearScreen(){ gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT); }
+
+  // init
+  resize();
+  initSingle();
+  uploadStatic();
+  clearScreen();
+
+  const statsEl = document.getElementById("stats");
+  let frames=0, ft=performance.now();
+
+  function frame(now){
+    resize();
+    // Motion trails: instead of clearing, draw a translucent black quad over
+    // the previous frame so stars leave fading streaks (purely visual).
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    // fade previous frame
+    fadeQuad(1.0 - view.trail);
+
+    if (sim.running) { step(); step(); }
+
+    // additive star rendering
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, posInterleaved(), gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);
+    // re-bind static attribs (VAO keeps them, but buffers were rebound)
+    gl.bindBuffer(gl.ARRAY_BUFFER, colBuf); gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, massBuf); gl.enableVertexAttribArray(2); gl.vertexAttribPointer(2,1,gl.FLOAT,false,0,0);
+
+    gl.useProgram(prog);
+    gl.uniformMatrix3fv(U.rot, false, rotMatrix());
+    gl.uniform1f(U.scale, view.scale);
+    const asp = canvas.height/canvas.width;
+    gl.uniform2f(U.aspect, asp, 1.0);
+    gl.drawArrays(gl.POINTS, 0, sim.n);
+
+    frames++;
+    if(now-ft>500){ statsEl.textContent = `${sim.n} stars · ${Math.round(frames*1000/(now-ft))} fps`; frames=0; ft=now; }
+    window.__galFrames = (window.__galFrames||0)+1;
+    requestAnimationFrame(frame);
+  }
+
+  // ---- fade quad for trails ----
+  let fadeProg, fadeBuf;
+  (function initFade(){
+    const fv = `#version 300 es
+    precision highp float; const vec2 v[3]=vec2[3](vec2(-1.,-1.),vec2(3.,-1.),vec2(-1.,3.));
+    void main(){ gl_Position=vec4(v[gl_VertexID],0.,1.); }`;
+    const ff = `#version 300 es
+    precision highp float; out vec4 o; uniform float uA; void main(){ o=vec4(0.,0.,0.,uA); }`;
+    fadeProg = gl.createProgram();
+    gl.attachShader(fadeProg, compile(gl.VERTEX_SHADER, fv));
+    gl.attachShader(fadeProg, compile(gl.FRAGMENT_SHADER, ff));
+    gl.linkProgram(fadeProg);
+  })();
+  const fadeA = gl.getUniformLocation(fadeProg, "uA");
+  function fadeQuad(a){
+    gl.useProgram(fadeProg);
+    gl.uniform1f(fadeA, a);
+    gl.bindVertexArray(vao); // no attribs needed
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
