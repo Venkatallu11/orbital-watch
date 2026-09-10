@@ -29,6 +29,32 @@
       <div class="globe-column">
         <div id="globe" class="globe"></div>
 
+        <div class="panel time-machine" id="time-machine-panel" hidden>
+          <h2>Time Machine</h2>
+          <p class="panel-note">
+            Rewind, pause, or fast-forward this satellite's real orbit. The
+            globe re-propagates the published orbital data (SGP4) to any
+            moment you pick &mdash; genuine orbital mechanics, not a canned
+            animation.
+          </p>
+          <div class="tm-clock" id="tm-clock"></div>
+          <div class="tm-speeds" id="tm-speeds"></div>
+          <div class="tm-scrub-row">
+            <button type="button" class="tm-jump" data-jump="-86400000">&minus;1 day</button>
+            <button type="button" class="tm-jump" data-jump="-3600000">&minus;1 hr</button>
+            <input type="range" id="tm-scrub" aria-label="Scrub simulated time">
+            <button type="button" class="tm-jump" data-jump="3600000">+1 hr</button>
+            <button type="button" class="tm-jump" data-jump="86400000">+1 day</button>
+          </div>
+          <div class="tm-actions">
+            <button type="button" id="tm-playpause">&#10073;&#10073; Pause</button>
+            <button type="button" id="tm-live">&#9679; Live</button>
+            <button type="button" id="tm-share">Copy shareable link</button>
+            <span id="tm-share-status" class="tm-share-status"></span>
+          </div>
+          <p class="panel-note" id="tm-caveat"></p>
+        </div>
+
         <div class="panel" id="achievement-panel" hidden>
           <h2>Notable Achievement</h2>
           <div id="achievement-content"></div>

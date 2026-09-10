@@ -319,6 +319,93 @@ main {
   text-align: right;
 }
 
+/* --- Time Machine --- */
+.tm-clock {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 0.2rem 0 0.7rem;
+}
+
+.tm-clock-time {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 1.05rem;
+  color: var(--accent);
+}
+
+.tm-clock-rel {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.tm-speeds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.7rem;
+}
+
+.tm-speed,
+.tm-jump,
+#tm-playpause,
+#tm-live,
+#tm-share {
+  background: var(--panel-bg);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.28rem 0.7rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.tm-speed.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(88, 166, 255, 0.12);
+}
+
+#tm-live.active {
+  color: var(--ok);
+  border-color: var(--ok);
+  background: rgba(63, 185, 80, 0.12);
+}
+
+.tm-scrub-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.7rem;
+}
+
+.tm-scrub-row input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.tm-jump {
+  white-space: nowrap;
+}
+
+.tm-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.tm-share-status {
+  font-size: 0.8rem;
+  color: var(--ok);
+}
+
+#tm-caveat .badge {
+  margin-right: 0.3rem;
+}
+
 footer {
   padding: 1rem 1.5rem 2rem;
   text-align: center;

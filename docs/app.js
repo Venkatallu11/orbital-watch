@@ -13,10 +13,50 @@ const NASA_API_KEY = "DEMO_KEY"; // works out of the box, 30 req/hour --
 // hit that limit.
 
 let globeInstance;
-let updateTimer;
 let siteData;
 let historyData;
 let achievementTimer;
+
+// --- Time Machine simulation clock ---
+// The globe is driven by this simulated clock instead of the wall clock.
+// satellite.js's SGP4 propagator accepts ANY date, so advancing/rewinding
+// simTime and re-propagating is genuine orbital mechanics -- the same math
+// mission planners use -- not a fabricated animation. The only honest limit
+// is that SGP4 accuracy degrades the further simTime gets from the TLE's
+// epoch; that caveat is shown live in the panel (see updateCaveat()).
+//
+// `live` means "pinned to the present" (simTime = wall clock each frame).
+// Any speed preset other than Live sets live=false and lets simTime run at
+// timeScale x real time (negative = rewind). Live external-data panels
+// (weather/fire/crew) are deliberately NOT driven by this clock -- there's
+// no honest source for "the weather forecast 3 days ago at this point", so
+// those always reflect the real present.
+const simClock = {
+  simTimeMs: Date.now(),
+  timeScale: 1,
+  playing: true,
+  live: true,
+  lastRealMs: null,
+  lastTrackMs: 0,
+  lastUiMs: 0,
+  lastHashMs: 0,
+  rafId: null,
+  satrec: null,
+  sat: null,
+};
+
+// Speed presets (multiplier on real time). Live is handled separately as a
+// snap-to-now mode; these are the "run the simulation at N x" options.
+const TIME_SPEEDS = [
+  { label: "&#9664;&#9664; -1 day/s", scale: -86400 },
+  { label: "&#9664; -1 hr/s", scale: -3600 },
+  { label: "&#9664; -1 min/s", scale: -60 },
+  { label: "1 min/s &#9654;", scale: 60 },
+  { label: "1 hr/s &#9654;", scale: 3600 },
+  { label: "1 day/s &#9654;&#9654;", scale: 86400 },
+];
+
+const SCRUB_RANGE_MIN = 60 * 24 * 60; // +/- 60 days, in minutes
 
 function isoDateDaysAgo(days) {
   const d = new Date();
@@ -100,51 +140,360 @@ function currentLatLon(satrec, date) {
   };
 }
 
-function groundTrackPoints(satrec) {
+function groundTrackPoints(satrec, fromDate) {
   // One full orbital period, sampled at ~100 points -- mean motion (rev/day)
-  // tells us the period; satrec.no is radians/minute.
+  // tells us the period; satrec.no is radians/minute. The track is drawn
+  // starting from `fromDate` (the simulated clock), so as you scrub/rewind
+  // the ground track really is the orbit for that simulated moment.
   const periodMinutes = (2 * Math.PI) / satrec.no;
-  const now = new Date();
+  const start = fromDate || new Date();
   const points = [];
   for (let i = 0; i <= 100; i++) {
-    const t = new Date(now.getTime() + (i / 100) * periodMinutes * 60000);
+    const t = new Date(start.getTime() + (i / 100) * periodMinutes * 60000);
     const pos = currentLatLon(satrec, t);
     if (pos) points.push([pos.lat, pos.lng]);
   }
   return points;
 }
 
+// TLE epoch as a JS Date, from satrec.jdsatepoch (Julian date). Used to tell
+// the visitor honestly how far the simulated time is from the data the
+// propagation is based on.
+function tleEpochDate(satrec) {
+  if (!satrec || !satrec.jdsatepoch) return null;
+  return new Date((satrec.jdsatepoch - 2440587.5) * 86400000);
+}
+
 function startTracking(sat) {
-  if (updateTimer) clearInterval(updateTimer);
+  if (simClock.rafId) cancelAnimationFrame(simClock.rafId);
+  simClock.rafId = null;
+  simClock.lastRealMs = null;
+  simClock.zoomed = false;
+
   const satrec = satrecFor(sat);
+  simClock.sat = sat;
+  simClock.satrec = satrec;
+
+  // Deep-space probes (Voyager/Pioneer) have no Earth-orbit TLE, so there's
+  // nothing for SGP4 to propagate -- the time machine simply doesn't apply
+  // to them. Clear the globe and hide the controls rather than pretend.
   if (!satrec) {
     globeInstance.pointsData([]).ringsData([]).pathsData([]);
+    setTimeMachineVisible(false);
     return;
   }
 
-  // Camera continuously follows the satellite's live position (a "chase
-  // cam") instead of a one-time center -- a real satellite moves fast
-  // enough (ISS crosses the globe in ~90 minutes) that centering only once,
-  // on selection, would drift out of view again within a minute or two.
-  // The first call also sets the zoom level (altitude); every call after
-  // that omits altitude so a manual zoom/drag by the user is preserved
-  // instead of being reset every tick.
-  let zoomed = false;
-  const tick = () => {
-    const pos = currentLatLon(satrec, new Date());
-    if (!pos) return;
+  setTimeMachineVisible(true);
+  renderTimeSpeeds();
+  simClockFrame(performance.now());
+}
+
+// The single animation loop. requestAnimationFrame gives smooth motion even
+// at high fast-forward rates; heavier work (recomputing the ground track,
+// refreshing the readout, syncing the URL) is throttled below.
+function simClockFrame(nowRealMs) {
+  const satrec = simClock.satrec;
+  if (!satrec) return;
+
+  if (simClock.lastRealMs === null) simClock.lastRealMs = nowRealMs;
+  const dtRealMs = nowRealMs - simClock.lastRealMs;
+  simClock.lastRealMs = nowRealMs;
+
+  if (simClock.live) {
+    simClock.simTimeMs = Date.now();
+  } else if (simClock.playing) {
+    simClock.simTimeMs += simClock.timeScale * dtRealMs;
+  }
+
+  const simDate = new Date(simClock.simTimeMs);
+  const pos = currentLatLon(satrec, simDate);
+  if (pos) {
     globeInstance.pointsData([pos]).ringsData([pos]);
-    if (!zoomed) {
+    if (!simClock.zoomed) {
       globeInstance.pointOfView({ lat: pos.lat, lng: pos.lng, altitude: 2.2 }, 1000);
-      zoomed = true;
+      simClock.zoomed = true;
     } else {
-      globeInstance.pointOfView({ lat: pos.lat, lng: pos.lng }, 800);
+      // Only steer the camera while it's tracking a moving point; when
+      // paused/live-at-1x the recenter is gentle. Skip the recenter entirely
+      // if the user is likely dragging (we don't get that signal cheaply, so
+      // just recenter slowly).
+      globeInstance.pointOfView({ lat: pos.lat, lng: pos.lng }, 500);
+    }
+  }
+
+  // Ground track: ~4x/sec is plenty and keeps 100 propagations off the
+  // 60fps hot path.
+  if (nowRealMs - simClock.lastTrackMs > 250) {
+    globeInstance.pathsData([{ points: groundTrackPoints(satrec, simDate) }]);
+    simClock.lastTrackMs = nowRealMs;
+  }
+
+  // Readout + caveat: ~4x/sec.
+  if (nowRealMs - simClock.lastUiMs > 250) {
+    updateTimeReadout(simDate, satrec);
+    simClock.lastUiMs = nowRealMs;
+  }
+
+  // Keep the URL roughly in sync so a refresh restores the view; ~ every 3s
+  // (using replaceState so we don't spam browser history).
+  if (nowRealMs - simClock.lastHashMs > 3000) {
+    updateUrlHash();
+    simClock.lastHashMs = nowRealMs;
+  }
+
+  simClock.rafId = requestAnimationFrame(simClockFrame);
+}
+
+function setTimeMachineVisible(visible) {
+  const panel = document.getElementById("time-machine-panel");
+  if (panel) panel.hidden = !visible;
+}
+
+// Builds the speed-preset buttons + the Live button once per satellite.
+function renderTimeSpeeds() {
+  const wrap = document.getElementById("tm-speeds");
+  if (!wrap) return;
+  wrap.innerHTML = "";
+  TIME_SPEEDS.forEach((preset) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "tm-speed";
+    btn.innerHTML = preset.label;
+    btn.dataset.scale = String(preset.scale);
+    btn.addEventListener("click", () => setSpeed(preset.scale));
+    wrap.appendChild(btn);
+  });
+  highlightActiveSpeed();
+}
+
+function highlightActiveSpeed() {
+  const wrap = document.getElementById("tm-speeds");
+  if (wrap) {
+    wrap.querySelectorAll(".tm-speed").forEach((b) => {
+      const active = !simClock.live && simClock.playing && Number(b.dataset.scale) === simClock.timeScale;
+      b.classList.toggle("active", active);
+    });
+  }
+  const liveBtn = document.getElementById("tm-live");
+  if (liveBtn) liveBtn.classList.toggle("active", simClock.live);
+  const playBtn = document.getElementById("tm-playpause");
+  if (playBtn) {
+    playBtn.innerHTML = simClock.playing ? "&#10073;&#10073; Pause" : "&#9654; Play";
+  }
+}
+
+function setSpeed(scale) {
+  simClock.live = false;
+  simClock.playing = true;
+  simClock.timeScale = scale;
+  highlightActiveSpeed();
+  updateUrlHash();
+}
+
+function setLive() {
+  simClock.live = true;
+  simClock.playing = true;
+  simClock.timeScale = 1;
+  simClock.simTimeMs = Date.now();
+  highlightActiveSpeed();
+  updateUrlHash();
+}
+
+function togglePlay() {
+  // Pausing a Live view drops out of live mode and freezes at the present
+  // moment, so you can inspect the current position without it drifting.
+  if (simClock.live) simClock.live = false;
+  simClock.playing = !simClock.playing;
+  highlightActiveSpeed();
+  updateUrlHash();
+}
+
+function jumpBy(ms) {
+  simClock.live = false;
+  simClock.playing = false;
+  simClock.simTimeMs += ms;
+  highlightActiveSpeed();
+  const simDate = new Date(simClock.simTimeMs);
+  updateTimeReadout(simDate, simClock.satrec);
+  if (simClock.satrec) {
+    const pos = currentLatLon(simClock.satrec, simDate);
+    if (pos) globeInstance.pointsData([pos]).ringsData([pos]);
+    globeInstance.pathsData([{ points: groundTrackPoints(simClock.satrec, simDate) }]);
+  }
+  updateUrlHash();
+}
+
+function onScrub(minutesOffset) {
+  simClock.live = false;
+  simClock.playing = false;
+  simClock.simTimeMs = Date.now() + minutesOffset * 60000;
+  highlightActiveSpeed();
+  const simDate = new Date(simClock.simTimeMs);
+  updateTimeReadout(simDate, simClock.satrec);
+  if (simClock.satrec) {
+    const pos = currentLatLon(simClock.satrec, simDate);
+    if (pos) globeInstance.pointsData([pos]).ringsData([pos]);
+    globeInstance.pathsData([{ points: groundTrackPoints(simClock.satrec, simDate) }]);
+  }
+  updateUrlHash();
+}
+
+// Live clock readout + honest SGP4-accuracy caveat, both refreshed from the
+// animation loop.
+function updateTimeReadout(simDate, satrec) {
+  const clockEl = document.getElementById("tm-clock");
+  if (clockEl) {
+    const nowMs = Date.now();
+    const offsetMs = simClock.simTimeMs - nowMs;
+    let rel;
+    if (simClock.live) {
+      rel = "live";
+    } else if (Math.abs(offsetMs) < 60000) {
+      rel = "now";
+    } else {
+      rel = humanizeOffset(offsetMs);
+    }
+    clockEl.innerHTML =
+      `<span class="tm-clock-time">${simDate.toISOString().replace("T", " ").slice(0, 19)} UTC</span>` +
+      `<span class="tm-clock-rel">${rel}</span>`;
+  }
+
+  // Keep the scrubber thumb roughly in step with the simulated time (unless
+  // the user is actively dragging it).
+  const scrub = document.getElementById("tm-scrub");
+  if (scrub && document.activeElement !== scrub) {
+    const minutesOffset = Math.round((simClock.simTimeMs - Date.now()) / 60000);
+    scrub.value = String(Math.max(-SCRUB_RANGE_MIN, Math.min(SCRUB_RANGE_MIN, minutesOffset)));
+  }
+
+  updateCaveat(simDate, satrec);
+}
+
+function humanizeOffset(ms) {
+  const sign = ms >= 0 ? "+" : "-";
+  const abs = Math.abs(ms);
+  const days = abs / 86400000;
+  const hours = abs / 3600000;
+  const mins = abs / 60000;
+  if (days >= 1) return `${sign}${days.toFixed(1)} days from now`;
+  if (hours >= 1) return `${sign}${hours.toFixed(1)} hours from now`;
+  return `${sign}${mins.toFixed(0)} min from now`;
+}
+
+function updateCaveat(simDate, satrec) {
+  const el = document.getElementById("tm-caveat");
+  if (!el) return;
+  const epoch = tleEpochDate(satrec);
+  if (!epoch) {
+    el.textContent = "";
+    return;
+  }
+  const diffDays = Math.abs(simDate.getTime() - epoch.getTime()) / 86400000;
+  let tier;
+  let cls;
+  if (diffDays < 3) {
+    tier = "High confidence — within a few days of this satellite's orbital-data epoch.";
+    cls = "badge-ok";
+  } else if (diffDays < 14) {
+    tier = "Reliable — SGP4 stays good for roughly two weeks from epoch.";
+    cls = "badge-ok";
+  } else if (diffDays < 60) {
+    tier = "Approximate — position drifts noticeably this far from the orbital-data epoch.";
+    cls = "badge-warn";
+  } else {
+    tier = "Rough / illustrative only — SGP4 isn't designed to propagate this far from epoch.";
+    cls = "badge-danger";
+  }
+  el.innerHTML =
+    `<span class="badge ${cls}">${diffDays.toFixed(1)} days from TLE epoch</span> ${tier} ` +
+    `The globe uses real SGP4 propagation of this satellite's published orbit; live panels ` +
+    `(weather, fire, crew) always reflect the present, not the simulated time.`;
+}
+
+// --- Shareable "lens" URL ---
+// Encodes the current view (satellite + simulated time + speed + play state)
+// in the URL hash, so a link reproduces the exact moment with no backend.
+function updateUrlHash() {
+  if (!simClock.sat) return;
+  const params = new URLSearchParams();
+  params.set("sat", String(simClock.sat.norad_id));
+  if (simClock.live) {
+    params.set("mode", "live");
+  } else {
+    params.set("t", String(Math.round(simClock.simTimeMs)));
+    params.set("scale", String(simClock.timeScale));
+    params.set("play", simClock.playing ? "1" : "0");
+  }
+  const newHash = "#" + params.toString();
+  if (location.hash !== newHash) {
+    history.replaceState(null, "", newHash);
+  }
+}
+
+function readUrlHash() {
+  if (!location.hash || location.hash.length < 2) return null;
+  const params = new URLSearchParams(location.hash.slice(1));
+  const sat = params.get("sat");
+  if (!sat) return null;
+  return {
+    norad_id: Number(sat),
+    mode: params.get("mode"),
+    t: params.get("t") ? Number(params.get("t")) : null,
+    scale: params.get("scale") ? Number(params.get("scale")) : null,
+    play: params.get("play"),
+  };
+}
+
+function applyLensState(state) {
+  if (state.mode === "live" || state.t === null || Number.isNaN(state.t)) {
+    setLive();
+    return;
+  }
+  simClock.live = false;
+  simClock.simTimeMs = state.t;
+  simClock.timeScale = state.scale && !Number.isNaN(state.scale) ? state.scale : 1;
+  simClock.playing = state.play !== "0";
+  highlightActiveSpeed();
+}
+
+function shareLens() {
+  updateUrlHash();
+  const url = location.href;
+  const statusEl = document.getElementById("tm-share-status");
+  const done = (msg) => {
+    if (statusEl) {
+      statusEl.textContent = msg;
+      setTimeout(() => { statusEl.textContent = ""; }, 4000);
     }
   };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(
+      () => done("Link copied!"),
+      () => done("Copy failed — URL is in the address bar.")
+    );
+  } else {
+    done("URL is in the address bar — copy it to share this exact view.");
+  }
+}
 
-  tick();
-  globeInstance.pathsData([{ points: groundTrackPoints(satrec) }]);
-  updateTimer = setInterval(tick, 1000);
+function wireTimeMachineControls() {
+  const playBtn = document.getElementById("tm-playpause");
+  if (playBtn) playBtn.addEventListener("click", togglePlay);
+  const liveBtn = document.getElementById("tm-live");
+  if (liveBtn) liveBtn.addEventListener("click", setLive);
+  const shareBtn = document.getElementById("tm-share");
+  if (shareBtn) shareBtn.addEventListener("click", shareLens);
+  document.querySelectorAll("[data-jump]").forEach((b) => {
+    b.addEventListener("click", () => jumpBy(Number(b.dataset.jump)));
+  });
+  const scrub = document.getElementById("tm-scrub");
+  if (scrub) {
+    scrub.min = String(-SCRUB_RANGE_MIN);
+    scrub.max = String(SCRUB_RANGE_MIN);
+    scrub.step = "5";
+    scrub.value = "0";
+    scrub.addEventListener("input", () => onScrub(Number(scrub.value)));
+  }
 }
 
 function renderStatus(sat) {
@@ -860,9 +1209,23 @@ function loadData() {
       // order here previously left the visible dropdown selection and the
       // rendered status/map for two different satellites.
       const select = document.getElementById("satellite-select");
-      if (select.options.length > 0) {
-        select.value = select.options[0].value;
-        selectSatellite(Number(select.value));
+
+      // A shared "lens" link (#sat=...&t=...&scale=...) reproduces an exact
+      // view: select that satellite and restore its simulated time/speed
+      // BEFORE tracking starts, so the globe opens on the shared moment
+      // rather than snapping to the present first.
+      const lens = readUrlHash();
+      let selectedId = null;
+      if (lens && siteData.satellites.some((s) => s.norad_id === lens.norad_id)) {
+        applyLensState(lens);
+        selectedId = lens.norad_id;
+      } else if (select.options.length > 0) {
+        selectedId = Number(select.options[0].value);
+      }
+
+      if (selectedId !== null) {
+        select.value = String(selectedId);
+        selectSatellite(selectedId);
       }
     })
     .catch((err) => {
@@ -873,5 +1236,6 @@ function loadData() {
 }
 
 initGlobe();
+wireTimeMachineControls();
 loadData();
 startBackdropRotation();

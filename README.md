@@ -107,6 +107,21 @@ something you can actually click through instead of reading JSON:
   client-side via `satellite.js` (the same SGP4 math the Python backend
   uses) from the latest TLE already in `data.json`. No live server needed
   for this part — it's just math running on data that's already there.
+- **Time Machine** — pause, rewind, or fast-forward the selected satellite's
+  orbit (presets from ±1 min/s up to ±1 day/s), scrub to any moment with the
+  slider, jump ±1 hour/±1 day, or snap back to **Live**. This is honest
+  because SGP4 propagates the *real* published orbit to *any* time — the same
+  math mission planners use — so the globe is showing genuine orbital
+  mechanics for the chosen moment, not a canned animation. The panel shows a
+  live accuracy caveat that grows more prominent the further the simulated
+  time drifts from the TLE's epoch (SGP4 stays reliable for ~2 weeks from
+  epoch and degrades beyond that), and it makes clear that the live data
+  panels (weather/fire/crew) always reflect the present, not the simulated
+  time — there's no honest source for "the forecast three days ago here."
+  Deep-space probes have no Earth-orbit TLE, so the Time Machine correctly
+  doesn't appear for them. A **shareable "lens" link** encodes the exact view
+  (satellite + simulated time + speed) in the URL hash, so anyone opening the
+  link lands on the same moment — reproduced entirely client-side, no backend.
 - **Status panel** — TLE age/freshness, the latest detected maneuver (if
   any), and SatNOGS observation health, straight from the same
   `state.json` the scheduled workflow maintains.
