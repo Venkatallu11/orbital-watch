@@ -49,7 +49,6 @@ Nothing flagged this run.
 - **NORAD 44714**: TLE is 1.1 day(s) old
 - **NORAD 44718**: TLE is 0.4 day(s) old
 - **NORAD 45131**: TLE is 0.8 day(s) old
-- **NORAD 46052**: TLE is 48.0 day(s) old -- STALE, treat any numbers above with extra caution
 - **NORAD 48274**: TLE is 0.5 day(s) old
 - **NORAD 49044**: TLE is 0.6 day(s) old
 - **NORAD 49954**: TLE is 0.4 day(s) old
@@ -63,7 +62,7 @@ No conjunctions involving your watchlist in the current 7-day SOCRATES run.
 ## Observation health (SatNOGS cross-check, where available)
 - **NORAD 7530**: only 0/11 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal -- DEGRADED
 - **NORAD 20580**: not enough vetted observations yet to judge
-- **NORAD 24278**: 3/5 recent vetted observations were good (60%)
+- **NORAD 24278**: 3/4 recent vetted observations were good (75%)
 - **NORAD 25544**: not enough vetted observations yet to judge
 - **NORAD 25867**: not enough vetted observations yet to judge
 - **NORAD 25989**: not enough vetted observations yet to judge
