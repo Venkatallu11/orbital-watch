@@ -129,61 +129,102 @@
     return mix(mix(mix(n000,n100,f.x),mix(n010,n110,f.x),f.y),
                mix(mix(n001,n101,f.x),mix(n011,n111,f.x),f.y),f.z);
   }
+  // fractal Brownian motion -- layered noise for turbulent disk gas.
+  float fbm(vec3 p){
+    float a = 0.5, s = 0.0;
+    for(int i=0;i<5;i++){ s += a*noise3(p); p *= 2.03; a *= 0.5; }
+    return s;
+  }
+  // Blackbody colour from temperature in Kelvin (Tanner Helland approximation).
+  // Lets the accretion disk take on physically-motivated colours: cooler outer
+  // gas glows red/orange, hotter inner gas white then blue.
+  vec3 blackbodyRGB(float K){
+    float t = clamp(K, 1000.0, 40000.0) / 100.0;
+    vec3 c;
+    c.r = t <= 66.0 ? 1.0 : clamp(1.292936 * pow(t-60.0, -0.1332047), 0.0, 1.0);
+    c.g = t <= 66.0 ? clamp(0.390081*log(t) - 0.631841, 0.0, 1.0)
+                    : clamp(1.129891 * pow(t-60.0, -0.0755148), 0.0, 1.0);
+    c.b = t >= 66.0 ? 1.0 : (t <= 19.0 ? 0.0 : clamp(0.543207*log(t-10.0) - 1.196254, 0.0, 1.0));
+    return c;
+  }
+  // ACES filmic tone-mapping -- compresses the huge HDR range of the disk's
+  // beamed emission into displayable colour without clipping to flat white.
+  vec3 aces(vec3 x){
+    return clamp((x*(2.51*x+0.03))/(x*(2.43*x+0.59)+0.14), 0.0, 1.0);
+  }
 
   // Distant sky: sparse stars + a faint milky band, sampled by ray direction.
   vec3 sampleSky(vec3 dir){
     vec3 col = vec3(0.0);
-    // three layers of stars at increasing density
-    for(int k=0;k<3;k++){
-      float scale = 180.0 + float(k)*260.0;
+    // four layers of stars at increasing density/distance
+    for(int k=0;k<4;k++){
+      float scale = 150.0 + float(k)*230.0;
       vec3 q = dir * scale;
       vec3 cell = floor(q);
       float h = hash13(cell + float(k)*7.1);
-      if(h > 0.982){
+      float thresh = 0.975 - float(k)*0.004;
+      if(h > thresh){
         vec3 center = cell + 0.5 + 0.5*vec3(hash13(cell+1.3),hash13(cell+2.7),hash13(cell+3.9));
         float d = length(q - center);
         float star = smoothstep(0.9, 0.0, d);
-        float tw = 0.7 + 0.3*sin(uTime*2.0 + h*40.0);
-        vec3 tint = mix(vec3(0.7,0.8,1.0), vec3(1.0,0.9,0.75), hash13(cell+9.0));
-        col += star * tw * tint * (0.6 + (h-0.982)*30.0);
+        float tw = 0.75 + 0.25*sin(uTime*2.0 + h*40.0);
+        // colour stars by a plausible stellar temperature range
+        vec3 tint = blackbodyRGB(mix(3200.0, 12000.0, hash13(cell+9.0)));
+        col += star * tw * tint * (0.7 + (h-thresh)*35.0);
       }
     }
-    // faint galactic band + nebula haze
-    float band = exp(-abs(dir.y)*3.5) * 0.06;
-    float neb = noise3(dir*4.0 + 10.0) * noise3(dir*9.0);
-    col += band * mix(vec3(0.10,0.13,0.22), vec3(0.20,0.12,0.22), neb);
-    col += neb*neb * 0.02 * vec3(0.2,0.25,0.4);
+    // faint galactic band + nebula haze (multi-octave)
+    float band = exp(-abs(dir.y)*3.0) * 0.09;
+    float neb = fbm(dir*3.0 + 10.0);
+    col += band * mix(vec3(0.10,0.13,0.24), vec3(0.24,0.13,0.20), neb);
+    col += pow(neb,3.0) * 0.06 * vec3(0.25,0.3,0.5);
     return col;
   }
 
   // Accretion-disk emission at a point in the equatorial (xz) plane.
+  // Physically-motivated: temperature rises toward the centre (T ~ r^-3/4 for
+  // a thin disk), relativistic Doppler beaming brightens/blueshifts the
+  // approaching side, and gravitational redshift dims/reddens gas deep in the
+  // well. Turbulent structure is fbm noise advected along the orbit.
   vec3 diskColor(vec3 p, vec3 rayDir){
     float r = length(p.xz);
-    float inner = 2.6*uMass;   // ~ innermost stable circular orbit region
-    float outer = 9.0*uMass;
+    float inner = 2.4*uMass;   // ~ inner edge (near the ISCO region)
+    float outer = 11.0*uMass;
     if(r < inner || r > outer) return vec3(0.0);
-    float t = (r - inner)/(outer - inner);      // 0 inner .. 1 outer
-    // temperature falls with radius -> white/blue hot inside, orange/red outside
-    vec3 hot  = vec3(1.0, 0.95, 0.85);
-    vec3 warm = vec3(1.0, 0.55, 0.18);
-    vec3 cool = vec3(0.75, 0.2, 0.08);
-    vec3 base = mix(mix(hot, warm, smoothstep(0.0,0.5,t)), cool, smoothstep(0.5,1.0,t));
-    // swirling turbulence, advected in time along the orbit
+    float t = (r - inner)/(outer - inner);              // 0 inner .. 1 outer
+
+    float Tin = 11000.0;
+    float temp = Tin * pow(inner / r, 0.75);            // disk temperature (K)
+
+    // turbulent gas, swirling with the orbit
     float ang = atan(p.z, p.x);
-    float swirl = noise3(vec3(r*1.6, ang*2.5 + uTime*0.6 - r*0.5, 0.0)*1.5);
-    float bright = (1.0 - t)*(1.0 - t) * (0.6 + 0.8*swirl);
-    // relativistic Doppler beaming: disk orbits (right-handed about +y).
-    // velocity direction at p is perpendicular to radius in the plane.
+    float turb = fbm(vec3(r*2.4, ang*3.0 - uTime*0.6 + r*0.7, uTime*0.15));
+    float fine = fbm(vec3(r*7.0, ang*8.0 - uTime*1.1, 5.0));
+
+    // gravitational redshift factor g = sqrt(1 - Rs/r), Rs = uMass (horizon).
+    float g = sqrt(max(1.0 - uMass / r, 0.04));
+    float shift;
     if(uDoppler > 0.5){
-      vec3 vel = normalize(vec3(-p.z, 0.0, p.x));
-      float beta = 0.42 * inner / max(r, 0.1);         // faster (bluer/brighter) inside
-      float mu = dot(vel, -normalize(rayDir));         // approaching viewer -> +
-      float dopp = 1.0 / (1.0 - beta*mu);              // Doppler factor
-      bright *= pow(clamp(dopp,0.2,3.0), 2.2);         // beaming ~ D^(3..4)
-      base = mix(base, vec3(0.7,0.85,1.0), clamp((dopp-1.0)*0.5,0.0,0.6)); // blue-shift tint
+      vec3 vel = normalize(vec3(-p.z, 0.0, p.x));       // Keplerian orbital direction
+      float beta = clamp(0.52 * sqrt(inner / max(r,0.1)), 0.0, 0.8);
+      float gamma = 1.0 / sqrt(1.0 - beta*beta);
+      float mu = dot(vel, -normalize(rayDir));          // approaching viewer -> +
+      float dopp = 1.0 / (gamma * (1.0 - beta*mu));     // relativistic Doppler
+      shift = dopp * g;
+    } else {
+      shift = g;
     }
-    float edge = smoothstep(0.0,0.15,t) * smoothstep(1.0,0.85,t); // soft edges
-    return base * bright * edge * 2.4;
+
+    float obsTemp = clamp(temp * shift, 1000.0, 40000.0);
+    vec3 col = blackbodyRGB(obsTemp);
+
+    // emission: radial falloff * turbulence, beamed ~ shift^3 (relativistic).
+    // Kept off full clipping so the approaching side stays coloured/structured
+    // rather than a flat white blob.
+    float bright = (1.0 - t)*(1.0 - t) * (0.45 + 0.75*turb) * (0.7 + 0.5*fine);
+    bright *= pow(clamp(shift, 0.12, 3.0), 3.0);
+    float edge = smoothstep(0.0, 0.10, t) * smoothstep(1.0, 0.80, t);  // soft edges
+    return col * bright * edge * 1.5;
   }
 
   void main(){
@@ -201,11 +242,11 @@
     vec3 prev = pos;
 
     // Adaptive-ish fixed stepping; more steps = smoother ring but slower.
-    const int STEPS = 260;
+    const int STEPS = 340;
     for(int i=0;i<STEPS;i++){
       float r = length(pos);
       // step smaller near the hole (where bending is strong), larger far away
-      float dt = clamp(0.018*r, 0.02, 0.35);
+      float dt = clamp(0.014*r, 0.014, 0.32);
       prev = pos;
       // light-bending acceleration (Schwarzschild, post-Newtonian form)
       vec3 accel = -1.5 * h2 * pos / pow(dot(pos,pos), 2.5);
@@ -227,19 +268,21 @@
 
     if(captured){
       // Falls through the horizon: black shadow, with a faint hot rim from
-      // the last disk light picked up just outside.
-      fragColor = vec4(color * 0.6, 1.0);
+      // the last disk light picked up just outside (tone-mapped so bright
+      // beamed gas doesn't clip to white at the edge of the shadow).
+      fragColor = vec4(pow(aces(color * 0.9), vec3(0.92)), 1.0);
       return;
     }
 
     vec3 sky = sampleSky(normalize(vel));
     color += hitSky ? sky : sky * 0.4;
 
-    // gentle tone map + vignette
-    color = color / (color + vec3(0.8));
-    color = pow(color, vec3(0.85));
-    float vig = smoothstep(1.25, 0.2, length(uv));
-    color *= mix(0.75, 1.0, vig);
+    // HDR -> display: ACES filmic tone map keeps the bright beamed disk from
+    // clipping to flat white, then a mild gamma and vignette.
+    color = aces(color * 0.82);
+    color = pow(color, vec3(0.92));
+    float vig = smoothstep(1.35, 0.15, length(uv));
+    color *= mix(0.7, 1.0, vig);
     fragColor = vec4(color, 1.0);
   }`;
 

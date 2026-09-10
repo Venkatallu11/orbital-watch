@@ -292,12 +292,12 @@ real objects, not guesses. Similarly, `verify_imagery_cli.py` (via the
 manual-only `verify-gibs-layers` workflow) confirms a candidate NASA GIBS
 layer identifier actually returns a real image before it's hardcoded.
 
-## Physics Lab (`blackhole.html`, `galaxy.html`)
+## Physics Lab (`blackhole.html`, `galaxy.html`, `universe.html`)
 
-Two self-contained WebGL pages, linked from the top of the main site. They're
+Three self-contained WebGL pages, linked from the top of the main site. They're
 labelled clearly as **physics simulations, not observations** — the whole
 point of the project is honesty, so these never pretend to be photographs or
-measured data. Both run entirely client-side with **no external dependencies**
+measured data. All run entirely client-side with **no external dependencies**
 (raw WebGL, no CDN) and no backend.
 
 - **Black-hole gravitational lensing** (`blackhole.html`) — a real-time ray
@@ -310,7 +310,11 @@ measured data. Both run entirely client-side with **no external dependencies**
   photon paths use a standard post-Newtonian light-bending approximation (not a
   full null-geodesic integrator), the hole is non-spinning, and the disk and
   starfield are procedural. Drag to orbit, scroll to zoom, toggle the disk /
-  Doppler / rotation.
+  Doppler / rotation. The disk uses a physically-motivated **blackbody
+  temperature ramp** (hotter, bluer gas toward the centre), combines Doppler
+  with **gravitational redshift** (gas deep in the well is dimmed and reddened),
+  and adds fBm turbulence, ~340 integration steps for a cleaner ring, and ACES
+  tone mapping for a realistic HDR look.
 - **N-body galaxy** (`galaxy.html`) — a direct-summation **N-body gravity
   simulation**: every star attracts every other via softened Newtonian gravity,
   integrated with a leapfrog scheme, so momentum and orbital dynamics are
@@ -318,9 +322,19 @@ measured data. Both run entirely client-side with **no external dependencies**
   "collide two galaxies" mode that produces real tidal debris. Simplified: a
   few hundred–thousand particles stand in for billions, gravity is softened at
   short range, and there's no gas, dark-matter halo, or relativity.
+- **Cosmic web** (`universe.html`) — a 3D **universe structure-formation**
+  N-body: a near-uniform early universe is seeded with **Zel'dovich-approximation
+  initial conditions** (a grid of particles nudged by a smooth random
+  displacement field — the same way real cosmological simulations like Millennium
+  and IllustrisTNG are seeded), then evolved under softened Newtonian gravity.
+  The volume-averaged ("background") force is subtracted each step so, as in a
+  real periodic/expanding universe, only density *contrasts* grow — producing the
+  emergent **filaments, clusters, and voids** of the cosmic web. Particles are
+  coloured by peculiar velocity. Simplified: a couple of thousand particles stand
+  in for ~10¹¹ galaxies, and there's no dark-energy expansion term or gas physics.
 
 **Why these and not the rest of the "interstellar" wishlist:** a black-hole ray
-tracer and an N-body simulation are *pure physics computed live* — no data
+tracer and N-body simulations are *pure physics computed live* — no data
 source to fabricate, no server needed — so they fit a static, real-data-only
 site perfectly. Features that would need a live backend or invented data
 (multiplayer "observers", a hosted AI narrator with a secret API key) were

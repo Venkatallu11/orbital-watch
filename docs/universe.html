@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>orbital-watch — Cosmic Web Simulation</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #000; color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  #gl { display: block; width: 100vw; height: 100vh; touch-action: none; }
+
+  .overlay { position: fixed; left: 0; right: 0; pointer-events: none; }
+  #top { top: 0; padding: 1rem 1.25rem; background: linear-gradient(180deg, rgba(0,0,0,0.7), rgba(0,0,0,0)); }
+  #top h1 { margin: 0; font-size: 1.25rem; text-shadow: 0 0 18px rgba(140,170,255,0.5); }
+  #top .sub { margin: 0.2rem 0 0; font-size: 0.85rem; color: #8b949e; max-width: 74ch; }
+  #top a { color: #58a6ff; pointer-events: auto; }
+
+  #panel { position: fixed; bottom: 0; left: 0; right: 0; padding: 0.9rem 1.25rem 1.1rem;
+    background: linear-gradient(0deg, rgba(0,0,0,0.72), rgba(0,0,0,0)); }
+  .controls { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .controls button, .controls label {
+    background: rgba(22,27,34,0.85); color: #c9d1d9; border: 1px solid #30363d;
+    border-radius: 999px; padding: 0.3rem 0.75rem; font-size: 0.8rem; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 0.4rem; pointer-events: auto; }
+  .controls button.active { color: #8ca6ff; border-color: #8ca6ff; }
+  .controls input[type=range] { accent-color: #8ca6ff; cursor: pointer; }
+  .note { margin: 0.6rem 0 0; font-size: 0.78rem; color: #8b949e; max-width: 94ch; }
+  .note strong { color: #c9d1d9; }
+  #stats { font-size: 0.75rem; color: #8b949e; margin-left: auto; }
+  #clock { font-size: 0.78rem; color: #8ca6ff; }
+  #fallback { position: fixed; inset: 0; display: none; place-items: center; padding: 2rem; text-align: center; }
+</style>
+</head>
+<body>
+  <canvas id="gl"></canvas>
+
+  <div id="fallback">
+    <div>
+      <h1>WebGL not available</h1>
+      <p>This simulation needs WebGL. Try a desktop browser with hardware acceleration.
+      <br><a href="index.html" style="color:#58a6ff">← back to orbital-watch</a></p>
+    </div>
+  </div>
+
+  <div id="top" class="overlay">
+    <h1>Cosmic Web — universe structure-formation simulation</h1>
+    <p class="sub">
+      A near-uniform early universe, seeded with tiny density ripples, evolving
+      under gravity into the real large-scale structure of the cosmos:
+      <em>filaments</em>, dense <em>halos/clusters</em> at their intersections, and
+      empty <em>voids</em> between. This is a <em>simulation</em> of gravitational
+      structure formation — not a map of the real sky.
+      <a href="index.html">← back to orbital-watch</a>
+    </p>
+  </div>
+
+  <div id="panel" class="overlay">
+    <div class="controls">
+      <button id="btn-pause">⏸ Pause</button>
+      <button id="btn-reset">↻ New universe</button>
+      <label>Gravity <input id="grav" type="range" min="0.3" max="2.5" step="0.05" value="1.0"></label>
+      <label>Ripple strength <input id="amp" type="range" min="0.04" max="0.28" step="0.01" value="0.15"></label>
+      <label>Trails <input id="trail" type="range" min="0.0" max="0.9" step="0.05" value="0.45"></label>
+      <span id="clock"></span>
+      <span id="stats"></span>
+    </div>
+    <p class="note">
+      <strong>What's physically real here:</strong> a direct-summation
+      <strong>N-body simulation</strong> starting from
+      <strong>Zel'dovich-approximation initial conditions</strong> — the same way real
+      cosmological simulations (Millennium, IllustrisTNG) are seeded: particles on a
+      grid are nudged by a smooth random displacement field, then softened Newtonian
+      gravity is integrated with a leapfrog scheme. The cosmic web is
+      <em>emergent</em> — gravity amplifies the tiny initial ripples into filaments and
+      clusters, exactly as it does in the real universe. Points are coloured by
+      <strong>peculiar velocity</strong> (blue = quiet voids, warm/white = fast-moving gas
+      falling into structure). <strong>What's simplified:</strong> a couple of thousand
+      particles stand in for ~10<sup>11</sup> galaxies, there's no dark-energy expansion
+      term, no gas physics, and gravity is softened at short range. Drag to rotate ·
+      scroll to zoom.
+    </p>
+  </div>
+
+<script>
+"use strict";
+(function () {
+  const canvas = document.getElementById("gl");
+  const gl = canvas.getContext("webgl2", { antialias: true });
+  if (!gl) {
+    document.getElementById("fallback").style.display = "grid";
+    canvas.style.display = "none";
+    return;
+  }
+
+  // ---------- N-body cosmic-structure physics ----------
+  const sim = {
+    grid: 13,            // grid^3 particles
+    n: 0,
+    G: 0.0022,
+    eps2: 0.0026,        // softening^2
+    dt: 0.010,
+    amp: 0.18,           // Zel'dovich displacement amplitude
+    running: true,
+    gravMul: 1.0,
+    t: 0,
+    px:null,py:null,pz:null, vx:null,vy:null,vz:null,
+    ax:null,ay:null,az:null, m:null, speed:null,
+  };
+
+  function alloc(n){
+    sim.n = n;
+    sim.px=new Float32Array(n); sim.py=new Float32Array(n); sim.pz=new Float32Array(n);
+    sim.vx=new Float32Array(n); sim.vy=new Float32Array(n); sim.vz=new Float32Array(n);
+    sim.ax=new Float32Array(n); sim.ay=new Float32Array(n); sim.az=new Float32Array(n);
+    sim.m=new Float32Array(n);  sim.speed=new Float32Array(n);
+    sim.posBuf3 = new Float32Array(n*3);
+  }
+
+  function rand(){ return Math.random(); }
+
+  // Zel'dovich initial conditions: lay particles on a regular grid, then
+  // displace each by the gradient of a random smooth potential built from a
+  // handful of low-frequency Fourier modes (a crude "power spectrum"). The
+  // matching velocity field points the same way, so coherent flows form the
+  // pancakes/filaments of the cosmic web as gravity takes over.
+  function initUniverse(){
+    const g = sim.grid;
+    alloc(g*g*g);
+    const amp = sim.amp;
+
+    // Random Fourier modes for the displacement potential. Using several modes
+    // across a range of wavenumbers (not one dominant low-k mode) seeds
+    // MULTIPLE overdense regions, which collapse into nodes joined by filaments
+    // -- a web -- rather than a single central blob.
+    const NMODES = 16;
+    const modes = [];
+    for(let k=0;k<NMODES;k++){
+      const kx = (1 + Math.floor(rand()*4)) * (rand()<0.5?-1:1);
+      const ky = (1 + Math.floor(rand()*4)) * (rand()<0.5?-1:1);
+      const kz = (1 + Math.floor(rand()*4)) * (rand()<0.5?-1:1);
+      const k2 = kx*kx+ky*ky+kz*kz;
+      // ~1/k weighting keeps some mid-scale power instead of only the largest
+      // wavelength dominating, so structure appears on more than one scale.
+      modes.push({ kx:kx*Math.PI, ky:ky*Math.PI, kz:kz*Math.PI,
+                   amp: (rand()*2-1)/Math.sqrt(k2), phase: rand()*Math.PI*2 });
+    }
+
+    let idx=0;
+    for(let i=0;i<g;i++) for(let j=0;j<g;j++) for(let k=0;k<g;k++){
+      // grid position in [-0.9, 0.9]
+      const qx = (i/(g-1)-0.5)*1.8, qy=(j/(g-1)-0.5)*1.8, qz=(k/(g-1)-0.5)*1.8;
+      // displacement = gradient of potential Phi = sum a*cos(k.q + phase)
+      let dx=0, dy=0, dz=0;
+      for(const m of modes){
+        const ph = m.kx*qx + m.ky*qy + m.kz*qz + m.phase;
+        const s = Math.sin(ph);
+        dx += m.amp * m.kx * s;   // d/dq of cos = -k sin ; sign folds into amp
+        dy += m.amp * m.ky * s;
+        dz += m.amp * m.kz * s;
+      }
+      sim.px[idx] = qx + amp*dx;
+      sim.py[idx] = qy + amp*dy;
+      sim.pz[idx] = qz + amp*dz;
+      // growing-mode velocity is proportional to displacement (Zel'dovich)
+      sim.vx[idx] = amp*dx*0.6;
+      sim.vy[idx] = amp*dy*0.6;
+      sim.vz[idx] = amp*dz*0.6;
+      sim.m[idx] = 1.0;
+      idx++;
+    }
+    sim.t = 0;
+    computeAccel();
+  }
+
+  function computeAccel(){
+    const n=sim.n, px=sim.px,py=sim.py,pz=sim.pz,m=sim.m;
+    const ax=sim.ax,ay=sim.ay,az=sim.az;
+    const G=sim.G*sim.gravMul, eps2=sim.eps2;
+    for(let i=0;i<n;i++){ ax[i]=0; ay[i]=0; az[i]=0; }
+    for(let i=0;i<n;i++){
+      const xi=px[i],yi=py[i],zi=pz[i];
+      let axi=0,ayi=0,azi=0;
+      for(let j=0;j<n;j++){
+        if(j===i) continue;
+        const dx=px[j]-xi, dy=py[j]-yi, dz=pz[j]-zi;
+        const r2=dx*dx+dy*dy+dz*dz+eps2;
+        const inv=1.0/Math.sqrt(r2);
+        const inv3=inv*inv*inv;
+        const f=G*m[j]*inv3;
+        axi+=f*dx; ayi+=f*dy; azi+=f*dz;
+      }
+      ax[i]=axi; ay[i]=ayi; az[i]=azi;
+    }
+    // Remove the volume-averaged ("background") acceleration. In a real
+    // homogeneous, expanding universe the smooth mass distribution exerts no
+    // net force by symmetry -- only density CONTRASTS do. In this small,
+    // non-periodic box that background instead shows up as a spurious pull of
+    // everything toward the centre of mass, which would collapse the whole
+    // thing into one blob. Subtracting the mean leaves the differential
+    // (tidal) forces that actually sculpt filaments, walls, and voids.
+    let mx=0,my=0,mz=0;
+    for(let i=0;i<n;i++){ mx+=ax[i]; my+=ay[i]; mz+=az[i]; }
+    mx/=n; my/=n; mz/=n;
+    for(let i=0;i<n;i++){ ax[i]-=mx; ay[i]-=my; az[i]-=mz; }
+  }
+
+  // Velocity-Verlet with a mild global drag so structure holds together
+  // visibly instead of virializing into a violent scatter too fast.
+  function step(){
+    const n=sim.n, dt=sim.dt;
+    for(let i=0;i<n;i++){
+      sim.vx[i]+=0.5*dt*sim.ax[i]; sim.vy[i]+=0.5*dt*sim.ay[i]; sim.vz[i]+=0.5*dt*sim.az[i];
+      sim.px[i]+=dt*sim.vx[i]; sim.py[i]+=dt*sim.vy[i]; sim.pz[i]+=dt*sim.vz[i];
+    }
+    computeAccel();
+    let maxs=1e-6;
+    for(let i=0;i<n;i++){
+      sim.vx[i]+=0.5*dt*sim.ax[i]; sim.vy[i]+=0.5*dt*sim.ay[i]; sim.vz[i]+=0.5*dt*sim.az[i];
+      const sp=Math.sqrt(sim.vx[i]*sim.vx[i]+sim.vy[i]*sim.vy[i]+sim.vz[i]*sim.vz[i]);
+      sim.speed[i]=sp; if(sp>maxs)maxs=sp;
+    }
+    sim.maxSpeed = maxs;
+    sim.t += dt;
+  }
+
+  // ---------- WebGL point rendering (additive glow, coloured by velocity) ----------
+  const VERT = `#version 300 es
+  precision highp float;
+  layout(location=0) in vec3 aPos;
+  layout(location=1) in float aSpeed;
+  uniform mat3 uRot;
+  uniform float uScale;
+  uniform vec2 uAspect;
+  uniform float uSpeedScale;
+  out vec3 vCol;
+  void main(){
+    vec3 p = uRot * aPos;
+    float depth = p.z*0.35 + 0.6;               // fake depth shading
+    gl_Position = vec4(p.xy * uScale * uAspect, 0.0, 1.0);
+    float s = clamp(aSpeed * uSpeedScale, 0.0, 1.0);
+    gl_PointSize = clamp(2.0 + s*7.0, 1.8, 10.0) * depth;
+    // void (slow) = deep blue, filament (medium) = warm, halo (fast) = white-hot
+    vec3 c = mix(vec3(0.12,0.18,0.5), vec3(1.0,0.7,0.35), pow(s,0.6));
+    c = mix(c, vec3(1.0,0.97,0.9), pow(s,2.5));
+    vCol = c * depth;
+  }`;
+
+  const FRAG = `#version 300 es
+  precision highp float;
+  in vec3 vCol;
+  out vec4 fragColor;
+  void main(){
+    vec2 d = gl_PointCoord - vec2(0.5);
+    float r = length(d);
+    float a = smoothstep(0.5, 0.0, r);
+    float core = pow(a, 3.0);
+    fragColor = vec4(vCol*1.5 + vec3(core*0.4), a);
+  }`;
+
+  function compile(type, src){
+    const s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  const prog=gl.createProgram();
+  gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
+  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
+  gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+
+  const vao=gl.createVertexArray(); gl.bindVertexArray(vao);
+  const posBuf=gl.createBuffer(), spdBuf=gl.createBuffer();
+  const U={
+    rot:gl.getUniformLocation(prog,"uRot"),
+    scale:gl.getUniformLocation(prog,"uScale"),
+    aspect:gl.getUniformLocation(prog,"uAspect"),
+    speedScale:gl.getUniformLocation(prog,"uSpeedScale"),
+  };
+
+  const view={ yaw:0.4, pitch:0.3, scale:1.05, trail:0.45, spin:true };
+  window.__uni={ sim, view }; // test/debug hook
+
+  function rotMatrix(){
+    const cy=Math.cos(view.yaw),sy=Math.sin(view.yaw),cp=Math.cos(view.pitch),sp=Math.sin(view.pitch);
+    return new Float32Array([ cy, sp*sy, -cp*sy,  0, cp, sp,  sy, -sp*cy, cp*cy ]);
+  }
+  function resize(){
+    const dpr=Math.min(window.devicePixelRatio||1,1.5);
+    const w=Math.floor(canvas.clientWidth*dpr), h=Math.floor(canvas.clientHeight*dpr);
+    if(canvas.width!==w||canvas.height!==h){ canvas.width=w; canvas.height=h; }
+    gl.viewport(0,0,canvas.width,canvas.height);
+  }
+  window.addEventListener("resize", resize);
+
+  // interaction
+  let drag=false,lx=0,ly=0;
+  canvas.addEventListener("pointerdown",e=>{drag=true;lx=e.clientX;ly=e.clientY;canvas.setPointerCapture(e.pointerId);});
+  canvas.addEventListener("pointerup",()=>{drag=false;});
+  canvas.addEventListener("pointermove",e=>{ if(!drag)return;
+    view.yaw+=(e.clientX-lx)*0.006; view.pitch+=(e.clientY-ly)*0.006;
+    view.pitch=Math.max(-1.55,Math.min(1.55,view.pitch)); lx=e.clientX; ly=e.clientY; view.spin=false; });
+  canvas.addEventListener("wheel",e=>{ e.preventDefault(); view.scale*=Math.exp(-e.deltaY*0.0012);
+    view.scale=Math.max(0.2,Math.min(3.0,view.scale)); },{passive:false});
+
+  document.getElementById("btn-pause").addEventListener("click",e=>{
+    sim.running=!sim.running; e.target.textContent=sim.running?"⏸ Pause":"▶ Play";
+    e.target.classList.toggle("active",!sim.running);
+  });
+  document.getElementById("btn-reset").addEventListener("click",()=>{ initUniverse(); clearScreen(); });
+  document.getElementById("grav").addEventListener("input",e=>{ sim.gravMul=parseFloat(e.target.value); });
+  document.getElementById("amp").addEventListener("input",e=>{ sim.amp=parseFloat(e.target.value); });
+  document.getElementById("trail").addEventListener("input",e=>{ view.trail=parseFloat(e.target.value); });
+
+  function clearScreen(){ gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT); }
+
+  // fade quad for motion trails
+  let fadeProg, fadeA;
+  (function(){
+    const fv=`#version 300 es
+    precision highp float; const vec2 v[3]=vec2[3](vec2(-1.,-1.),vec2(3.,-1.),vec2(-1.,3.));
+    void main(){ gl_Position=vec4(v[gl_VertexID],0.,1.); }`;
+    const ff=`#version 300 es
+    precision highp float; out vec4 o; uniform float uA; void main(){ o=vec4(0.,0.,0.,uA); }`;
+    fadeProg=gl.createProgram();
+    gl.attachShader(fadeProg,compile(gl.VERTEX_SHADER,fv));
+    gl.attachShader(fadeProg,compile(gl.FRAGMENT_SHADER,ff));
+    gl.linkProgram(fadeProg);
+    fadeA=gl.getUniformLocation(fadeProg,"uA");
+  })();
+  function fadeQuad(a){ gl.useProgram(fadeProg); gl.uniform1f(fadeA,a); gl.bindVertexArray(vao); gl.drawArrays(gl.TRIANGLES,0,3); }
+
+  // init
+  resize();
+  initUniverse();
+  clearScreen();
+
+  const statsEl=document.getElementById("stats"), clockEl=document.getElementById("clock");
+  let frames=0, ft=performance.now();
+
+  function frame(now){
+    resize();
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    fadeQuad(1.0 - view.trail);
+
+    if(sim.running){ step(); }
+    if(view.spin) view.yaw += 0.0016;
+
+    // upload positions + speeds
+    const n=sim.n, arr=sim.posBuf3;
+    for(let i=0;i<n;i++){ arr[i*3]=sim.px[i]; arr[i*3+1]=sim.py[i]; arr[i*3+2]=sim.pz[i]; }
+    gl.bindBuffer(gl.ARRAY_BUFFER,posBuf);
+    gl.bufferData(gl.ARRAY_BUFFER,arr,gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ARRAY_BUFFER,spdBuf);
+    gl.bufferData(gl.ARRAY_BUFFER,sim.speed,gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1,1,gl.FLOAT,false,0,0);
+
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    gl.useProgram(prog);
+    gl.uniformMatrix3fv(U.rot,false,rotMatrix());
+    gl.uniform1f(U.scale, view.scale);
+    gl.uniform2f(U.aspect, canvas.height/canvas.width, 1.0);
+    gl.uniform1f(U.speedScale, 1.0/Math.max(sim.maxSpeed||1, 0.001));
+    gl.drawArrays(gl.POINTS, 0, n);
+
+    frames++;
+    if(now-ft>500){
+      statsEl.textContent = `${n} particles · ${Math.round(frames*1000/(now-ft))} fps`;
+      clockEl.textContent = `cosmic time: ${sim.t.toFixed(2)}`;
+      frames=0; ft=now;
+    }
+    window.__uniFrames=(window.__uniFrames||0)+1;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
