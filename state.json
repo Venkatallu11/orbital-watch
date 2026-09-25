@@ -5554,21 +5554,21 @@
       "norad_id": 7530,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 10,
-      "unvetted_count": 15,
+      "bad_count": 11,
+      "unvetted_count": 14,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/10 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/11 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "24278": {
       "norad_id": 24278,
       "total_observations": 25,
-      "good_count": 0,
-      "bad_count": 2,
+      "good_count": 1,
+      "bad_count": 1,
       "unvetted_count": 23,
-      "success_rate": 0.0,
+      "success_rate": 0.5,
       "is_degraded": false,
-      "reason": "0/2 recent vetted observations were good (0%)"
+      "reason": "1/2 recent vetted observations were good (50%)"
     },
     "25867": {
       "norad_id": 25867,
@@ -5604,11 +5604,11 @@
       "norad_id": 26931,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 9,
-      "unvetted_count": 16,
+      "bad_count": 8,
+      "unvetted_count": 17,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/9 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/8 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "28485": {
       "norad_id": 28485,
@@ -5674,11 +5674,11 @@
       "norad_id": 35933,
       "total_observations": 25,
       "good_count": 5,
-      "bad_count": 6,
-      "unvetted_count": 14,
-      "success_rate": 0.45454545454545453,
+      "bad_count": 7,
+      "unvetted_count": 13,
+      "success_rate": 0.4166666666666667,
       "is_degraded": true,
-      "reason": "only 5/11 recent vetted observations were good (45%) -- worth checking against the TLE-residual signal"
+      "reason": "only 5/12 recent vetted observations were good (42%) -- worth checking against the TLE-residual signal"
     },
     "36086": {
       "norad_id": 36086,
@@ -6016,10 +6016,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Sep-25 15:42:00.0000",
-      "distance_from_earth_km": 25743731436.99063,
-      "distance_from_earth_au": 172.08621564284493,
-      "speed_km_s": 44.35957291286054
+      "epoch": "2026-Sep-25 19:44:00.0000",
+      "distance_from_earth_km": 25744313964.44526,
+      "distance_from_earth_au": 172.0901095983665,
+      "speed_km_s": 44.35538671484555
     },
     {
       "key": "voyager_2",
@@ -6037,10 +6037,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Sep-25 15:42:00.0000",
-      "distance_from_earth_km": 21511191035.03701,
-      "distance_from_earth_au": 143.79343057746485,
-      "speed_km_s": 41.00967600605736
+      "epoch": "2026-Sep-25 19:44:00.0000",
+      "distance_from_earth_km": 21511731756.16927,
+      "distance_from_earth_au": 143.7970450749823,
+      "speed_km_s": 41.01853684854662
     },
     {
       "key": "pioneer_10",
@@ -6052,10 +6052,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Sep-25 15:42:00.0000",
-      "distance_from_earth_km": 21196130487.83182,
-      "distance_from_earth_au": 141.68738090088218,
-      "speed_km_s": 18.109968944706075
+      "epoch": "2026-Sep-25 19:44:00.0000",
+      "distance_from_earth_km": 21195882177.97974,
+      "distance_from_earth_au": 141.68572105204262,
+      "speed_km_s": 18.1201611358027
     },
     {
       "key": "pioneer_11",
@@ -6067,10 +6067,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Sep-25 15:42:00.0000",
-      "distance_from_earth_km": 17609326948.76331,
-      "distance_from_earth_au": 117.71108015351793,
-      "speed_km_s": 40.21552120945314
+      "epoch": "2026-Sep-25 19:44:00.0000",
+      "distance_from_earth_km": 17609898213.24435,
+      "distance_from_earth_au": 117.7148988207113,
+      "speed_km_s": 40.224131893923875
     }
   ],
   "volcano_alerts": [
@@ -6095,8 +6095,8 @@
       "observatory": "Hawaiian Volcano Observatory",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
-      "sent_utc": "2026-09-24 18:43:24",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-09-24T17:15:03+00:00"
+      "sent_utc": "2026-09-25 19:24:30",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-09-25T17:09:44+00:00"
     },
     {
       "volcano_name": "Ahyi Seamount",
