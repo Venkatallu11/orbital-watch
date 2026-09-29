@@ -13,8 +13,8 @@
       "line2": "2 25994  97.9344 317.5421 0000929 245.7244 163.0374 14.61167200424796"
     },
     "43013": {
-      "line1": "1 43013U 17073A   26271.54521505  .00000022  00000+0  31541-4 0  9995",
-      "line2": "2 43013  98.7837 210.1127 0001010  34.6272 325.4970 14.19527986459139"
+      "line1": "1 43013U 17073A   26272.10909949  .00000028  00000+0  34254-4 0  9990",
+      "line2": "2 43013  98.7838 210.6721 0000990  34.1654 325.9585 14.19528085459217"
     },
     "20580": {
       "line1": "1 20580U 90037B   26270.92146237  .00004611  00000+0  13862-3 0  9999",
@@ -25,8 +25,8 @@
       "line2": "2 39084  98.2202 341.0415 0001315  94.9771 265.1578 14.57105851713040"
     },
     "37849": {
-      "line1": "1 37849U 11061A   26271.60197153  .00000045  00000+0  42488-4 0  9998",
-      "line2": "2 37849  98.8026 211.7982 0002539  49.5741 310.5656 14.19535538773114"
+      "line1": "1 37849U 11061A   26272.16585278  .00000046  00000+0  43004-4 0  9995",
+      "line2": "2 37849  98.8027 212.3587 0002526  48.5476 311.5917 14.19535623773197"
     },
     "25544": {
       "line1": "1 25544U 98067A   26272.11005302  .00004557  00000+0  91790-4 0  9991",
@@ -57,8 +57,8 @@
       "line2": "2 25989  63.9616 281.6787 4648581  63.1030   0.1095  0.50121727 23515"
     },
     "26407": {
-      "line1": "1 26407U 00040A   26271.24814091  .00000027  00000+0  00000+0 0  9997",
-      "line2": "2 26407  54.8357 211.0724 0117505 304.1161 233.1436  2.00558405192019"
+      "line1": "1 26407U 00040A   26272.00968683  .00000031  00000+0  00000+0 0  9994",
+      "line2": "2 26407  54.8355 211.0422 0117464 304.1330  62.9894  2.00558401192038"
     },
     "26931": {
       "line1": "1 26931U 01043C   26271.59915870  .00000073  00000+0  58322-4 0  9994",
@@ -263,7 +263,6 @@
       0.5681675483601011
     ],
     "26407": [
-      0.09947166674950655,
       0.0921425007899056,
       0.114028237834213,
       0.32137675788736986,
@@ -272,7 +271,8 @@
       0.17436628461964404,
       0.19916751708914693,
       0.24587900948050842,
-      0.2883875094402718
+      0.2883875094402718,
+      0.17617522142916042
     ],
     "26931": [
       0.13869000586736402,
@@ -395,7 +395,6 @@
       116.45079779094074
     ],
     "37849": [
-      0.05600687233538351,
       0.06227811574570345,
       0.067585677760488,
       0.06922496727560898,
@@ -404,7 +403,8 @@
       0.08236564244754241,
       0.04677684182489004,
       0.103629564929657,
-      0.05025457601538782
+      0.05025457601538782,
+      0.06813701120993727
     ],
     "38012": [
       1.321500634250778,
@@ -551,7 +551,6 @@
       0.3224726893296504
     ],
     "43013": [
-      0.05188129703805136,
       0.10339508859098506,
       0.06726294153792414,
       0.1338158955573393,
@@ -560,7 +559,8 @@
       0.08270131214212642,
       0.06190548882103859,
       0.061264635195957776,
-      0.06949854723236705
+      0.06949854723236705,
+      0.07578308216443332
     ],
     "44057": [
       1.1627898683580935,
@@ -5773,12 +5773,12 @@
     "33591": {
       "norad_id": 33591,
       "total_observations": 25,
-      "good_count": 2,
-      "bad_count": 10,
+      "good_count": 3,
+      "bad_count": 9,
       "unvetted_count": 13,
-      "success_rate": 0.16666666666666666,
+      "success_rate": 0.25,
       "is_degraded": true,
-      "reason": "only 2/12 recent vetted observations were good (17%) -- worth checking against the TLE-residual signal"
+      "reason": "only 3/12 recent vetted observations were good (25%) -- worth checking against the TLE-residual signal"
     },
     "37849": {
       "norad_id": 37849,
@@ -5833,22 +5833,22 @@
     "7530": {
       "norad_id": 7530,
       "total_observations": 25,
-      "good_count": 0,
-      "bad_count": 2,
-      "unvetted_count": 23,
-      "success_rate": 0.0,
-      "is_degraded": false,
-      "reason": "0/2 recent vetted observations were good (0%)"
+      "good_count": 1,
+      "bad_count": 7,
+      "unvetted_count": 17,
+      "success_rate": 0.125,
+      "is_degraded": true,
+      "reason": "only 1/8 recent vetted observations were good (12%) -- worth checking against the TLE-residual signal"
     },
     "24278": {
       "norad_id": 24278,
       "total_observations": 25,
-      "good_count": 2,
+      "good_count": 3,
       "bad_count": 0,
-      "unvetted_count": 23,
+      "unvetted_count": 22,
       "success_rate": 1.0,
       "is_degraded": false,
-      "reason": "2/2 recent vetted observations were good (100%)"
+      "reason": "3/3 recent vetted observations were good (100%)"
     },
     "25867": {
       "norad_id": 25867,
@@ -5953,12 +5953,12 @@
     "35933": {
       "norad_id": 35933,
       "total_observations": 25,
-      "good_count": 10,
+      "good_count": 9,
       "bad_count": 7,
-      "unvetted_count": 8,
-      "success_rate": 0.5882352941176471,
+      "unvetted_count": 9,
+      "success_rate": 0.5625,
       "is_degraded": false,
-      "reason": "10/17 recent vetted observations were good (59%)"
+      "reason": "9/16 recent vetted observations were good (56%)"
     },
     "36086": {
       "norad_id": 36086,
@@ -6043,12 +6043,12 @@
     "38771": {
       "norad_id": 38771,
       "total_observations": 25,
-      "good_count": 1,
+      "good_count": 2,
       "bad_count": 19,
-      "unvetted_count": 5,
-      "success_rate": 0.05,
+      "unvetted_count": 4,
+      "success_rate": 0.09523809523809523,
       "is_degraded": true,
-      "reason": "only 1/20 recent vetted observations were good (5%) -- worth checking against the TLE-residual signal"
+      "reason": "only 2/21 recent vetted observations were good (10%) -- worth checking against the TLE-residual signal"
     },
     "39089": {
       "norad_id": 39089,
@@ -6254,11 +6254,11 @@
       "norad_id": 35951,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 21,
-      "unvetted_count": 4,
+      "bad_count": 22,
+      "unvetted_count": 3,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/21 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/22 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     }
   },
   "crew_by_craft": {
@@ -6296,10 +6296,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Sep-29 16:17:00.0000",
-      "distance_from_earth_km": 25757599394.24731,
-      "distance_from_earth_au": 172.1789172113351,
-      "speed_km_s": 44.243278284493115
+      "epoch": "2026-Sep-29 21:12:00.0000",
+      "distance_from_earth_km": 25758300489.20106,
+      "distance_from_earth_au": 172.1836037416344,
+      "speed_km_s": 44.236453693188935
     },
     {
       "key": "voyager_2",
@@ -6317,10 +6317,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Sep-29 16:17:00.0000",
-      "distance_from_earth_km": 21524216319.42797,
-      "distance_from_earth_au": 143.88049922576855,
-      "speed_km_s": 41.210639041865896
+      "epoch": "2026-Sep-29 21:12:00.0000",
+      "distance_from_earth_km": 21524883382.61747,
+      "distance_from_earth_au": 143.8849582677748,
+      "speed_km_s": 41.22024056768083
     },
     {
       "key": "pioneer_10",
@@ -6332,10 +6332,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Sep-29 16:17:00.0000",
-      "distance_from_earth_km": 21190260548.07889,
-      "distance_from_earth_au": 141.64814277720126,
-      "speed_km_s": 18.40015779667893
+      "epoch": "2026-Sep-29 21:12:00.0000",
+      "distance_from_earth_km": 21189966386.98005,
+      "distance_from_earth_au": 141.64617643170806,
+      "speed_km_s": 18.41747165444141
     },
     {
       "key": "pioneer_11",
@@ -6347,10 +6347,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Sep-29 16:17:00.0000",
-      "distance_from_earth_km": 17623067764.36815,
-      "distance_from_earth_au": 117.8029318325595,
-      "speed_km_s": 40.40900516430207
+      "epoch": "2026-Sep-29 21:12:00.0000",
+      "distance_from_earth_km": 17623770280.37782,
+      "distance_from_earth_au": 117.80762786203093,
+      "speed_km_s": 40.41814479528865
     }
   ],
   "volcano_alerts": [
@@ -6359,24 +6359,24 @@
       "observatory": "Alaska Volcano Observatory",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
-      "sent_utc": "2026-09-28 20:41:27",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-09-28T19:52:01+00:00"
+      "sent_utc": "2026-09-29 19:52:26",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-09-29T18:26:19+00:00"
     },
     {
       "volcano_name": "Shishaldin",
       "observatory": "Alaska Volcano Observatory",
       "alert_level": "ADVISORY",
       "color_code": "YELLOW",
-      "sent_utc": "2026-09-28 20:41:27",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-09-28T19:52:01+00:00"
+      "sent_utc": "2026-09-29 19:52:26",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-AVO-2026-09-29T18:26:19+00:00"
     },
     {
       "volcano_name": "Kilauea",
       "observatory": "Hawaiian Volcano Observatory",
       "alert_level": "WATCH",
       "color_code": "ORANGE",
-      "sent_utc": "2026-09-28 18:21:13",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-09-28T16:49:27+00:00"
+      "sent_utc": "2026-09-29 19:02:11",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-09-29T16:47:40+00:00"
     },
     {
       "volcano_name": "Ahyi Seamount",
