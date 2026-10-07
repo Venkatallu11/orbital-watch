@@ -297,6 +297,40 @@ main {
   border-color: var(--accent);
 }
 
+/* God's eye view toggle */
+#godeye-toggle {
+  background: var(--panel-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
+#godeye-toggle:hover {
+  border-color: var(--accent);
+}
+#godeye-toggle.active {
+  color: #0d1117;
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+/* Fleet maneuver feed */
+.feed-item {
+  cursor: pointer;
+  border-radius: 6px;
+}
+.feed-item:hover {
+  background: rgba(88, 166, 255, 0.08);
+}
+#maneuver-feed-content {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
 #crew-content ul {
   margin: 0.4rem 0 0;
   padding-left: 1.2rem;
