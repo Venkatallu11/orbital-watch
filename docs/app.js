@@ -547,6 +547,220 @@ function wireTimeMachineControls() {
   }
 }
 
+// --- Visible-pass prediction (Heavens-Above-style, 100% client-side) ---
+// Given your location, work out when the selected satellite rises above your
+// horizon, how high it gets, and -- crucially -- whether you can actually SEE
+// it: a satellite is only visible when IT is sunlit while YOUR sky is dark.
+// All of this is real orbital + solar geometry computed in the browser from
+// the TLE already in data.json -- no API, no key, works offline.
+const OBS_KEY = "ow_observer";
+const DEG = Math.PI / 180;
+const EARTH_R_KM = 6378.137;
+let observer = loadObserver(); // {lat, lon, alt(km)} or null
+
+function loadObserver() {
+  try { const s = localStorage.getItem(OBS_KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; }
+}
+function saveObserver(o) { try { localStorage.setItem(OBS_KEY, JSON.stringify(o)); } catch (e) { /* private mode */ } }
+
+// Low-precision solar position in ECI (km) -- Astronomical Almanac's "low
+// precision formulae for the Sun" (good to ~0.01°, far better than we need to
+// decide sunlit-vs-shadow and day-vs-night).
+function sunEci(date) {
+  const jd = date.getTime() / 86400000 + 2440587.5;
+  const n = jd - 2451545.0;
+  const L = ((280.460 + 0.9856474 * n) % 360) * DEG;
+  const g = ((357.528 + 0.9856003 * n) % 360) * DEG;
+  const lambda = L + (1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * DEG;
+  const eps = (23.439 - 0.0000004 * n) * DEG;
+  const AU = 149597870.7;
+  const r = (1.00014 - 0.01671 * Math.cos(g) - 0.00014 * Math.cos(2 * g)) * AU;
+  return { x: r * Math.cos(lambda), y: r * Math.cos(eps) * Math.sin(lambda), z: r * Math.sin(eps) * Math.sin(lambda) };
+}
+
+// Is this ECI point in sunlight? Cylindrical-umbra test: sunlit unless it's on
+// the far side of Earth from the Sun AND within one Earth radius of the
+// Earth–Sun line (i.e. inside Earth's shadow cylinder).
+function isSunlit(p, date) {
+  const s = sunEci(date);
+  const sr = Math.hypot(s.x, s.y, s.z);
+  const sx = s.x / sr, sy = s.y / sr, sz = s.z / sr;
+  const proj = p.x * sx + p.y * sy + p.z * sz;
+  if (proj >= 0) return true;
+  const perp = Math.hypot(p.x - proj * sx, p.y - proj * sy, p.z - proj * sz);
+  return perp > EARTH_R_KM;
+}
+
+// Sun elevation at the observer (deg) -- below ~ -6° means the sky is dark
+// enough to see a sunlit satellite.
+function sunElevationDeg(obs, date) {
+  const gmst = satellite.gstime(date);
+  const ecf = satellite.eciToEcf(sunEci(date), gmst);
+  const look = satellite.ecfToLookAngles(
+    { longitude: obs.lon * DEG, latitude: obs.lat * DEG, height: (obs.alt || 0) },
+    ecf
+  );
+  return look.elevation / DEG;
+}
+
+function azToCompass(az) {
+  const dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+  return dirs[Math.round(((az % 360) / 22.5)) % 16];
+}
+
+// Find passes in the next `hours` hours with peak elevation above `minEl`.
+function computePasses(satrec, obs, hours, minEl) {
+  hours = hours || 48;
+  minEl = minEl || 10;
+  const obsGd = { longitude: obs.lon * DEG, latitude: obs.lat * DEG, height: (obs.alt || 0) };
+  const stepMs = 30 * 1000;
+  const start = Date.now();
+  const end = start + hours * 3600 * 1000;
+  const passes = [];
+  let cur = null;
+  const flush = () => {
+    if (!cur) return;
+    const peak = cur.samples.reduce((a, b) => (b.el > a.el ? b : a), cur.samples[0]);
+    if (peak.el >= minEl) {
+      const first = cur.samples[0], last = cur.samples[cur.samples.length - 1];
+      passes.push({
+        start: first.date, end: last.date, peakTime: peak.date,
+        maxEl: peak.el, startAz: first.az, endAz: last.az,
+        durationS: (last.date - first.date) / 1000,
+        // visible = at some moment the satellite is sunlit while the observer's
+        // sky is dark and the object is a reasonable height up.
+        visible: cur.samples.some((s) => s.sunlit && s.sunEl < -6 && s.el > 5),
+      });
+    }
+    cur = null;
+  };
+  for (let t = start; t <= end; t += stepMs) {
+    const date = new Date(t);
+    const pv = satellite.propagate(satrec, date);
+    if (!pv.position) continue;
+    const gmst = satellite.gstime(date);
+    const look = satellite.ecfToLookAngles(obsGd, satellite.eciToEcf(pv.position, gmst));
+    const el = look.elevation / DEG;
+    if (el > 0) {
+      if (!cur) cur = { samples: [] };
+      cur.samples.push({
+        date, el, az: look.azimuth / DEG,
+        sunlit: isSunlit(pv.position, date),
+        sunEl: sunElevationDeg(obs, date),
+      });
+    } else {
+      flush();
+    }
+  }
+  flush();
+  return passes;
+}
+
+function renderPasses(sat) {
+  const panel = document.getElementById("passes-panel");
+  const el = document.getElementById("passes-content");
+  if (!panel || !el) return;
+  if (!sat || !sat.line1 || !sat.line2) { panel.hidden = true; return; }
+  panel.hidden = false;
+
+  if (!observer) {
+    el.innerHTML = locationPromptHtml();
+    wireLocationControls(sat);
+    return;
+  }
+
+  el.innerHTML = `<p class="panel-note">Computing passes over ${observer.lat.toFixed(2)}°, ${observer.lon.toFixed(2)}° (next 48 h)…</p>`;
+  // Defer the heavy loop one tick so the "computing…" note paints first.
+  setTimeout(() => {
+    if (!simClock.sat || simClock.sat.norad_id !== sat.norad_id) return; // selection moved on
+    const satrec = satrecFor(sat);
+    let passes = [];
+    try { passes = computePasses(satrec, observer); } catch (e) { /* bad element set */ }
+    el.innerHTML = renderPassListHtml(passes);
+    wireLocationControls(sat);
+  }, 0);
+}
+
+function renderPassListHtml(passes) {
+  const loc = `<p class="panel-note">Your location: <strong>${observer.lat.toFixed(3)}°, ${observer.lon.toFixed(3)}°</strong> — ` +
+    `<a href="#" id="passes-change">change</a>. Times are your local time; all computed in-browser from the TLE (real look-angle + solar geometry), not fetched.</p>`;
+
+  if (passes.length === 0) {
+    return loc + '<div class="no-imagery">No passes above 10° in the next 48 hours from your location (it may stay below your horizon, or this is a high/geostationary orbit).</div>';
+  }
+
+  // A pass longer than ~2 h isn't really a "pass" -- it's a high/GEO object
+  // sitting in view. Label it honestly instead of as a fly-over.
+  const rows = passes.slice(0, 12).map((p) => {
+    const vis = p.visible
+      ? '<span class="badge badge-ok">👁 VISIBLE</span>'
+      : '<span class="badge badge-warn">radio/daylight only</span>';
+    if (p.durationS > 7200) {
+      return `<div class="status-row">${vis} <strong>Continuously in view</strong>` +
+        `<br><span class="label">High/geostationary orbit — stays above your horizon (max el ${p.maxEl.toFixed(0)}°).</span></div>`;
+    }
+    const d = p.peakTime;
+    const when = d.toLocaleString([], { weekday: "short", hour: "2-digit", minute: "2-digit" });
+    const dur = Math.round(p.durationS / 60);
+    return `<div class="status-row">${vis} <strong>${when}</strong> (local)` +
+      `<br><span class="label">max elevation ${p.maxEl.toFixed(0)}° · ${azToCompass(p.startAz)}→${azToCompass(p.endAz)} · ~${dur} min</span></div>`;
+  }).join("");
+
+  const visibleNote = passes.some((p) => p.visible)
+    ? '<p class="panel-note">👁 marks passes you could actually <em>see</em> with the naked eye — the satellite is sunlit while your sky is dark.</p>'
+    : '<p class="panel-note">None of these are naked-eye visible in this window (the satellite is in Earth\'s shadow, or your sky is still bright, when it passes).</p>';
+
+  return loc + visibleNote + rows;
+}
+
+function locationPromptHtml() {
+  return `<p class="panel-note">See when this satellite flies over <strong>you</strong> — and whether it'll be bright enough to spot. Set your location (kept only in your browser):</p>
+    <div class="loc-controls">
+      <button type="button" id="loc-geo">📍 Use my location</button>
+      <span class="label">or enter it:</span>
+      <input type="number" id="loc-lat" placeholder="lat" step="0.01" min="-90" max="90">
+      <input type="number" id="loc-lon" placeholder="lon" step="0.01" min="-180" max="180">
+      <button type="button" id="loc-set">Set</button>
+    </div>
+    <p class="panel-note" id="loc-status"></p>`;
+}
+
+function wireLocationControls(sat) {
+  const geo = document.getElementById("loc-geo");
+  if (geo) geo.addEventListener("click", () => {
+    const status = document.getElementById("loc-status");
+    if (!navigator.geolocation) { if (status) status.textContent = "Geolocation isn't available in this browser — enter coordinates manually."; return; }
+    if (status) status.textContent = "Requesting your location…";
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        observer = { lat: pos.coords.latitude, lon: pos.coords.longitude, alt: (pos.coords.altitude || 0) / 1000 };
+        saveObserver(observer);
+        renderPasses(sat);
+      },
+      () => { if (status) status.textContent = "Couldn't get your location (permission denied?) — enter coordinates manually."; }
+    );
+  });
+  const setBtn = document.getElementById("loc-set");
+  if (setBtn) setBtn.addEventListener("click", () => {
+    const lat = parseFloat(document.getElementById("loc-lat").value);
+    const lon = parseFloat(document.getElementById("loc-lon").value);
+    if (Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180) {
+      observer = { lat, lon, alt: 0 };
+      saveObserver(observer);
+      renderPasses(sat);
+    } else {
+      const status = document.getElementById("loc-status");
+      if (status) status.textContent = "Please enter a valid latitude (−90…90) and longitude (−180…180).";
+    }
+  });
+  const change = document.getElementById("passes-change");
+  if (change) change.addEventListener("click", (e) => {
+    e.preventDefault();
+    observer = null;
+    renderPasses(sat);
+  });
+}
+
 // --- Cockpit controls: optics (sensor looks), tactical HUD, cockpit POV ---
 // Inspired by "God's Eye View"-style situational displays, but driven entirely
 // by our real SGP4 state and done client-side -- the optics are honest visual
@@ -592,6 +806,9 @@ function updateHud(satrec, date) {
   if (topEl) topEl.textContent = `TRACKING · ${name} · ${view.optics.toUpperCase()}`;
   const ns = st.lat >= 0 ? "N" : "S";
   const ew = st.lng >= 0 ? "E" : "W";
+  // Is the satellite itself in sunlight or Earth's shadow right now? (Real
+  // solar geometry -- the same test the visible-pass predictor uses.)
+  const lit = isSunlit(st.eci, date);
   el.innerHTML = [
     ["NORAD", simClock.sat ? simClock.sat.norad_id : "—"],
     ["LAT", `${Math.abs(st.lat).toFixed(3)}° ${ns}`],
@@ -600,6 +817,7 @@ function updateHud(satrec, date) {
     ["VEL", st.speedKmS ? `${st.speedKmS.toFixed(2)} km/s` : "—"],
     ["INC", `${inc.toFixed(2)}°`],
     ["PERIOD", `${periodMin.toFixed(1)} min`],
+    ["LIGHT", lit ? "☀ sunlit" : "🌑 eclipse"],
   ].map(([k, v]) => `<div class="hud-line"><span>${k}</span><b>${v}</b></div>`).join("");
 }
 
@@ -1313,6 +1531,7 @@ function selectSatellite(noradId) {
   renderFireDetection(sat);
   renderPrecipitationForecast(sat);
   renderOceanConditions(sat);
+  renderPasses(sat);
 }
 
 function populateDropdown() {

@@ -172,6 +172,17 @@ something you can actually click through instead of reading JSON:
   live SGP4 positions (the same geometry conjunction screening uses) — so it's
   genuinely "what's near this satellite," and curated ones click through to
   their own detail view.
+- **Passes Over You** — a proper **visible-pass predictor** (the thing people
+  pay Heavens-Above/N2YO for), done clean and free. Give it your location (one
+  tap of "use my location", or type coordinates — kept only in your browser)
+  and it computes, for the selected satellite, every pass above 10° over the
+  next 48 hours: peak elevation, compass direction, and duration. Crucially it
+  flags which passes are **👁 naked-eye visible** — true only when the satellite
+  is sunlit *and* your sky is dark — by computing the real solar position, an
+  Earth-shadow (umbra) test, and your local sun elevation. All of it runs in
+  the browser from the TLE already in `data.json`: no API, no key, works
+  offline. The tactical HUD also shows whether the tracked object is **sunlit
+  or in eclipse** right now, from the same solar geometry.
 - **"What This Satellite Actually Does" panel** — real per-satellite
   instrument/mission info from `instruments.json` (sourced from genuine
   public mission fact sheets, not fabricated): what instruments it carries
