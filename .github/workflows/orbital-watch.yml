@@ -102,8 +102,23 @@ jobs:
           git config user.name "orbital-watch-bot"
           git config user.email "actions@users.noreply.github.com"
           git add state.json digest.md
-          git diff --cached --quiet || git commit -m "orbital-watch: update state and digest [skip ci]"
-          git push
+          if git diff --cached --quiet; then
+            echo "No state/digest changes to commit."
+          else
+            git commit -m "orbital-watch: update state and digest [skip ci]"
+            # Resilient push: this job spends minutes fetching ~600 TLEs, during
+            # which main can advance (an overlapping run, or a human push). A
+            # plain push then fails with "(fetch first)" and skips the whole
+            # deploy. Rebase onto the latest main and retry instead of failing.
+            pushed=""
+            for attempt in 1 2 3 4 5; do
+              if git push; then pushed=1; break; fi
+              echo "push rejected (attempt $attempt) -- rebasing onto latest main"
+              git pull --rebase origin main || exit 1
+              sleep 3
+            done
+            [ -n "$pushed" ] || { echo "::error::could not push state after retries"; exit 1; }
+          fi
 
       - name: Generate website data (docs/data.json)
         run: |
