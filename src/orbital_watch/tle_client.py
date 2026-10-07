@@ -32,6 +32,7 @@ class TleRecord:
     norad_id: int
     line1: str
     line2: str
+    name: str | None = None  # from 3-line format when present; None for bare 2-line
 
 
 class SpaceTrackClient:
@@ -127,17 +128,19 @@ def _parse_tle_text(text: str) -> list[TleRecord]:
     i = 0
     while i < len(lines):
         # 3-line format (name, line1, line2) or bare 2-line -- handle both
+        name = None
         if lines[i].startswith("1 ") and i + 1 < len(lines) and lines[i + 1].startswith("2 "):
             line1, line2 = lines[i], lines[i + 1]
             i += 2
         elif i + 2 < len(lines) and lines[i + 1].startswith("1 ") and lines[i + 2].startswith("2 "):
+            name = lines[i].strip()
             line1, line2 = lines[i + 1], lines[i + 2]
             i += 3
         else:
             i += 1
             continue
         norad_id = int(line1[2:7])
-        records.append(TleRecord(norad_id=norad_id, line1=line1, line2=line2))
+        records.append(TleRecord(norad_id=norad_id, line1=line1, line2=line2, name=name or None))
     return records
 
 

@@ -68,6 +68,16 @@ def main(argv=None) -> int:
     previous_tles = store.get("previous_tles", {})
     maneuver_events = store.get("maneuver_events", {})
 
+    # Names/categories for group-fetched satellites (persisted by cli.py's
+    # --watchlist-groups path). names.json/categories.json always win;
+    # these fill the gaps so hundreds of group sats aren't all "NORAD nnn".
+    tle_names = {int(k): v for k, v in store.get("tle_names", {}).items()}
+    for norad_id, name in tle_names.items():
+        object_names.setdefault(norad_id, name)
+    group_categories = {int(k): v for k, v in store.get("group_categories", {}).items()}
+    for norad_id, category in group_categories.items():
+        categories.setdefault(norad_id, category)
+
     # tle_age_days isn't persisted in state.json (it's computed fresh each
     # run relative to "now" -- see propagate.tle_age_days), so recompute it
     # here from each object's stored TLE rather than needing cli.py to pass

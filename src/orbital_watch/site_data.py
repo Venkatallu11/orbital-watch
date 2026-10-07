@@ -226,6 +226,8 @@ class SiteSatellite:
     object_type: str | None
     imagery: dict
     latest_maneuver: dict | None
+    maneuver_history: list[dict] | None  # all recorded events, oldest-first (capped)
+    maneuver_count: int
     satnogs_health: dict | None
     category: str
     instruments: dict | None
@@ -281,6 +283,10 @@ def build_site_data(
 
         events = maneuver_events.get(norad_key, [])
         latest_maneuver = events[-1] if events else None
+        # Full per-satellite maneuver timeline for the website's history
+        # panel and the God's-eye-view maneuver feed -- capped at the 25
+        # most recent so data.json stays lean with hundreds of satellites.
+        maneuver_history = events[-25:] if events else None
 
         satellites.append(
             SiteSatellite(
@@ -292,6 +298,8 @@ def build_site_data(
                 object_type=object_types.get(norad_id),
                 imagery=imagery_descriptor(norad_id),
                 latest_maneuver=latest_maneuver,
+                maneuver_history=maneuver_history,
+                maneuver_count=len(events),
                 satnogs_health=satnogs_healths_by_id.get(norad_id),
                 category=categories.get(norad_id, "uncategorized"),
                 instruments=instruments.get(norad_id),
@@ -328,6 +336,8 @@ def build_site_data(
                 object_type="Deep space probe (not Earth-orbiting)",
                 imagery={"kind": "none"},
                 latest_maneuver=None,
+                maneuver_history=None,
+                maneuver_count=0,
                 satnogs_health=None,
                 category="deep_space_probes",
                 instruments={
@@ -364,6 +374,8 @@ def build_site_data(
                 "object_type": s.object_type,
                 "imagery": s.imagery,
                 "latest_maneuver": s.latest_maneuver,
+                "maneuver_history": s.maneuver_history,
+                "maneuver_count": s.maneuver_count,
                 "satnogs_health": s.satnogs_health,
                 "category": s.category,
                 "instruments": s.instruments,

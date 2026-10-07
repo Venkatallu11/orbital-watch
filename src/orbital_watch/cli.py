@@ -29,9 +29,65 @@ from sgp4.api import Satrec
 from orbital_watch.alert import format_alert, send_console, send_webhook
 from orbital_watch.baseline import PerObjectBaseline
 from orbital_watch.digest import ManeuverAlert, generate_digest
-from orbital_watch.propagate import compute_residual, tle_age_days
+from orbital_watch.propagate import compute_element_changes, compute_residual, tle_age_days
 from orbital_watch.store import JsonStore
 from orbital_watch.tle_client import CelesTrakClient, SpaceTrackClient, load_tles_from_file
+
+# CelesTrak group name -> our category key (see site_data.CATEGORY_LABELS).
+# Groups not listed here keep "uncategorized" rather than being guessed at.
+GROUP_CATEGORIES: dict[str, str] = {
+    "stations": "space_stations",
+    "visual": "uncategorized",  # brightest objects -- genuinely mixed
+    "weather": "earth_observation",
+    "noaa": "earth_observation",
+    "goes": "earth_observation",
+    "resource": "earth_observation",
+    "planet": "earth_observation",
+    "spire": "earth_observation",
+    "dmc": "earth_observation",
+    "sarsat": "uncategorized",
+    "tdrss": "communications",
+    "argos": "uncategorized",
+    "geo": "communications",
+    "intelsat": "communications",
+    "ses": "communications",
+    "iridium": "communications",
+    "iridium-NEXT": "communications",
+    "oneweb": "communications",
+    "orbcomm": "communications",
+    "globalstar": "communications",
+    "amateur": "amateur",
+    "satnogs": "amateur",
+    "cubesat": "amateur",
+    "gps-ops": "navigation",
+    "glo-ops": "navigation",
+    "galileo": "navigation",
+    "beidou": "navigation",
+    "sbas": "navigation",
+    "science": "space_telescopes",
+    "geodetic": "uncategorized",
+    "engineering": "uncategorized",
+}
+
+# Default group fetch order = priority order when --max-group-satellites
+# caps the total. Starlink is deliberately NOT in the defaults: 7000+
+# near-identical station-keeping objects would blow the data.json budget
+# and drown the maneuver feed -- use --watchlist-groups starlink explicitly
+# if you really want it (with a big --max-group-satellites).
+DEFAULT_WATCHLIST_GROUPS = (
+    "stations,visual,weather,noaa,goes,resource,planet,spire,"
+    "science,amateur,cubesat,oneweb,iridium,geo,gps-ops,galileo"
+)
+
+# Element-change maneuver thresholds. A real impulsive maneuver moves the
+# orbit itself, not just the propagated position -- these catch plane
+# changes and orbit raise/lower events even when the position residual
+# happens to be small. Values chosen conservatively: atmospheric drag in
+# LEO typically changes semi-major axis by <0.1 km/day and inclination by
+# ~0.001 deg/day, so these sit well above drag noise for hourly runs.
+DELTA_SMA_KM_THRESHOLD = 0.3
+DELTA_INCL_DEG_THRESHOLD = 0.005
+DELTA_ECC_THRESHOLD = 0.0002
 
 
 def build_satrec(record) -> Satrec:
@@ -159,6 +215,23 @@ def main(argv=None) -> int:
     parser.add_argument("--tle-file", help="Required when --source file")
     parser.add_argument("--webhook-url", default=os.environ.get("ALERT_WEBHOOK_URL"))
     parser.add_argument("--z-threshold", type=float, default=3.0)
+    parser.add_argument(
+        "--watchlist-groups",
+        default="",
+        help=(
+            "Comma-separated CelesTrak group names (e.g. 'stations,visual,weather') "
+            "to track IN ADDITION to --watchlist. Each group is one HTTP request "
+            "(vs one request per NORAD ID), so this is how the watchlist scales "
+            "to hundreds of objects. Defaults to '' (watchlist only); the "
+            "scheduled workflow passes a curated set."
+        ),
+    )
+    parser.add_argument(
+        "--max-group-satellites",
+        type=int,
+        default=600,
+        help="Cap on satellites pulled from --watchlist-groups (priority order).",
+    )
     parser.add_argument("--include-socrates", action="store_true", help="Fetch CelesTrak SOCRATES conjunction data")
     parser.add_argument("--include-satnogs", action="store_true", help="Fetch SatNOGS observation health")
     parser.add_argument("--include-crew", action="store_true", help="Fetch Open Notify 'people in space now' data")
@@ -183,6 +256,35 @@ def main(argv=None) -> int:
         with open(args.object_names) as f:
             object_names = {int(k): v for k, v in json.load(f).items()}
 
+    # CelesTrak group expansion: whole catalog groups in one request each,
+    # unioned with the curated watchlist. This is what takes the tracked
+    # fleet from dozens to hundreds without hand-maintaining NORAD IDs.
+    group_names: dict[int, str] = {}      # TLE name fallback for group sats
+    group_categories: dict[int, str] = {}  # auto-category by group
+    group_list = [g.strip() for g in args.watchlist_groups.split(",") if g.strip()]
+    base_watchlist_size = len(watchlist)
+    group_records_by_id: dict[int, object] = {}  # TLEs already in hand -- don't re-fetch these
+    if group_list:
+        group_client = CelesTrakClient()
+        for group in group_list:
+            try:
+                group_records = group_client.fetch_group(group)
+            except Exception as exc:  # noqa: BLE001 - one bad group shouldn't kill the run
+                print(f"Warning: CelesTrak group fetch failed for '{group}' ({exc}), skipping group.")
+                continue
+            added = 0
+            for rec in group_records:
+                if len(watchlist) - base_watchlist_size >= args.max_group_satellites:
+                    break
+                if rec.norad_id not in watchlist:
+                    watchlist.add(rec.norad_id)
+                    added += 1
+                group_records_by_id.setdefault(rec.norad_id, rec)
+                if rec.name:
+                    group_names.setdefault(rec.norad_id, rec.name)
+                group_categories.setdefault(rec.norad_id, GROUP_CATEGORIES.get(group, "uncategorized"))
+            print(f"Group '{group}': {len(group_records)} fetched, {added} new added to watchlist.")
+
     store = JsonStore(args.state)
     baseline = PerObjectBaseline.from_dict(
         store.get("baseline_history", {}), z_threshold=args.z_threshold
@@ -192,7 +294,13 @@ def main(argv=None) -> int:
 
     if args.source == "celestrak":
         try:
-            records = CelesTrakClient().fetch_by_norad_ids(sorted(watchlist))
+            # IDs already fetched via --watchlist-groups are reused directly
+            # (one request per group, not per ID); only the rest go through
+            # the per-ID path.
+            remaining = [nid for nid in sorted(watchlist) if nid not in group_records_by_id]
+            records = [group_records_by_id[nid] for nid in sorted(watchlist) if nid in group_records_by_id]
+            if remaining:
+                records.extend(CelesTrakClient().fetch_by_norad_ids(remaining))
         except Exception as exc:  # noqa: BLE001 - see comment below
             # Confirmed on a real run (2026-07-04): celestrak.org timed out
             # from GitHub Actions' shared runner IP range. This is a known,
@@ -223,6 +331,13 @@ def main(argv=None) -> int:
     records = [r for r in records if r.norad_id in watchlist]
     print(f"Fetched {len(records)} TLE(s) for {len(watchlist)} watched object(s).")
 
+    # TLE-embedded names as a fallback wherever names.json has no entry --
+    # this covers group-fetched and file-sourced satellites alike.
+    for r in records:
+        if r.name:
+            object_names.setdefault(r.norad_id, r.name)
+            group_names.setdefault(r.norad_id, r.name)
+
     maneuver_alerts: list[ManeuverAlert] = []
     tle_ages_days: dict[int, float] = {}
     for record in records:
@@ -244,8 +359,33 @@ def main(argv=None) -> int:
                 # research flags as a real false-positive cause.
                 verdict = baseline.evaluate(record.norad_id, residual.position_error_km_per_day)
 
-                if verdict.is_anomalous:
+                # Second, independent maneuver signal: direct changes in the
+                # Keplerian elements themselves. A plane change or orbit
+                # raise/lower moves the orbit even when the propagated
+                # position residual happens to stay small.
+                elem = compute_element_changes(before_satrec, after_satrec)
+                element_bits = []
+                if abs(elem.delta_sma_km) >= DELTA_SMA_KM_THRESHOLD:
+                    element_bits.append(f"semi-major axis {elem.delta_sma_km:+.2f} km")
+                if abs(elem.delta_incl_deg) >= DELTA_INCL_DEG_THRESHOLD:
+                    element_bits.append(f"inclination {elem.delta_incl_deg:+.4f} deg")
+                if abs(elem.delta_ecc) >= DELTA_ECC_THRESHOLD:
+                    element_bits.append(f"eccentricity {elem.delta_ecc:+.5f}")
+                element_maneuver = bool(element_bits)
+
+                if verdict.is_anomalous or element_maneuver:
+                    # Which signal(s) fired, for the digest and the event log.
+                    detection = (
+                        "residual+elements" if (verdict.is_anomalous and element_maneuver)
+                        else "elements" if element_maneuver
+                        else "residual"
+                    )
+                    reason = verdict.reason
+                    if element_maneuver:
+                        reason += " | element change: " + ", ".join(element_bits)
                     message = format_alert(verdict, residual)
+                    if element_maneuver:
+                        message += f"\nElement change: {', '.join(element_bits)}"
                     send_console(message)
                     if args.webhook_url:
                         send_webhook(args.webhook_url, message)
@@ -254,7 +394,7 @@ def main(argv=None) -> int:
                         norad_id=record.norad_id,
                         residual_km=residual.position_error_km,
                         z_score=verdict.z_score,
-                        reason=verdict.reason,
+                        reason=reason,
                         epoch_gap_days=residual.epoch_gap_days,
                         residual_km_per_day=residual.position_error_km_per_day,
                     )
@@ -268,7 +408,11 @@ def main(argv=None) -> int:
                             "residual_km_per_day": residual.position_error_km_per_day,
                             "epoch_gap_days": residual.epoch_gap_days,
                             "z_score": verdict.z_score,
-                            "reason": verdict.reason,
+                            "reason": reason,
+                            "detection": detection,
+                            "delta_sma_km": elem.delta_sma_km,
+                            "delta_incl_deg": elem.delta_incl_deg,
+                            "delta_ecc": elem.delta_ecc,
                         }
                     )
             else:
@@ -333,6 +477,17 @@ def main(argv=None) -> int:
     # up" apart from "genuinely zero fires detected in the last 24h."
     if fire_counts_by_source is not None:
         store.set("fire_counts_by_source", fire_counts_by_source)
+
+    # Persisted so site_data_cli can name/categorize group-fetched
+    # satellites that have no names.json/categories.json entries.
+    if group_names:
+        merged_names = store.get("tle_names", {})
+        merged_names.update({str(k): v for k, v in group_names.items()})
+        store.set("tle_names", merged_names)
+    if group_categories:
+        merged_cats = store.get("group_categories", {})
+        merged_cats.update({str(k): v for k, v in group_categories.items()})
+        store.set("group_categories", merged_cats)
 
     store.set("previous_tles", previous_tles)
     store.set("baseline_history", baseline.to_dict())

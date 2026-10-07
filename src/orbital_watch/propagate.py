@@ -28,7 +28,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from math import sqrt
+from math import pi, sqrt
 
 from sgp4.api import Satrec, jday
 
@@ -37,6 +37,10 @@ MINUTES_PER_DAY = 1440.0
 # epoch -- an hour is short enough that per-day normalization stops being
 # meaningful anyway, so anything under it is treated as "1 hour" of gap.
 _MIN_GAP_DAYS = 1 / 24.0
+
+# Earth's gravitational parameter, km^3/s^2 -- for semi-major axis from
+# mean motion (satrec.no is radians/minute).
+_MU_EARTH_KM3_S2 = 398600.4418
 
 
 @dataclass
@@ -50,8 +54,39 @@ class Residual:
     position_error_km_per_day: float
 
 
+@dataclass
+class ElementChanges:
+    """Direct changes in Keplerian elements between two TLEs for the same
+    object -- a maneuver signature INDEPENDENT of the position residual.
+    A plane change or orbit raise/lower shows up here even when the
+    residual happens to be small (e.g. a prograde burn timed so the
+    position error partially cancels)."""
+    delta_sma_km: float   # semi-major axis change, from mean motion
+    delta_incl_deg: float  # inclination change
+    delta_ecc: float       # eccentricity change
+
+
 def _distance(a: tuple, b: tuple) -> float:
     return sqrt(sum((ai - bi) ** 2 for ai, bi in zip(a, b)))
+
+
+def _sma_km(satrec: Satrec) -> float:
+    """Semi-major axis in km from mean motion (satrec.no, radians/minute)
+    via Kepler's third law."""
+    n_rad_s = satrec.no / 60.0
+    return (_MU_EARTH_KM3_S2 / n_rad_s**2) ** (1 / 3)
+
+
+def compute_element_changes(satrec_before: Satrec, satrec_after: Satrec) -> ElementChanges:
+    """Direct Keplerian-element deltas between two element sets for the
+    same object. Pure function of the two TLEs -- no propagation involved,
+    so this signal is independent of the position residual in
+    compute_residual()."""
+    return ElementChanges(
+        delta_sma_km=_sma_km(satrec_after) - _sma_km(satrec_before),
+        delta_incl_deg=(satrec_after.inclo - satrec_before.inclo) * 180.0 / pi,
+        delta_ecc=satrec_after.ecco - satrec_before.ecco,
+    )
 
 
 def compute_residual(satrec_before: Satrec, satrec_after: Satrec) -> Residual:
