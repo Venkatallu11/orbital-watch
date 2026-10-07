@@ -111,10 +111,14 @@ something you can actually click through instead of reading JSON:
 - **Live 3D globe tracking** — a 3D Earth (via `globe.gl`/three.js, real
   night-lights + starfield textures, not a screenshot) whose camera
   continuously follows the selected satellite's current position, with a
-  pulsing marker and animated dashed ground track, updated every second
-  client-side via `satellite.js` (the same SGP4 math the Python backend
-  uses) from the latest TLE already in `data.json`. No live server needed
-  for this part — it's just math running on data that's already there.
+  pulsing marker and an animated dashed **ground track** showing one full
+  orbit ahead, recomputed client-side via `satellite.js` (the same SGP4 math
+  the Python backend uses) from the latest TLE already in `data.json`. The
+  track floats just above the surface and updates instantly (globe.gl's
+  per-update "draw-on" path animation is disabled — left on, it restarted
+  several times a second as the track was recomputed and the line never
+  actually appeared, so only the marker showed). No live server needed for
+  this part — it's just math running on data that's already there.
 - **Time Machine** — pause, rewind, or fast-forward the selected satellite's
   orbit (presets from ±1 min/s up to ±1 day/s), scrub to any moment with the
   slider, jump ±1 hour/±1 day, or snap back to **Live**. This is honest
@@ -136,12 +140,20 @@ something you can actually click through instead of reading JSON:
   workflow maintains.
 - **🌍 God's eye view** — one click renders the *entire* tracked fleet on
   the globe at once (hundreds of satellites, not one): live positions
-  updated every 3 seconds, orbit trails for every object, and any satellite
-  with a maneuver in the last 7 days pulsing red. A fleet-wide maneuver
-  feed lists every recorded maneuver newest-first; clicking a row or a globe
-  point drops into that satellite's full detail view. Position updates are
-  throttled and trails build in chunks so the page stays smooth with
-  hundreds of objects.
+  updated every 3 seconds, and any satellite with a maneuver in the last 7
+  days pulsing red. The fleet is driven by a dedicated lean `fleet` array in
+  `data.json` that carries **every object we have a TLE for** — the curated
+  watchlist *plus* all the group-fetched satellites (CelesTrak GROUPs:
+  stations, GPS, Starlink, OneWeb, Iridium, weather, science, …), so the
+  view scales to the whole catalog rather than just the ~50 detail objects.
+  Versatility controls appear in this mode: a **category filter** (isolate
+  just Starlink, or just GPS, etc., each with a live count) and an **orbit-
+  trails mode** — *key orbits only* (curated + recently-maneuvered, the
+  readable default), *all orbits* (the full dense mesh), or *none* (points
+  only). Hover any point for its name; curated ones click through to the full
+  detail view, and a fleet-wide maneuver feed lists every recorded maneuver
+  newest-first. Position updates are throttled and trails build in chunks so
+  the page stays smooth with hundreds of objects.
 - **"What This Satellite Actually Does" panel** — real per-satellite
   instrument/mission info from `instruments.json` (sourced from genuine
   public mission fact sheets, not fabricated): what instruments it carries
