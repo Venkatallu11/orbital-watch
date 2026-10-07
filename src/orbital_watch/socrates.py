@@ -117,15 +117,37 @@ def filter_to_watchlist(conjunctions: list[Conjunction], watchlist: set[int]) ->
     return [c for c in conjunctions if c.norad_id_1 in watchlist or c.norad_id_2 in watchlist]
 
 
+# CelesTrak serves its TLE endpoint (gp.php) to a default requests UA, but its
+# older SOCRATES subsystem is fussier about bot-looking clients; send a real,
+# identifiable UA so we're a well-behaved caller rather than an anonymous one.
+_HEADERS = {
+    "User-Agent": "orbital-watch/1.0 (+https://github.com/Venkatallu11/orbital-watch)",
+    "Accept": "text/csv, text/plain, */*",
+}
+
+
 def fetch_conjunctions(max_results: int = 1000) -> list[Conjunction]:
     """Pulls the broad current SOCRATES result set (all objects, sorted by
     collision probability, up to `max_results`) rather than querying per
     watchlist object -- see module docstring for why. Filter the result
-    with `filter_to_watchlist` afterwards."""
+    with `filter_to_watchlist` afterwards.
+
+    Raises a clear, diagnostic error if the endpoint answers with something
+    other than the expected CSV (an HTML error page, a rate-limit notice, a
+    moved endpoint), so a failure is visible in the run log instead of silently
+    parsing zero rows."""
     resp = requests.get(
         SOCRATES_URL,
         params={"NAME": ",", "ORDER": "MAXPROB", "MAX": max_results, "FORMAT": "csv"},
+        headers=_HEADERS,
         timeout=30,
     )
     resp.raise_for_status()
-    return parse_socrates_csv(resp.text)
+    text = resp.text
+    if "NORAD_CAT_ID_1" not in text:
+        snippet = " ".join(text.split())[:200]
+        raise ValueError(
+            f"unexpected SOCRATES response (HTTP {resp.status_code}, "
+            f"content-type {resp.headers.get('content-type', '?')}): {snippet!r}"
+        )
+    return parse_socrates_csv(text)

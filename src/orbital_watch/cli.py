@@ -101,9 +101,17 @@ def _fetch_conjunctions_safely(watchlist: set[int]) -> list:
     from orbital_watch.socrates import fetch_conjunctions, filter_to_watchlist
 
     try:
-        return filter_to_watchlist(fetch_conjunctions(), watchlist)
+        raw = fetch_conjunctions()
+        matched = filter_to_watchlist(raw, watchlist)
+        # Diagnostic: distinguishes "fetch worked but nothing involves our
+        # fleet" from "fetch failed" -- both previously looked like an empty
+        # Conjunction Watch with no way to tell which from the outside.
+        print(f"SOCRATES: fetched {len(raw)} raw conjunctions, "
+              f"{len(matched)} involve the {len(watchlist)}-object fleet.")
+        return matched
     except Exception as exc:  # noqa: BLE001 - deliberately broad, see docstring
-        print(f"Warning: SOCRATES fetch failed ({exc}), skipping conjunction section.")
+        print(f"Warning: SOCRATES fetch failed ({type(exc).__name__}: {exc}), "
+              "skipping conjunction section.")
         return []
 
 
