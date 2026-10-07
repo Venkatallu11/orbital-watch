@@ -145,6 +145,32 @@ def test_fleet_includes_group_fetched_satellites_not_on_watchlist():
     assert by_id[99999]["last_maneuver"] is None
 
 
+def test_site_data_emits_sorted_fleet_conjunction_feed():
+    """The fleet-wide Conjunction Watch reads a top-level `conjunctions` array;
+    it must carry both objects of each pair and be sorted tightest-miss-first."""
+    conjunctions = [
+        {"norad_id_1": 100, "name_1": "A", "norad_id_2": 200, "name_2": "B",
+         "time_of_closest_approach": "2026-10-08T00:00:00+00:00", "min_range_km": 4.2, "max_probability": 1e-5},
+        {"norad_id_1": 300, "name_1": "C", "norad_id_2": 400, "name_2": "D",
+         "time_of_closest_approach": "2026-10-08T01:00:00+00:00", "min_range_km": 0.3, "max_probability": 2e-4},
+    ]
+    data = build_site_data(
+        generated_at="2026-10-07T00:00:00+00:00",
+        watchlist=[100],
+        object_names={},
+        previous_tles={"100": {"line1": ISS_L1, "line2": ISS_L2}},
+        tle_ages_days={},
+        maneuver_events={},
+        satnogs_healths_by_id={},
+        conjunctions=conjunctions,
+    )
+    feed = data["conjunctions"]
+    assert len(feed) == 2
+    assert feed[0]["min_range_km"] == 0.3  # tightest first
+    assert feed[0]["name_1"] == "C" and feed[0]["name_2"] == "D"
+    assert feed[1]["min_range_km"] == 4.2
+
+
 def test_fleet_skips_entries_without_a_tle():
     """An object with no usable TLE can't be propagated, so it must not land
     in the fleet (it would just be an un-drawable ghost point)."""

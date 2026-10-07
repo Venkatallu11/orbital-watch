@@ -761,6 +761,138 @@ function wireLocationControls(sat) {
   });
 }
 
+// --- Fleet-wide Conjunction Watch (SOCRATES, no network -- it's in data.json) ---
+// The backend now screens CelesTrak SOCRATES against the WHOLE fleet (not just
+// the ~50 curated objects), so this feed actually has close approaches to show.
+function renderConjunctionWatch() {
+  const el = document.getElementById("conjunction-watch-content");
+  if (!el) return;
+  const list = (siteData && siteData.conjunctions) || [];
+  if (list.length === 0) {
+    el.innerHTML = '<span class="panel-note">No close approaches involving the tracked fleet in the current CelesTrak SOCRATES run. SOCRATES screens the catalog a few times a day; a quiet list is normal, not an error.</span>';
+    return;
+  }
+  const curated = curatedIdSet();
+  const sev = (km) => (km < 1 ? "badge-danger" : km < 5 ? "badge-warn" : "badge-ok");
+  const nameCell = (id, name) => curated.has(id)
+    ? `<a href="#" class="cj-link" data-norad="${id}">${name}</a>` : name;
+  const rows = list.slice(0, 25).map((c) => {
+    const tca = c.time_of_closest_approach ? new Date(c.time_of_closest_approach).toLocaleString() : "—";
+    const prob = (c.max_probability !== null && c.max_probability !== undefined) ? c.max_probability : "—";
+    return `<div class="status-row"><span class="badge ${sev(c.min_range_km)}">${c.min_range_km.toFixed(2)} km</span> ` +
+      `<strong>${nameCell(c.norad_id_1, c.name_1)}</strong> ⇄ <strong>${nameCell(c.norad_id_2, c.name_2)}</strong>` +
+      `<br><span class="label">closest approach ${tca} · max probability ${prob}</span></div>`;
+  }).join("");
+  el.innerHTML = `<p class="panel-note">Tightest upcoming close approaches across the whole tracked fleet (CelesTrak SOCRATES), smallest miss distance first. Public screening data — <strong>not</strong> a collision-avoidance system.</p>` +
+    rows + (list.length > 25 ? `<p class="panel-note">Showing the 25 closest of ${list.length}.</p>` : "");
+  el.querySelectorAll(".cj-link").forEach((a) => a.addEventListener("click", (e) => {
+    e.preventDefault();
+    const id = Number(a.dataset.norad);
+    document.getElementById("satellite-select").value = String(id);
+    if (godEye.active) exitGodEye();
+    selectSatellite(id);
+  }));
+}
+
+// --- Upcoming launches (Launch Library 2 -- The Space Devs, free, CORS) ---
+// Fetched once client-side and cached in localStorage for 30 min, so each
+// visitor stays well under LL2's 15-calls/hour anonymous limit. Falls back to
+// the cached list, then to an honest "couldn't load", exactly like the APOD /
+// Open-Meteo fetches already do.
+function launchesHtml(results, ts) {
+  if (!results || results.length === 0) return '<span class="panel-note">No upcoming launches listed right now.</span>';
+  const rows = results.map((l) => {
+    const when = l.net ? new Date(l.net).toLocaleString() : "date TBD";
+    const where = [l.provider, l.pad].filter(Boolean).join(" · ");
+    return `<div class="status-row"><strong>${l.name}</strong>${l.status ? ` <span class="badge badge-ok">${l.status}</span>` : ""}` +
+      `<br><span class="label">${when}${where ? " · " + where : ""}</span></div>`;
+  }).join("");
+  return `<p class="panel-note">Next launches worldwide — Launch Library 2 (The Space Devs), free. As of ${new Date(ts).toLocaleTimeString()}.</p>` + rows;
+}
+function renderLaunches() {
+  const el = document.getElementById("launches-content");
+  if (!el) return;
+  const KEY = "ow_launches";
+  const now = Date.now();
+  let cached = null;
+  try { const s = localStorage.getItem(KEY); if (s) cached = JSON.parse(s); } catch (e) { /* private mode */ }
+  if (cached && cached.data && now - cached.ts < 30 * 60 * 1000) {
+    el.innerHTML = launchesHtml(cached.data, cached.ts);
+    return;
+  }
+  el.innerHTML = '<span class="panel-note">Loading upcoming launches…</span>';
+  fetch("https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=5")
+    .then((r) => { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+    .then((data) => {
+      const results = (data.results || []).map((l) => ({
+        name: l.name,
+        net: l.net,
+        status: (l.status && (l.status.abbrev || l.status.name)) || "",
+        provider: (l.launch_service_provider && l.launch_service_provider.name) || "",
+        pad: (l.pad && l.pad.location && l.pad.location.name) || "",
+      }));
+      try { localStorage.setItem(KEY, JSON.stringify({ ts: now, data: results })); } catch (e) { /* ignore */ }
+      el.innerHTML = launchesHtml(results, now);
+    })
+    .catch(() => {
+      if (cached && cached.data) {
+        el.innerHTML = launchesHtml(cached.data, cached.ts) +
+          '<p class="panel-note">(cached — live refresh unavailable right now)</p>';
+      } else {
+        el.innerHTML = '<span class="no-imagery">Couldn\'t load upcoming launches right now (Launch Library 2 rate limit or network). It refreshes automatically.</span>';
+      }
+    });
+}
+
+// --- Radio / how to listen (SatNOGS transmitter database, free, CORS) ---
+// Real downlink frequencies the community has logged for this satellite -- what
+// you'd actually tune a receiver to. Per-satellite fetch, cached in
+// sessionStorage, graceful fallback. Only for Earth-orbiting objects.
+function radioHtml(sat, tx) {
+  if (!tx || tx.length === 0) {
+    return '<span class="panel-note">No transmitters listed for this satellite in the SatNOGS database — it may not broadcast on tracked/amateur bands (most GPS/commercial sats aren\'t publicly logged).</span>';
+  }
+  const mhz = (hz) => (hz ? (hz / 1e6).toFixed(4) + " MHz" : null);
+  const rows = tx.slice(0, 8).map((t) => {
+    const parts = [];
+    const dl = mhz(t.downlink);
+    if (dl) parts.push(`downlink ${dl}`);
+    if (t.mode) parts.push(t.mode);
+    if (t.service) parts.push(t.service);
+    const badge = t.status === "active"
+      ? ' <span class="badge badge-ok">active</span>'
+      : (t.status ? ` <span class="badge badge-warn">${t.status}</span>` : "");
+    return `<div class="status-row"><strong>${t.desc || "Transmitter"}</strong>${badge}<br><span class="label">${parts.join(" · ") || "—"}</span></div>`;
+  }).join("");
+  return `<p class="panel-note">Real transmitter frequencies for ${sat.name}, from the community <strong>SatNOGS</strong> database — tune a receiver here (downlink = what you listen for).</p>` + rows;
+}
+function renderRadio(sat) {
+  const panel = document.getElementById("radio-panel");
+  const el = document.getElementById("radio-content");
+  if (!panel || !el) return;
+  if (!sat || !sat.line1 || !sat.line2) { panel.hidden = true; return; } // deep-space probes: no TLE
+  panel.hidden = false;
+  const KEY = "ow_radio_" + sat.norad_id;
+  const now = Date.now();
+  let cached = null;
+  try { const s = sessionStorage.getItem(KEY); if (s) cached = JSON.parse(s); } catch (e) { /* ignore */ }
+  if (cached && now - cached.ts < 6 * 3600 * 1000) { el.innerHTML = radioHtml(sat, cached.data); return; }
+  el.innerHTML = '<span class="panel-note">Checking SatNOGS for transmitters…</span>';
+  fetch(`https://db.satnogs.org/api/transmitters/?satellite__norad_cat_id=${sat.norad_id}&format=json`)
+    .then((r) => { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+    .then((data) => {
+      const tx = (Array.isArray(data) ? data : []).map((t) => ({
+        desc: t.description, mode: t.mode, downlink: t.downlink_low,
+        status: t.status, service: t.service,
+      }));
+      // only keep tracking if this is still the selected satellite
+      if (!simClock.sat || simClock.sat.norad_id !== sat.norad_id) return;
+      try { sessionStorage.setItem(KEY, JSON.stringify({ ts: now, data: tx })); } catch (e) { /* ignore */ }
+      el.innerHTML = radioHtml(sat, tx);
+    })
+    .catch(() => { el.innerHTML = '<span class="no-imagery">Couldn\'t reach the SatNOGS transmitter database right now — it refreshes on reselect.</span>'; });
+}
+
 // --- Cockpit controls: optics (sensor looks), tactical HUD, cockpit POV ---
 // Inspired by "God's Eye View"-style situational displays, but driven entirely
 // by our real SGP4 state and done client-side -- the optics are honest visual
@@ -1532,6 +1664,7 @@ function selectSatellite(noradId) {
   renderPrecipitationForecast(sat);
   renderOceanConditions(sat);
   renderPasses(sat);
+  renderRadio(sat);
 }
 
 function populateDropdown() {
@@ -1618,6 +1751,8 @@ function loadData() {
         selectSatellite(selectedId);
       }
       renderManeuverFeed();
+      renderConjunctionWatch();
+      renderLaunches();
     })
     .catch((err) => {
       document.getElementById("status-content").innerHTML =

@@ -391,10 +391,30 @@ def build_site_data(
             }
         )
 
+    # Fleet-wide conjunction watch: the full SOCRATES close-approach list
+    # (both objects of each pair), sorted by miss distance so the tightest
+    # approaches lead, capped so data.json stays lean. The per-satellite
+    # Collision Risk panel still filters this to one object; this array powers
+    # the fleet-wide feed.
+    conjunction_feed = sorted(
+        (
+            {
+                "norad_id_1": c["norad_id_1"], "name_1": c["name_1"],
+                "norad_id_2": c["norad_id_2"], "name_2": c["name_2"],
+                "time_of_closest_approach": c["time_of_closest_approach"],
+                "min_range_km": c["min_range_km"],
+                "max_probability": c["max_probability"],
+            }
+            for c in conjunctions
+        ),
+        key=lambda c: c["min_range_km"],
+    )[:80]
+
     return {
         "generated_at": generated_at,
         "category_labels": CATEGORY_LABELS,
         "fleet": fleet,
+        "conjunctions": conjunction_feed,
         "satellites": [
             {
                 "norad_id": s.norad_id,

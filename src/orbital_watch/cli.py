@@ -422,7 +422,13 @@ def main(argv=None) -> int:
 
         previous_tles[norad_key] = {"line1": record.line1, "line2": record.line2}
 
-    conjunctions = _fetch_conjunctions_safely(watchlist) if args.include_socrates else []
+    # Screen SOCRATES conjunctions against the ENTIRE tracked fleet (watchlist +
+    # all group-fetched objects), not just the ~50 curated ones. CelesTrak's
+    # SOCRATES lists the globe's top close approaches; a 50-object filter almost
+    # never matches, but the full fleet (Starlink/debris/etc.) hits plenty --
+    # that's what makes the fleet-wide Conjunction Watch actually populated.
+    fleet_ids = {int(k) for k in previous_tles}
+    conjunctions = _fetch_conjunctions_safely(fleet_ids) if args.include_socrates else []
     satnogs_healths = _fetch_satnogs_health_safely(watchlist) if args.include_satnogs else []
     crew_by_craft = _fetch_crew_safely() if args.include_crew else {}
     deep_space_probes = _fetch_deep_space_probes_safely() if args.include_deep_space else []

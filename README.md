@@ -183,6 +183,24 @@ something you can actually click through instead of reading JSON:
   the browser from the TLE already in `data.json`: no API, no key, works
   offline. The tactical HUD also shows whether the tracked object is **sunlit
   or in eclipse** right now, from the same solar geometry.
+- **Conjunction Watch (fleet-wide)** — the tightest upcoming close approaches
+  across the *whole* tracked fleet, from CelesTrak SOCRATES, smallest miss
+  distance first (red < 1 km, amber < 5 km), with time of closest approach and
+  max probability; curated objects click through to their detail view. The
+  backend now screens SOCRATES against the **entire fleet** (not just the ~50
+  curated objects, which almost never appear in the global close-approach list)
+  — that's what makes this feed actually populated. Public screening data, **not**
+  a collision-avoidance system.
+- **Upcoming Launches** — the next launches worldwide from
+  [Launch Library 2](https://ll.thespacedevs.com/) (The Space Devs, free):
+  vehicle, provider, pad, and time. Fetched client-side and cached in
+  `localStorage` for 30 min so each visitor stays well under LL2's anonymous
+  rate limit, with graceful fallback to the cached list.
+- **Radio — How to Listen** — real transmitter frequencies for the selected
+  satellite from the community [SatNOGS](https://db.satnogs.org/) database
+  (downlink frequency, mode, service) — what you'd actually tune a receiver to.
+  Per-satellite, cached per session, honest "nothing listed" for objects that
+  don't broadcast on tracked bands.
 - **"What This Satellite Actually Does" panel** — real per-satellite
   instrument/mission info from `instruments.json` (sourced from genuine
   public mission fact sheets, not fabricated): what instruments it carries

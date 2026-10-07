@@ -550,3 +550,7 @@ footer a {
 }
 #passes-content .badge { margin-right: 0.3rem; }
 #passes-change { color: var(--accent); }
+
+/* --- Conjunction watch / launches / radio links --- */
+.cj-link { color: var(--accent); text-decoration: none; }
+.cj-link:hover { text-decoration: underline; }
