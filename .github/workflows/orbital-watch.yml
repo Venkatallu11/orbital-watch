@@ -91,6 +91,8 @@ jobs:
             --watchlist watchlist.json \
             --state state.json \
             --source celestrak \
+            --watchlist-groups stations,visual,weather,noaa,goes,resource,planet,spire,science,amateur,cubesat,oneweb,iridium,geo,gps-ops,galileo \
+            --max-group-satellites 600 \
             --include-socrates --include-satnogs --include-crew \
             --include-deep-space --include-volcano-status \
             --digest-out digest.md
