@@ -551,6 +551,11 @@ function renderStatus(sat) {
     rows.push('<div class="status-row"><span class="label">Maneuvers</span><br>None detected yet.</div>');
   }
 
+  // Full per-satellite maneuver timeline (new in the God's-eye upgrade;
+  // empty until the backend regenerates data.json with maneuver_history).
+  const timelineHtml = renderManeuverTimeline(sat);
+  if (timelineHtml) rows.push(timelineHtml);
+
   if (sat.satnogs_health) {
     const badge = sat.satnogs_health.is_degraded
       ? '<span class="badge badge-warn">DEGRADED</span>'
@@ -1227,6 +1232,7 @@ function loadData() {
         select.value = String(selectedId);
         selectSatellite(selectedId);
       }
+      renderManeuverFeed();
     })
     .catch((err) => {
       document.getElementById("status-content").innerHTML =
@@ -1235,7 +1241,221 @@ function loadData() {
     });
 }
 
+// --- God's eye view: every tracked satellite on the globe at once ---
+// The default per-satellite view tracks ONE object; this mode renders the
+// whole fleet: every satellite with a TLE becomes a point, orbit trails for
+// all of them, and any object with a recent maneuver pulses red. Clicking
+// a point drops back into the per-satellite view for that object.
+//
+// Performance design (this has to stay smooth with hundreds of objects):
+//  - SGP4 propagation for all objects runs on a 3s interval, NOT per
+//    animation frame (600 propagations = ~ms of work; 60fps would be
+//    wasteful since orbital motion is invisible at that granularity).
+//  - Orbit trails are computed ONCE per data load in small setTimeout
+//    chunks so the page stays responsive while they build.
+//  - Points use per-point color/size accessors; hot (recent-maneuver)
+//    objects get the pulsing ring treatment.
+const godEye = {
+  active: false,
+  entries: [], // {sat, satrec, recent}
+  intervalId: null,
+  trailsDone: false,
+};
+
+const GODEYE_UPDATE_MS = 3000;
+const GODEYE_TRAIL_POINTS = 36;
+const GODEYE_TRAIL_CHUNK = 40;
+const MANEUVER_RECENT_DAYS = 7;
+
+function recentManeuverEvent(sat) {
+  const hist = sat.maneuver_history;
+  if (!hist || hist.length === 0) return null;
+  const latest = hist[hist.length - 1];
+  if (Date.now() - new Date(latest.timestamp).getTime() < MANEUVER_RECENT_DAYS * 86400000) {
+    return latest;
+  }
+  return null;
+}
+
+function enterGodEye() {
+  if (godEye.active || !siteData) return;
+  godEye.active = true;
+  document.getElementById("godeye-toggle").classList.add("active");
+  document.getElementById("godeye-toggle").innerHTML = "🌍 Exit God's eye";
+
+  // Stop the per-satellite tracking loop and time machine.
+  if (simClock.rafId) cancelAnimationFrame(simClock.rafId);
+  simClock.rafId = null;
+  setTimeMachineVisible(false);
+
+  godEye.entries = [];
+  for (const sat of siteData.satellites) {
+    const satrec = satrecFor(sat);
+    if (!satrec) continue; // deep-space probes have no TLE
+    godEye.entries.push({ sat, satrec, recent: recentManeuverEvent(sat) });
+  }
+  godEye.trailsDone = false;
+
+  // Full-globe camera.
+  globeInstance.pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 1000);
+
+  // Per-point styling for fleet mode.
+  globeInstance
+    .pointColor((d) => d.color)
+    .pointRadius((d) => d.size)
+    .ringColor(() => (t) => `rgba(248, 81, 73, ${1 - t})`)
+    .pathColor((d) => (d.hot
+      ? ["#f85149", "rgba(248, 81, 73, 0.08)"]
+      : ["rgba(88, 166, 255, 0.5)", "rgba(88, 166, 255, 0.06)"]))
+    .onPointClick((p) => {
+      if (p && p.norad_id) {
+        document.getElementById("satellite-select").value = String(p.norad_id);
+        exitGodEye();
+        selectSatellite(p.norad_id);
+      }
+    });
+
+  updateGodEyePoints();
+  buildGodEyeTrails();
+  godEye.intervalId = setInterval(updateGodEyePoints, GODEYE_UPDATE_MS);
+}
+
+function exitGodEye() {
+  if (!godEye.active) return;
+  godEye.active = false;
+  if (godEye.intervalId) clearInterval(godEye.intervalId);
+  godEye.intervalId = null;
+  const toggle = document.getElementById("godeye-toggle");
+  toggle.classList.remove("active");
+  toggle.innerHTML = "🌍 God's eye view";
+  globeInstance.onPointClick(null);
+
+  // Restore per-satellite styling.
+  globeInstance
+    .pointColor(() => "#58a6ff")
+    .pointRadius(0.7)
+    .ringColor(() => (t) => `rgba(88, 166, 255, ${1 - t})`)
+    .pathColor(() => ["#58a6ff", "rgba(88, 166, 255, 0.15)"]);
+
+  // Resume tracking whatever the dropdown shows.
+  const select = document.getElementById("satellite-select");
+  if (select.value) selectSatellite(Number(select.value));
+}
+
+function updateGodEyePoints() {
+  if (!godEye.active) return;
+  const now = new Date();
+  const pts = [];
+  const rings = [];
+  for (const e of godEye.entries) {
+    const pos = currentLatLon(e.satrec, now);
+    if (!pos) continue;
+    pts.push({
+      lat: pos.lat, lng: pos.lng,
+      norad_id: e.sat.norad_id,
+      color: e.recent ? "#f85149" : "#58a6ff",
+      size: e.recent ? 0.9 : 0.45,
+    });
+    if (e.recent) rings.push({ lat: pos.lat, lng: pos.lng });
+  }
+  globeInstance.pointsData(pts).ringsData(rings);
+}
+
+function buildGodEyeTrails() {
+  const paths = [];
+  let i = 0;
+  const now = new Date();
+  function chunk() {
+    if (!godEye.active) return; // user exited mid-build
+    const end = Math.min(i + GODEYE_TRAIL_CHUNK, godEye.entries.length);
+    for (; i < end; i++) {
+      const e = godEye.entries[i];
+      const periodMinutes = (2 * Math.PI) / e.satrec.no;
+      const pts = [];
+      for (let k = 0; k <= GODEYE_TRAIL_POINTS; k++) {
+        const t = new Date(now.getTime() + (k / GODEYE_TRAIL_POINTS) * periodMinutes * 60000);
+        const pos = currentLatLon(e.satrec, t);
+        if (pos) pts.push([pos.lat, pos.lng]);
+      }
+      if (pts.length > 1) paths.push({ points: pts, hot: !!e.recent });
+    }
+    globeInstance.pathsData(paths);
+    if (i < godEye.entries.length) {
+      setTimeout(chunk, 0);
+    } else {
+      godEye.trailsDone = true;
+    }
+  }
+  chunk();
+}
+
+// Fleet-wide maneuver feed: every recorded maneuver event across all
+// satellites, newest first. Clicking a row jumps to that satellite.
+function renderManeuverFeed() {
+  const el = document.getElementById("maneuver-feed-content");
+  if (!el) return;
+  const feed = [];
+  for (const sat of siteData.satellites) {
+    for (const e of (sat.maneuver_history || [])) {
+      feed.push({ sat, e });
+    }
+  }
+  feed.sort((a, b) => new Date(b.e.timestamp) - new Date(a.e.timestamp));
+  if (feed.length === 0) {
+    el.innerHTML = '<span class="panel-note">No maneuvers detected yet across the fleet.</span>';
+    return;
+  }
+  const total = feed.length;
+  const rows = feed.slice(0, 25).map(({ sat, e }) => {
+    const when = new Date(e.timestamp).toLocaleString();
+    const sig = e.detection ? ` <span class="badge badge-warn">${e.detection}</span>` : "";
+    const detail = e.delta_sma_km !== undefined && e.delta_sma_km !== null
+      ? `<br><span class="label">Δa ${e.delta_sma_km >= 0 ? "+" : ""}${e.delta_sma_km.toFixed(2)} km · Δi ${e.delta_incl_deg >= 0 ? "+" : ""}${e.delta_incl_deg.toFixed(4)}°</span>`
+      : "";
+    return `<div class="status-row feed-item" data-norad="${sat.norad_id}">` +
+      `<span class="badge badge-danger">MANEUVER</span> <strong>${sat.name}</strong>${sig}` +
+      `<br><span class="label">${when}</span>${detail}</div>`;
+  });
+  el.innerHTML = rows.join("") +
+    (total > 25 ? `<div class="panel-note">Showing 25 most recent of ${total} recorded maneuvers.</div>` : "");
+  el.querySelectorAll(".feed-item").forEach((row) => {
+    row.addEventListener("click", () => {
+      const id = Number(row.dataset.norad);
+      document.getElementById("satellite-select").value = String(id);
+      if (godEye.active) exitGodEye();
+      selectSatellite(id);
+    });
+  });
+}
+
+// Per-satellite maneuver timeline in the status panel, from the new
+// maneuver_history field (falls back gracefully when the backend hasn't
+// regenerated data.json yet).
+function renderManeuverTimeline(sat) {
+  const hist = sat.maneuver_history;
+  if (!hist || hist.length === 0) return "";
+  const rows = hist.slice().reverse().map((e) => {
+    const sig = e.detection ? ` <span class="badge badge-warn">${e.detection}</span>` : "";
+    const detail = (e.delta_sma_km !== undefined && e.delta_sma_km !== null)
+      ? `<br><span class="label">Δa ${e.delta_sma_km >= 0 ? "+" : ""}${e.delta_sma_km.toFixed(2)} km · ` +
+        `Δi ${e.delta_incl_deg >= 0 ? "+" : ""}${e.delta_incl_deg.toFixed(4)}° · ` +
+        `Δe ${e.delta_ecc >= 0 ? "+" : ""}${e.delta_ecc.toFixed(5)}</span>`
+      : "";
+    return `<div class="status-row"><span class="badge badge-danger">MANEUVER</span>${sig}` +
+      `<br><span class="label">${new Date(e.timestamp).toLocaleString()}</span>${detail}</div>`;
+  });
+  return `<div class="status-row"><span class="label">Maneuver history (${hist.length} recorded)</span></div>` + rows.join("");
+}
+
+function wireGodEyeToggle() {
+  document.getElementById("godeye-toggle").addEventListener("click", () => {
+    if (godEye.active) exitGodEye();
+    else enterGodEye();
+  });
+}
+
 initGlobe();
 wireTimeMachineControls();
+wireGodEyeToggle();
 loadData();
 startBackdropRotation();
