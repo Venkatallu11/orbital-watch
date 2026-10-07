@@ -1,9 +1,7 @@
 # Orbital Watch Digest
 
 ## Maneuvers detected (TLE residual analysis)
-- **SWIFT**: within this object's normal drift pattern | element change: semi-major axis -2.58 km (22.19 km residual, 11.78 km/day over 1.88 day(s) between TLEs, 0.1 sigma)
-- **GOES 18**: within this object's normal drift pattern | element change: inclination +0.0127 deg (12.61 km residual, 49.71 km/day over 0.25 day(s) between TLEs, 1.0 sigma)
-- **IRIDIUM 106**: residual 3.023 km/day is 31.7 sigma above this object's recent baseline (0.177 km/day avg) (0.63 km residual, 3.02 km/day over 0.21 day(s) between TLEs, 31.7 sigma)
+Nothing flagged this run.
 
 ## Data freshness (how old is the TLE behind each number)
 - **ATLAS CENTAUR 2**: TLE is 0.2 day(s) old
@@ -20,13 +18,13 @@
 - **OAO 3 (COPERNICUS)**: TLE is 0.7 day(s) old
 - **ATLAS CENTAUR R/B**: TLE is 0.8 day(s) old
 - **OSCAR 7 (AO-7)**: TLE is 0.3 day(s) old
-- **SL-8 R/B**: TLE is 0.3 day(s) old
+- **SL-8 R/B**: TLE is 0.4 day(s) old
 - **SL-3 R/B**: TLE is 0.2 day(s) old
 - **SEASAT 1**: TLE is 0.3 day(s) old
-- **SL-14 R/B**: TLE is 0.3 day(s) old
+- **SL-14 R/B**: TLE is 0.4 day(s) old
 - **SL-8 R/B**: TLE is 0.3 day(s) old
 - **SL-14 R/B**: TLE is 0.8 day(s) old
-- **SL-8 R/B**: TLE is 0.2 day(s) old
+- **SL-8 R/B**: TLE is 0.3 day(s) old
 - **SL-3 R/B**: TLE is 0.2 day(s) old
 - **SL-3 R/B**: TLE is 0.2 day(s) old
 - **SL-3 R/B**: TLE is 0.2 day(s) old
@@ -36,12 +34,12 @@
 - **SL-3 R/B**: TLE is 0.3 day(s) old
 - **PHASE 3B (AO-10)**: TLE is 0.8 day(s) old
 - **SL-3 R/B**: TLE is 0.2 day(s) old
-- **COSMOS 1536**: TLE is 0.3 day(s) old
-- **UOSAT 2 (UO-11)**: TLE is 0.1 day(s) old
+- **COSMOS 1536**: TLE is 0.4 day(s) old
+- **UOSAT 2 (UO-11)**: TLE is 0.2 day(s) old
 - **SL-14 R/B**: TLE is 0.3 day(s) old
 - **SL-8 R/B**: TLE is 0.5 day(s) old
 - **SL-12 R/B(2)**: TLE is 0.3 day(s) old
-- **SL-14 R/B**: TLE is 0.5 day(s) old
+- **SL-14 R/B**: TLE is 0.6 day(s) old
 - **SL-16 R/B**: TLE is 0.3 day(s) old
 - **SL-14 R/B**: TLE is 0.3 day(s) old
 - **COSMOS 1743**: TLE is 0.5 day(s) old
@@ -61,7 +59,7 @@
 - **SL-16 R/B**: TLE is 0.3 day(s) old
 - **COSMOS 1953**: TLE is 0.2 day(s) old
 - **SL-8 R/B**: TLE is 0.3 day(s) old
-- **COSMOS 1975**: TLE is 0.3 day(s) old
+- **COSMOS 1975**: TLE is 0.4 day(s) old
 - **SL-14 R/B**: TLE is 0.5 day(s) old
 - **SL-16 R/B**: TLE is 0.3 day(s) old
 - **INTERCOSMOS 24**: TLE is 0.3 day(s) old
@@ -75,9 +73,9 @@
 - **SL-14 R/B**: TLE is 0.4 day(s) old
 - **HST**: TLE is 0.2 day(s) old
 - **SL-16 R/B**: TLE is 0.6 day(s) old
-- **COSMOS 2084**: TLE is 0.3 day(s) old
+- **COSMOS 2084**: TLE is 0.4 day(s) old
 - **SL-6 R/B(2)**: TLE is 0.5 day(s) old
-- **SL-8 R/B**: TLE is 0.3 day(s) old
+- **SL-8 R/B**: TLE is 0.4 day(s) old
 - **SL-8 R/B**: TLE is 0.4 day(s) old
 - **OKEAN-3**: TLE is 0.7 day(s) old
 - **COSMOS 2151**: TLE is 0.2 day(s) old
@@ -93,9 +91,9 @@
 - **COSMOS 2221**: TLE is 0.3 day(s) old
 - **SL-16 R/B**: TLE is 0.3 day(s) old
 - **COSMOS 2228**: TLE is 0.2 day(s) old
-- **SCD 1**: TLE is 0.5 day(s) old
+- **SCD 1**: TLE is 0.6 day(s) old
 - **SL-16 R/B**: TLE is 0.8 day(s) old
-- **COSMOS 2242**: TLE is 0.2 day(s) old
+- **COSMOS 2242**: TLE is 0.3 day(s) old
 - **SL-16 R/B**: TLE is 0.4 day(s) old
 - **EYESAT A (AO-27)**: TLE is 0.4 day(s) old
 - **ITAMSAT (IO-26)**: TLE is 0.6 day(s) old
@@ -110,8 +108,8 @@
 - **POLAR**: TLE is 1.1 day(s) old
 - **JAS-2 (FO-29)**: TLE is 0.3 day(s) old
 - **SL-16 R/B**: TLE is 0.3 day(s) old
-- **ORBVIEW 2 (SEASTAR)**: TLE is 0.3 day(s) old
-- **TECHSAT 1B (GO-32)**: TLE is 0.3 day(s) old
+- **ORBVIEW 2 (SEASTAR)**: TLE is 0.4 day(s) old
+- **TECHSAT 1B (GO-32)**: TLE is 0.4 day(s) old
 - **SL-16 R/B**: TLE is 0.3 day(s) old
 - **SL-16 R/B**: TLE is 0.3 day(s) old
 - **SCD 2**: TLE is 0.2 day(s) old
@@ -122,14 +120,14 @@
 - **OKEAN-O**: TLE is 0.2 day(s) old
 - **SL-16 R/B**: TLE is 0.6 day(s) old
 - **CXO**: TLE epoch is 2.3 day(s) ahead of fetch time (catalog/clock-skew artifact, not stale data)
-- **DELTA 2 R/B**: TLE is 0.6 day(s) old
+- **DELTA 2 R/B**: TLE is 0.7 day(s) old
 - **HELIOS 1B**: TLE is 0.5 day(s) old
-- **XMM-NEWTON**: TLE epoch is 0.3 day(s) ahead of fetch time (catalog/clock-skew artifact, not stale data)
+- **XMM-NEWTON**: TLE epoch is 0.2 day(s) ahead of fetch time (catalog/clock-skew artifact, not stale data)
 - **TERRA**: TLE is 0.2 day(s) old
 - **SL-16 R/B**: TLE is 0.3 day(s) old
 - **NAVSTAR 48 (USA 151)**: TLE is 0.6 day(s) old
 - **TITAN 4B R/B**: TLE is 0.2 day(s) old
-- **PCSAT (NO-44)**: TLE is 0.2 day(s) old
+- **PCSAT (NO-44)**: TLE is 0.3 day(s) old
 - **TIMED**: TLE is 0.4 day(s) old
 - **MAROC-TUBSAT**: TLE is 0.3 day(s) old
 - **ENVISAT**: TLE is 0.3 day(s) old
@@ -139,23 +137,23 @@
 - **MIDORI II (ADEOS-II)**: TLE is 0.3 day(s) old
 - **H-2A R/B**: TLE is 0.3 day(s) old
 - **SAUDISAT 1C (SO-50)**: TLE is 0.8 day(s) old
-- **CORIOLIS**: TLE is 0.3 day(s) old
+- **CORIOLIS**: TLE is 0.4 day(s) old
 - **SORCE**: TLE is 0.6 day(s) old
 - **MOST**: TLE is 0.8 day(s) old
 - **SCISAT 1**: TLE is 0.3 day(s) old
-- **DMSP 5D-3 F16 (USA 172)**: TLE is 0.1 day(s) old
-- **CZ-4B R/B**: TLE is 0.3 day(s) old
+- **DMSP 5D-3 F16 (USA 172)**: TLE is 0.2 day(s) old
+- **CZ-4B R/B**: TLE is 0.4 day(s) old
 - **SHIYAN-1 (SY-1)**: TLE is 0.6 day(s) old
 - **SL-16 R/B**: TLE is 0.8 day(s) old
-- **AURA**: TLE is 0.2 day(s) old
+- **AURA**: TLE is 0.3 day(s) old
 - **CZ-4B R/B**: TLE is 0.3 day(s) old
 - **CZ-2C R/B**: TLE is 0.5 day(s) old
 - **SWIFT**: TLE is 0.2 day(s) old
 - **ARIANE 5 R/B**: TLE is 0.3 day(s) old
 - **IRS-P5 (CARTOSAT-1)**: TLE is 0.3 day(s) old
-- **CZ-2D R/B**: TLE is 0.7 day(s) old
+- **CZ-2D R/B**: TLE is 0.8 day(s) old
 - **SINAH 1**: TLE is 0.2 day(s) old
-- **METEOSAT-9 (MSG-2)**: TLE is 0.8 day(s) old
+- **METEOSAT-9 (MSG-2)**: TLE is 0.9 day(s) old
 - **ALOS (DAICHI)**: TLE is 0.3 day(s) old
 - **H-2A R/B**: TLE is 0.3 day(s) old
 - **RESURS-DK 1**: TLE is 0.3 day(s) old
@@ -179,19 +177,19 @@
 - **RADARSAT-2**: TLE is 0.2 day(s) old
 - **CARTOSAT-2A**: TLE is 0.2 day(s) old
 - **FENGYUN 3A**: TLE is 0.3 day(s) old
-- **FGRST (GLAST)**: TLE is 0.7 day(s) old
+- **FGRST (GLAST)**: TLE is 0.8 day(s) old
 - **HUANJING 1A (HJ-1A)**: TLE is 0.2 day(s) old
-- **HUANJING 1B (HJ-1B)**: TLE is 0.1 day(s) old
+- **HUANJING 1B (HJ-1B)**: TLE is 0.2 day(s) old
 - **GEOEYE 1**: TLE is 0.3 day(s) old
 - **THEOS**: TLE is 0.2 day(s) old
 - **COSMO-SKYMED 3**: TLE is 0.2 day(s) old
 - **YAOGAN-4**: TLE is 0.4 day(s) old
 - **GOSAT (IBUKI)**: TLE is 0.5 day(s) old
-- **KORONAS-FOTON**: TLE is 0.3 day(s) old
+- **KORONAS-FOTON**: TLE is 0.4 day(s) old
 - **NOAA 19**: TLE is 0.2 day(s) old
 - **EWS-G3 (GOES 14)**: TLE is 0.3 day(s) old
 - **DEIMOS-1**: TLE is 0.2 day(s) old
-- **DUBAISAT-1**: TLE is 0.4 day(s) old
+- **DUBAISAT-1**: TLE is 0.5 day(s) old
 - **OCEANSAT-2**: TLE is 0.2 day(s) old
 - **SWISSCUBE**: TLE is 0.2 day(s) old
 - **BEESAT-1**: TLE is 0.5 day(s) old
@@ -225,7 +223,7 @@
 - **ARIRANG-3 (KOMPSAT-3)**: TLE is 0.2 day(s) old
 - **H-2A R/B**: TLE is 0.3 day(s) old
 - **NUSTAR**: TLE is 0.1 day(s) old
-- **METEOSAT-10 (MSG-3)**: TLE is 0.5 day(s) old
+- **METEOSAT-10 (MSG-3)**: TLE is 0.6 day(s) old
 - **EXACTVIEW-1 (ADS-1B)**: TLE is 0.2 day(s) old
 - **SPOT 6**: TLE is 0.2 day(s) old
 - **METOP-B**: TLE is 0.2 day(s) old
@@ -237,7 +235,7 @@
 - **BRITE-AUSTRIA**: TLE is 0.4 day(s) old
 - **GAOFEN-1**: TLE is 0.2 day(s) old
 - **VNREDSAT 1**: TLE is 0.2 day(s) old
-- **IRIS**: TLE is 0.6 day(s) old
+- **IRIS**: TLE is 0.7 day(s) old
 - **INSAT-3D**: TLE is 0.2 day(s) old
 - **ARIRANG-5 (KOMPSAT-5)**: TLE is 0.2 day(s) old
 - **HISAKI (SPRINT-A)**: TLE is 0.3 day(s) old
@@ -254,19 +252,19 @@
 - **SENTINEL-1A**: TLE is 0.2 day(s) old
 - **SL-4 R/B**: TLE is 0.3 day(s) old
 - **KAZEOSAT 1**: TLE is 0.2 day(s) old
-- **ALOS-2**: TLE is 0.6 day(s) old
+- **ALOS-2**: TLE is 0.7 day(s) old
 - **KAZEOSAT 2**: TLE is 0.2 day(s) old
 - **HODOYOSHI-4**: TLE is 0.2 day(s) old
 - **DEIMOS-2**: TLE is 0.2 day(s) old
 - **HODOYOSHI-3**: TLE is 0.4 day(s) old
-- **BRITE-CA1 (TORONTO)**: TLE is 0.4 day(s) old
+- **BRITE-CA1 (TORONTO)**: TLE is 0.5 day(s) old
 - **LEMUR-1**: TLE is 0.4 day(s) old
 - **SPOT 7**: TLE is 0.2 day(s) old
 - **OCO 2**: TLE is 0.2 day(s) old
 - **METEOR-M 2**: TLE is 0.2 day(s) old
 - **SKYSAT-B**: TLE is 0.3 day(s) old
 - **NAVSTAR 71 (USA 256)**: TLE is 0.6 day(s) old
-- **WORLDVIEW-3 (WV-3)**: TLE is 0.2 day(s) old
+- **WORLDVIEW-3 (WV-3)**: TLE is 0.3 day(s) old
 - **GAOFEN-2**: TLE is 0.2 day(s) old
 - **BRITE-PL2 (HEWELIUSZ)**: TLE is 0.2 day(s) old
 - **GSAT0201 (GALILEO 5)**: TLE is 19.1 day(s) old -- STALE, treat any numbers above with extra caution
@@ -285,21 +283,21 @@
 - **MMS 4**: TLE is 0.1 day(s) old
 - **KOMPSAT-3A**: TLE is 0.2 day(s) old
 - **SENTINEL-2A**: TLE is 0.2 day(s) old
-- **GAOFEN-8**: TLE is 0.1 day(s) old
+- **GAOFEN-8**: TLE is 0.2 day(s) old
 - **CARBONITE 1 (CBNT-1)**: TLE is 0.2 day(s) old
-- **METEOSAT-11 (MSG-4)**: TLE is 0.5 day(s) old
+- **METEOSAT-11 (MSG-4)**: TLE is 0.6 day(s) old
 - **YAOGAN-27**: TLE is 0.2 day(s) old
 - **GAOFEN-9 01**: TLE is 0.2 day(s) old
 - **ASTROSAT**: TLE is 0.6 day(s) old
 - **YAOGAN-28**: TLE is 0.2 day(s) old
-- **YAOGAN-29**: TLE is 0.1 day(s) old
-- **ELEKTRO-L 2**: TLE is 0.5 day(s) old
+- **YAOGAN-29**: TLE is 0.2 day(s) old
+- **ELEKTRO-L 2**: TLE is 0.6 day(s) old
 - **KENT RIDGE 1**: TLE is 0.5 day(s) old
 - **DAMPE**: TLE is 0.2 day(s) old
 - **GAOFEN-4**: TLE is 0.2 day(s) old
 - **JASON-3**: TLE is 0.2 day(s) old
 - **SENTINEL-3A**: TLE is 0.2 day(s) old
-- **ASTRO-H (HITOMI)**: TLE is 0.2 day(s) old
+- **ASTRO-H (HITOMI)**: TLE is 0.3 day(s) old
 - **ZIYUAN 3-02 (ZY 3-02)**: TLE is 0.2 day(s) old
 - **CARTOSAT-2C**: TLE is 0.2 day(s) old
 - **SKYSAT-C1**: TLE is 0.7 day(s) old
@@ -307,7 +305,7 @@
 - **GAOFEN-3**: TLE is 0.2 day(s) old
 - **INSAT-3DR**: TLE is 0.2 day(s) old
 - **SKYSAT-C4**: TLE is 0.8 day(s) old
-- **SKYSAT-C5**: TLE is 0.2 day(s) old
+- **SKYSAT-C5**: TLE is 0.3 day(s) old
 - **SKYSAT-C2**: TLE is 0.3 day(s) old
 - **SKYSAT-C3**: TLE is 0.3 day(s) old
 - **PISAT**: TLE is 0.3 day(s) old
@@ -343,7 +341,7 @@
 - **FORMOSAT-5**: TLE is 0.3 day(s) old
 - **SENTINEL-5P**: TLE is 0.4 day(s) old
 - **SKYSAT-C11**: TLE is 0.4 day(s) old
-- **SKYSAT-C10**: TLE is 0.1 day(s) old
+- **SKYSAT-C10**: TLE is 0.2 day(s) old
 - **SKYSAT-C9**: TLE is 0.4 day(s) old
 - **SKYSAT-C8**: TLE is 0.4 day(s) old
 - **SKYSAT-C7**: TLE is 0.4 day(s) old
@@ -355,43 +353,43 @@
 - **ZHANGHENG 1-01 (CSES-1)**: TLE is 0.2 day(s) old
 - **GOES 17**: TLE is 0.3 day(s) old
 - **GAOFEN-1 02**: TLE is 0.2 day(s) old
-- **GAOFEN-1 03**: TLE is 0.1 day(s) old
+- **GAOFEN-1 03**: TLE is 0.2 day(s) old
 - **GAOFEN-1 04**: TLE is 0.2 day(s) old
 - **SENTINEL-3B**: TLE is 0.6 day(s) old
 - **GAOFEN-5 01**: TLE is 0.3 day(s) old
-- **GAOFEN-6**: TLE is 0.1 day(s) old
-- **FENGYUN 2H**: TLE is 0.7 day(s) old
+- **GAOFEN-6**: TLE is 0.2 day(s) old
+- **FENGYUN 2H**: TLE is 0.8 day(s) old
 - **GAOFEN-11 01**: TLE is 0.2 day(s) old
 - **ICESAT-2**: TLE is 0.2 day(s) old
 - **SAOCOM 1A**: TLE is 0.2 day(s) old
 - **H-2A R/B**: TLE is 0.5 day(s) old
-- **METOP-C**: TLE is 0.2 day(s) old
+- **METOP-C**: TLE is 0.3 day(s) old
 - **HYSIS**: TLE is 0.2 day(s) old
 - **KAZSTSAT**: TLE is 0.8 day(s) old
 - **SKYSAT-C12**: TLE is 0.3 day(s) old
 - **GEO-KOMPSAT-2A**: TLE is 0.9 day(s) old
 - **SAUDISAT 5A**: TLE is 0.2 day(s) old
 - **SAUDISAT 5B**: TLE is 0.2 day(s) old
-- **ONEWEB-0012**: TLE is 0.4 day(s) old
+- **ONEWEB-0012**: TLE is 0.5 day(s) old
 - **METEOR-M2 2**: TLE is 0.2 day(s) old
 - **GAOFEN-10R**: TLE is 0.2 day(s) old
 - **STARLINK-1008**: TLE is 0.5 day(s) old
-- **STARLINK-1012**: TLE is 0.2 day(s) old
+- **STARLINK-1012**: TLE is 0.3 day(s) old
 - **CARTOSAT-3**: TLE is 0.2 day(s) old
 - **GAOFEN-12 01**: TLE is 0.2 day(s) old
 - **CSG-1**: TLE is 0.2 day(s) old
-- **ONEWEB-0013**: TLE is 0.4 day(s) old
+- **ONEWEB-0013**: TLE is 0.5 day(s) old
 - **SAOCOM 1B**: TLE is 0.2 day(s) old
 - **NEMO-HD**: TLE is 0.2 day(s) old
 - **SALSAT**: TLE is 0.8 day(s) old
 - **SENTINEL-6A**: TLE is 0.4 day(s) old
-- **ARKTIKA-M 1**: TLE is 0.6 day(s) old
+- **ARKTIKA-M 1**: TLE is 0.7 day(s) old
 - **CAS500-1**: TLE is 0.2 day(s) old
 - **GAOFEN-12 02**: TLE is 0.2 day(s) old
 - **PLEIADES NEO 3**: TLE is 0.2 day(s) old
 - **LEMUR-2-AMANDA-SVANTE**: TLE is 0.6 day(s) old
 - **CSS (TIANHE)**: TLE is 0.2 day(s) old
-- **COSMOS 2550**: TLE is 0.3 day(s) old
+- **COSMOS 2550**: TLE is 0.4 day(s) old
 - **FENGYUN 3E**: TLE is 0.2 day(s) old
 - **ISS (NAUKA)**: TLE is 0.2 day(s) old
 - **PLEIADES NEO 4**: TLE is 0.2 day(s) old
@@ -407,7 +405,7 @@
 - **GSLV R/B**: TLE is 0.3 day(s) old
 - **CSS (MENGTIAN)**: TLE is 0.2 day(s) old
 - **NOAA 21 (JPSS-2)**: TLE is 0.2 day(s) old
-- **METEOSAT-12 (MTG-I1)**: TLE is 0.5 day(s) old
+- **METEOSAT-12 (MTG-I1)**: TLE is 0.6 day(s) old
 - **SWOT**: TLE is 0.4 day(s) old
 - **TIANMU-1 03**: TLE is 0.2 day(s) old
 - **TIANMU-1 04**: TLE is 0.2 day(s) old
@@ -416,14 +414,14 @@
 - **FENGYUN 3G**: TLE is 8.5 day(s) old -- STALE, treat any numbers above with extra caution
 - **LEMUR-2-EMBRIONOVIS**: TLE is 0.4 day(s) old
 - **METEOR-M2 3**: TLE is 0.2 day(s) old
-- **LEMUR-2-DEVERILL-M-T**: TLE is 0.6 day(s) old
+- **LEMUR-2-DEVERILL-M-T**: TLE is 0.7 day(s) old
 - **TIANMU-1 07**: TLE is 0.2 day(s) old
 - **TIANMU-1 08**: TLE is 0.2 day(s) old
 - **TIANMU-1 09**: TLE is 0.2 day(s) old
 - **TIANMU-1 10**: TLE is 0.2 day(s) old
 - **FENGYUN 3F**: TLE is 0.2 day(s) old
-- **GAOFEN-12 04**: TLE is 0.1 day(s) old
-- **XRISM**: TLE is 0.2 day(s) old
+- **GAOFEN-12 04**: TLE is 0.2 day(s) old
+- **XRISM**: TLE is 0.3 day(s) old
 - **LEMUR-2-BASS**: TLE is 0.3 day(s) old
 - **FLOCK 4Q-16**: TLE is 0.5 day(s) old
 - **PELICAN-1**: TLE is 1.0 day(s) old
@@ -445,14 +443,14 @@
 - **TIANMU-1 16**: TLE is 0.2 day(s) old
 - **TIANMU-1 17**: TLE is 0.2 day(s) old
 - **TIANMU-1 18**: TLE is 0.2 day(s) old
-- **LEMUR-2-NIMBUS2000**: TLE is 0.6 day(s) old
-- **LEMUR-2-VALHALLA**: TLE is 0.6 day(s) old
+- **LEMUR-2-NIMBUS2000**: TLE is 0.7 day(s) old
+- **LEMUR-2-VALHALLA**: TLE is 0.7 day(s) old
 - **LEMUR-2-CAEL**: TLE is 0.2 day(s) old
 - **INSAT-3DS**: TLE is 0.3 day(s) old
 - **METEOR-M2 4**: TLE is 0.2 day(s) old
 - **PARS 1**: TLE is 0.2 day(s) old
-- **LEMUR-2-JOHNNYTRUONG**: TLE is 0.3 day(s) old
-- **RESURS-P 4**: TLE is 0.1 day(s) old
+- **LEMUR-2-JOHNNYTRUONG**: TLE is 0.4 day(s) old
+- **RESURS-P 4**: TLE is 0.2 day(s) old
 - **ACS3**: TLE is 0.5 day(s) old
 - **LEGION 1**: TLE is 0.2 day(s) old
 - **LEGION 2**: TLE is 0.2 day(s) old
@@ -464,13 +462,13 @@
 - **FLOCK 4BE-18**: TLE is 0.3 day(s) old
 - **FLOCK 4BE-7**: TLE is 0.6 day(s) old
 - **FLOCK 4BE-36**: TLE is 0.6 day(s) old
-- **FLOCK 4BE-25**: TLE is 0.2 day(s) old
+- **FLOCK 4BE-25**: TLE is 0.3 day(s) old
 - **FLOCK 4BE-31**: TLE is 0.6 day(s) old
-- **FLOCK 4BE-20**: TLE is 0.3 day(s) old
+- **FLOCK 4BE-20**: TLE is 0.4 day(s) old
 - **FLOCK 4BE-23**: TLE is 0.6 day(s) old
 - **FLOCK 4BE-17**: TLE is 0.6 day(s) old
 - **FLOCK 4BE-22**: TLE is 0.6 day(s) old
-- **FLOCK 4BE-34**: TLE is 0.2 day(s) old
+- **FLOCK 4BE-34**: TLE is 0.3 day(s) old
 - **FLOCK 4BE-32**: TLE is 0.2 day(s) old
 - **FLOCK 4BE-11**: TLE is 0.2 day(s) old
 - **FLOCK 4BE-24**: TLE is 0.6 day(s) old
@@ -501,7 +499,7 @@
 - **IONOSFERA-M 1**: TLE is 0.2 day(s) old
 - **IONOSFERA-M 2**: TLE is 0.2 day(s) old
 - **FLOCK 4G-8**: TLE is 0.6 day(s) old
-- **FLOCK 4G-9**: TLE is 0.3 day(s) old
+- **FLOCK 4G-9**: TLE is 0.4 day(s) old
 - **FLOCK 4G-7**: TLE is 0.3 day(s) old
 - **FLOCK 4G-12**: TLE is 0.3 day(s) old
 - **FLOCK 4G-11**: TLE is 0.6 day(s) old
@@ -529,9 +527,9 @@
 - **FLOCK 4G-15**: TLE is 0.6 day(s) old
 - **FLOCK 4G-30**: TLE is 0.6 day(s) old
 - **FLOCK 4G-18**: TLE is 0.3 day(s) old
-- **FLOCK 4G-17**: TLE is 0.3 day(s) old
-- **FLOCK 4G-33**: TLE is 0.3 day(s) old
-- **LEMUR-2-WILSON**: TLE is 0.3 day(s) old
+- **FLOCK 4G-17**: TLE is 0.4 day(s) old
+- **FLOCK 4G-33**: TLE is 0.4 day(s) old
+- **LEMUR-2-WILSON**: TLE is 0.4 day(s) old
 - **LEMUR-2-STAR-FOX**: TLE is 0.6 day(s) old
 - **LEMUR-2-ARIANNA**: TLE is 0.3 day(s) old
 - **LEMUR-2-ALISIA**: TLE is 0.6 day(s) old
@@ -539,7 +537,7 @@
 - **LEMUR-2-MYNAMEISJEFF**: TLE is 0.3 day(s) old
 - **PRSC-EO1**: TLE is 0.2 day(s) old
 - **LEMUR-2-LEIA-PHILIP**: TLE is 0.3 day(s) old
-- **LEMUR-2-LIA-MARTIN**: TLE is 0.6 day(s) old
+- **LEMUR-2-LIA-MARTIN**: TLE is 0.7 day(s) old
 - **LEMUR-2-DELOITTE-1**: TLE is 0.3 day(s) old
 - **LEMUR-2-EMERSONROSE**: TLE is 0.5 day(s) old
 - **LEMUR-2-MARACHE-FRAN**: TLE is 0.6 day(s) old
@@ -555,15 +553,15 @@
 - **LEMUR-2-BALTO**: TLE is 0.3 day(s) old
 - **BIOMASS**: TLE is 0.3 day(s) old
 - **LEMUR-2-KRISH**: TLE is 0.5 day(s) old
-- **LEMUR-2-HUBBLE-4**: TLE is 0.2 day(s) old
+- **LEMUR-2-HUBBLE-4**: TLE is 0.3 day(s) old
 - **LEMUR-2-SEJONG-2**: TLE is 0.2 day(s) old
 - **GOSAT-GW (IBUKI GW)**: TLE is 0.2 day(s) old
-- **MTG-S1**: TLE is 1.5 day(s) old
+- **MTG-S1**: TLE is 1.6 day(s) old
 - **LEMUR-2-HUBBLE-5**: TLE is 0.5 day(s) old
 - **LEMUR-2-KARENDARRELL**: TLE is 0.5 day(s) old
 - **IONOSFERA-M 3**: TLE is 0.2 day(s) old
 - **IONOSFERA-M 4**: TLE is 0.2 day(s) old
-- **MICROCARB**: TLE is 0.3 day(s) old
+- **MICROCARB**: TLE is 0.4 day(s) old
 - **CO3D 3**: TLE is 0.3 day(s) old
 - **CO3D 4**: TLE is 0.3 day(s) old
 - **CO3D 2**: TLE is 0.2 day(s) old
@@ -574,28 +572,28 @@
 - **PELICAN-4**: TLE is 0.6 day(s) old
 - **LEMUR-2-LUCILLE-ROSE**: TLE is 0.5 day(s) old
 - **FENGYUN 3H**: TLE is 0.4 day(s) old
-- **CZ-8A R/B**: TLE is 0.2 day(s) old
+- **CZ-8A R/B**: TLE is 0.3 day(s) old
 - **HRC MONOBLOCK CAMERA**: TLE is 0.3 day(s) old
 - **LEMUR-2-AFFIE-WAUWIE**: TLE is 0.6 day(s) old
 - **SENTINEL-6B**: TLE is 0.4 day(s) old
 - **SZ-21 MODULE**: TLE is 0.6 day(s) old
 - **CAS500-3**: TLE is 0.4 day(s) old
 - **PELICAN-5**: TLE is 0.2 day(s) old
-- **OTTER SDM**: TLE is 0.6 day(s) old
-- **LEMUR-2-STAS-GORBUK**: TLE is 0.3 day(s) old
+- **OTTER SDM**: TLE is 0.7 day(s) old
+- **LEMUR-2-STAS-GORBUK**: TLE is 0.4 day(s) old
 - **PELICAN-6**: TLE is 0.6 day(s) old
 - **FLOCK 4H-1**: TLE is 0.6 day(s) old
 - **FLOCK 4H-2**: TLE is 0.4 day(s) old
 - **FLOCK 4H-3**: TLE is 0.6 day(s) old
-- **FLOCK 4H-4**: TLE is 0.3 day(s) old
+- **FLOCK 4H-4**: TLE is 0.4 day(s) old
 - **FLOCK 4H-5**: TLE is 0.6 day(s) old
 - **FLOCK 4H-6**: TLE is 0.3 day(s) old
-- **FLOCK 4H-7**: TLE is 0.3 day(s) old
+- **FLOCK 4H-7**: TLE is 0.4 day(s) old
 - **FLOCK 4H-8**: TLE is 0.4 day(s) old
 - **FLOCK 4H-9**: TLE is 0.4 day(s) old
 - **FLOCK 4H-10**: TLE is 0.6 day(s) old
 - **FLOCK 4H-12**: TLE is 0.6 day(s) old
-- **FLOCK 4H-13**: TLE is 0.3 day(s) old
+- **FLOCK 4H-13**: TLE is 0.4 day(s) old
 - **FLOCK 4H-14**: TLE is 0.3 day(s) old
 - **FLOCK 4H-15**: TLE is 0.6 day(s) old
 - **FLOCK 4H-16**: TLE is 0.4 day(s) old
@@ -604,7 +602,7 @@
 - **FLOCK 4H-20**: TLE is 0.6 day(s) old
 - **FLOCK 4H-21**: TLE is 0.6 day(s) old
 - **FLOCK 4H-22**: TLE is 0.4 day(s) old
-- **FLOCK 4H-23**: TLE is 0.1 day(s) old
+- **FLOCK 4H-23**: TLE is 0.2 day(s) old
 - **FLOCK 4H-24**: TLE is 0.6 day(s) old
 - **FLOCK 4H-25**: TLE is 0.3 day(s) old
 - **FLOCK 4H-26**: TLE is 0.6 day(s) old
@@ -612,26 +610,26 @@
 - **FLOCK 4H-29**: TLE is 0.6 day(s) old
 - **FLOCK 4H-30**: TLE is 0.4 day(s) old
 - **FLOCK 4H-31**: TLE is 0.6 day(s) old
-- **FLOCK 4H-32**: TLE is 0.3 day(s) old
+- **FLOCK 4H-32**: TLE is 0.4 day(s) old
 - **FLOCK 4H-33**: TLE is 0.6 day(s) old
-- **FLOCK 4H-34**: TLE is 0.6 day(s) old
+- **FLOCK 4H-34**: TLE is 0.7 day(s) old
 - **FLOCK 4H-35**: TLE is 0.3 day(s) old
 - **FLOCK 4H-36**: TLE is 0.4 day(s) old
-- **LEMUR-2-TEODOR**: TLE is 0.3 day(s) old
+- **LEMUR-2-TEODOR**: TLE is 0.4 day(s) old
 - **LEMUR-2-LAILA**: TLE is 0.6 day(s) old
 - **LEMUR-2-CELIJO-SB-PK**: TLE is 0.7 day(s) old
 - **LEMUR-2-FINNIAN**: TLE is 0.4 day(s) old
 - **LEMUR-2-STARLIGHT**: TLE is 0.4 day(s) old
-- **LEMUR-2-TARTIFLETTE**: TLE is 0.6 day(s) old
+- **LEMUR-2-TARTIFLETTE**: TLE is 0.7 day(s) old
 - **LEMUR-2-VUKASIN**: TLE is 0.6 day(s) old
 - **LEMUR-2-HOTSPUR-TOM**: TLE is 0.7 day(s) old
 - **LEMUR-2-MYRA**: TLE is 0.4 day(s) old
 - **DUPLEX**: TLE is 0.3 day(s) old
-- **SPACEMOBILE-006**: TLE is 0.7 day(s) old
+- **SPACEMOBILE-006**: TLE is 0.8 day(s) old
 - **CSG-3**: TLE is 0.3 day(s) old
 - **LEMUR-2 FIKRETDENGIZ**: TLE is 0.8 day(s) old
 - **TWILIGHT-1 OBJECT B**: TLE is 0.3 day(s) old
-- **LEMUR-2-MARIO-SOUSA**: TLE is 0.8 day(s) old
+- **LEMUR-2-MARIO-SOUSA**: TLE is 0.9 day(s) old
 - **LEMUR-2-SONNENBLUME**: TLE is 0.3 day(s) old
 - **LEMUR-2-WOBLER**: TLE is 0.3 day(s) old
 - **LEMUR-2-GRAM-E-SUE**: TLE is 0.3 day(s) old
