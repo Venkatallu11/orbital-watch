@@ -97,11 +97,20 @@ function initGlobe() {
     .pathPoints("points")
     .pathPointLat((p) => p[0])
     .pathPointLng((p) => p[1])
+    // Float the track just above the surface so it isn't z-fought/occluded by
+    // the globe sphere, and give it a visible stroke.
+    .pathPointAlt(0.01)
     .pathColor(() => ["#58a6ff", "rgba(88, 166, 255, 0.15)"])
     .pathDashLength(0.06)
     .pathDashGap(0.03)
     .pathDashAnimateTime(6000)
-    .pathStroke(1.5)
+    .pathStroke(2.5)
+    // CRITICAL: globe.gl animates a path "drawing on" over this duration on
+    // every pathsData() change. The tracking loop rewrites pathsData several
+    // times a second, so with the default ~1000ms the draw-on animation kept
+    // restarting and the ground track never actually appeared -- only the
+    // position marker showed. 0 = the path updates instantly and stays drawn.
+    .pathTransitionDuration(0)
     .pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 0);
 
   // NOTE: autoRotate is deliberately left off. It rotates the camera every
@@ -1257,24 +1266,53 @@ function loadData() {
 //    objects get the pulsing ring treatment.
 const godEye = {
   active: false,
-  entries: [], // {sat, satrec, recent}
+  entries: [], // {sat, satrec, recent, curated, category}
   intervalId: null,
   trailsDone: false,
+  filter: "__all__",      // category key, or "__all__"
+  trailsMode: "important", // "important" | "all" | "none"
 };
+
+// Entries matching the current category filter.
+function godEyeFiltered() {
+  if (godEye.filter === "__all__") return godEye.entries;
+  return godEye.entries.filter((e) => (e.sat.category || "uncategorized") === godEye.filter);
+}
 
 const GODEYE_UPDATE_MS = 3000;
 const GODEYE_TRAIL_POINTS = 36;
 const GODEYE_TRAIL_CHUNK = 40;
 const MANEUVER_RECENT_DAYS = 7;
 
-function recentManeuverEvent(sat) {
-  const hist = sat.maneuver_history;
-  if (!hist || hist.length === 0) return null;
-  const latest = hist[hist.length - 1];
-  if (Date.now() - new Date(latest.timestamp).getTime() < MANEUVER_RECENT_DAYS * 86400000) {
-    return latest;
+// The God's-eye view draws the WHOLE fleet -- every object we have a TLE for
+// (the curated watchlist plus the hundreds of group-fetched satellites). The
+// backend ships that as `siteData.fleet` (lean: norad_id/name/category/TLE +
+// maneuver recency). Older data.json (before the fleet field) falls back to
+// the curated `satellites` array so the view still works during a deploy lag.
+function fleetList() {
+  if (siteData && Array.isArray(siteData.fleet) && siteData.fleet.length > 0) {
+    return siteData.fleet;
   }
-  return null;
+  return (siteData && siteData.satellites) || [];
+}
+
+// "Recently maneuvered" works for both shapes: a fleet entry carries a single
+// `last_maneuver` timestamp; a curated satellite carries a maneuver_history.
+function maneuveredRecently(entry) {
+  let ts = null;
+  if (entry.last_maneuver) {
+    ts = entry.last_maneuver;
+  } else if (entry.maneuver_history && entry.maneuver_history.length > 0) {
+    ts = entry.maneuver_history[entry.maneuver_history.length - 1].timestamp;
+  }
+  if (!ts) return false;
+  return Date.now() - new Date(ts).getTime() < MANEUVER_RECENT_DAYS * 86400000;
+}
+
+// NORAD IDs that have a full detail page (the dropdown) -- used to tell, in
+// God's-eye view, which fleet points can be clicked through to a detail view.
+function curatedIdSet() {
+  return new Set(((siteData && siteData.satellites) || []).map((s) => s.norad_id));
 }
 
 function enterGodEye() {
@@ -1289,12 +1327,26 @@ function enterGodEye() {
   setTimeMachineVisible(false);
 
   godEye.entries = [];
-  for (const sat of siteData.satellites) {
+  const curated = curatedIdSet();
+  for (const sat of fleetList()) {
     const satrec = satrecFor(sat);
-    if (!satrec) continue; // deep-space probes have no TLE
-    godEye.entries.push({ sat, satrec, recent: recentManeuverEvent(sat) });
+    if (!satrec) continue; // deep-space probes / entries without a TLE
+    godEye.entries.push({
+      sat,
+      satrec,
+      recent: maneuveredRecently(sat),
+      curated: curated.has(sat.norad_id),
+    });
   }
   godEye.trailsDone = false;
+
+  // Tell the visitor how many objects are actually on screen -- this scales
+  // from the curated ~50 to the full group-fetched fleet (hundreds).
+  document.getElementById("godeye-toggle").innerHTML =
+    `🌍 Exit God's eye (${godEye.entries.length})`;
+
+  populateGodEyeFilter();
+  document.getElementById("godeye-controls").hidden = false;
 
   // Full-globe camera.
   globeInstance.pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 1000);
@@ -1303,12 +1355,19 @@ function enterGodEye() {
   globeInstance
     .pointColor((d) => d.color)
     .pointRadius((d) => d.size)
+    .pointLabel((d) => `<div style="font-size:12px">${d.name}` +
+      (d.curated ? ' &bull; <span style="color:#58a6ff">click for detail</span>' : '') +
+      (d.recent ? '<br><span style="color:#f85149">recent maneuver</span>' : '') +
+      `</div>`)
     .ringColor(() => (t) => `rgba(248, 81, 73, ${1 - t})`)
     .pathColor((d) => (d.hot
       ? ["#f85149", "rgba(248, 81, 73, 0.08)"]
       : ["rgba(88, 166, 255, 0.5)", "rgba(88, 166, 255, 0.06)"]))
     .onPointClick((p) => {
-      if (p && p.norad_id) {
+      // Only curated satellites have a detail page / dropdown entry; clicking
+      // a group-fleet-only object just keeps the hover label (no dead-end
+      // navigation into a satellite the panels have no data for).
+      if (p && p.norad_id && p.curated) {
         document.getElementById("satellite-select").value = String(p.norad_id);
         exitGodEye();
         selectSatellite(p.norad_id);
@@ -1328,12 +1387,14 @@ function exitGodEye() {
   const toggle = document.getElementById("godeye-toggle");
   toggle.classList.remove("active");
   toggle.innerHTML = "🌍 God's eye view";
+  document.getElementById("godeye-controls").hidden = true;
   globeInstance.onPointClick(null);
 
   // Restore per-satellite styling.
   globeInstance
     .pointColor(() => "#58a6ff")
     .pointRadius(0.7)
+    .pointLabel(() => "")
     .ringColor(() => (t) => `rgba(88, 166, 255, ${1 - t})`)
     .pathColor(() => ["#58a6ff", "rgba(88, 166, 255, 0.15)"]);
 
@@ -1347,29 +1408,54 @@ function updateGodEyePoints() {
   const now = new Date();
   const pts = [];
   const rings = [];
-  for (const e of godEye.entries) {
+  const entries = godEyeFiltered();
+  for (const e of entries) {
     const pos = currentLatLon(e.satrec, now);
     if (!pos) continue;
     pts.push({
       lat: pos.lat, lng: pos.lng,
       norad_id: e.sat.norad_id,
-      color: e.recent ? "#f85149" : "#58a6ff",
-      size: e.recent ? 0.9 : 0.45,
+      name: e.sat.name,
+      curated: e.curated,
+      recent: e.recent,
+      color: e.recent ? "#f85149" : (e.curated ? "#58a6ff" : "#8b949e"),
+      size: e.recent ? 0.9 : (e.curated ? 0.5 : 0.35),
     });
     if (e.recent) rings.push({ lat: pos.lat, lng: pos.lng });
   }
   globeInstance.pointsData(pts).ringsData(rings);
+  const recentCount = entries.filter((e) => e.recent).length;
+  const countEl = document.getElementById("godeye-count");
+  if (countEl) {
+    countEl.textContent = `${pts.length} shown` +
+      (recentCount ? ` · ${recentCount} recently maneuvered` : "");
+  }
 }
 
 function buildGodEyeTrails() {
+  // Which objects get an orbit trail depends on the trails mode:
+  //  - "none": no trails (just the fleet of points -- cleanest).
+  //  - "important": only curated satellites + anything that recently
+  //    maneuvered (keeps the globe readable with hundreds of objects while
+  //    still drawing the orbits that matter).
+  //  - "all": every filtered object (the full dense "whole sky" mesh).
+  godEye.trailsDone = false;
+  if (godEye.trailsMode === "none") {
+    globeInstance.pathsData([]);
+    godEye.trailsDone = true;
+    return;
+  }
+  const source = godEyeFiltered().filter((e) =>
+    godEye.trailsMode === "all" ? true : (e.curated || e.recent));
+
   const paths = [];
   let i = 0;
   const now = new Date();
   function chunk() {
     if (!godEye.active) return; // user exited mid-build
-    const end = Math.min(i + GODEYE_TRAIL_CHUNK, godEye.entries.length);
+    const end = Math.min(i + GODEYE_TRAIL_CHUNK, source.length);
     for (; i < end; i++) {
-      const e = godEye.entries[i];
+      const e = source[i];
       const periodMinutes = (2 * Math.PI) / e.satrec.no;
       const pts = [];
       for (let k = 0; k <= GODEYE_TRAIL_POINTS; k++) {
@@ -1380,13 +1466,37 @@ function buildGodEyeTrails() {
       if (pts.length > 1) paths.push({ points: pts, hot: !!e.recent });
     }
     globeInstance.pathsData(paths);
-    if (i < godEye.entries.length) {
+    if (i < source.length) {
       setTimeout(chunk, 0);
     } else {
       godEye.trailsDone = true;
     }
   }
   chunk();
+}
+
+// Build the category filter dropdown from the categories actually present in
+// the fleet, each with a live count, so a visitor can isolate e.g. just
+// Starlink or just GPS out of the whole sky.
+function populateGodEyeFilter() {
+  const sel = document.getElementById("godeye-filter");
+  if (!sel) return;
+  const labels = (siteData && siteData.category_labels) || {};
+  const counts = new Map();
+  for (const e of godEye.entries) {
+    const c = e.sat.category || "uncategorized";
+    counts.set(c, (counts.get(c) || 0) + 1);
+  }
+  const cats = [...counts.keys()].sort((a, b) => (labels[a] || a).localeCompare(labels[b] || b));
+  sel.innerHTML = `<option value="__all__">All categories (${godEye.entries.length})</option>` +
+    cats.map((c) => `<option value="${c}">${labels[c] || c} (${counts.get(c)})</option>`).join("");
+  sel.value = godEye.filter;
+}
+
+function refreshGodEye() {
+  if (!godEye.active) return;
+  updateGodEyePoints();
+  buildGodEyeTrails();
 }
 
 // Fleet-wide maneuver feed: every recorded maneuver event across all
@@ -1451,6 +1561,16 @@ function wireGodEyeToggle() {
   document.getElementById("godeye-toggle").addEventListener("click", () => {
     if (godEye.active) exitGodEye();
     else enterGodEye();
+  });
+  const filterSel = document.getElementById("godeye-filter");
+  if (filterSel) filterSel.addEventListener("change", () => {
+    godEye.filter = filterSel.value;
+    refreshGodEye();
+  });
+  const trailsSel = document.getElementById("godeye-trails");
+  if (trailsSel) trailsSel.addEventListener("change", () => {
+    godEye.trailsMode = trailsSel.value;
+    buildGodEyeTrails();
   });
 }
 

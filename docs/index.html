@@ -33,6 +33,18 @@
       <span id="generated-at" class="generated-at"></span>
     </section>
 
+    <section class="controls godeye-controls" id="godeye-controls" hidden>
+      <label for="godeye-filter">Fleet filter:</label>
+      <select id="godeye-filter"><option value="__all__">All categories</option></select>
+      <label for="godeye-trails">Orbit trails:</label>
+      <select id="godeye-trails">
+        <option value="important">Key orbits only</option>
+        <option value="all">All orbits</option>
+        <option value="none">None (points only)</option>
+      </select>
+      <span id="godeye-count" class="generated-at"></span>
+    </section>
+
     <section class="panels">
       <div class="globe-column">
         <div id="globe" class="globe"></div>

@@ -107,3 +107,54 @@ def test_site_data_no_maneuvers_gives_empty_history():
     assert sat["maneuver_count"] == 0
     assert sat["maneuver_history"] is None
     assert sat["latest_maneuver"] is None
+
+
+def test_fleet_includes_group_fetched_satellites_not_on_watchlist():
+    """The God's-eye view draws the whole fleet, so data.json must carry a
+    `fleet` array with EVERY object we have a TLE for -- including the
+    hundreds of group-fetched satellites that are not on the curated
+    watchlist (and therefore never appear in `satellites`)."""
+    events = {"25544": [{"timestamp": "2026-10-02T00:00:00+00:00", "reason": "b"}]}
+    data = build_site_data(
+        generated_at="2026-10-07T00:00:00+00:00",
+        watchlist=[25544],  # curated watchlist is just one object...
+        object_names={25544: "ISS", 99999: "STARLINK-TEST"},
+        # ...but we have TLEs for two (one from a group fetch).
+        previous_tles={
+            "25544": {"line1": ISS_L1, "line2": ISS_L2},
+            "99999": {"line1": ISS_L1, "line2": ISS_L2},
+        },
+        tle_ages_days={25544: 0.5},
+        maneuver_events=events,
+        satnogs_healths_by_id={},
+        categories={99999: "communications"},
+    )
+    # satellites (detail/dropdown) stays curated: just the watchlist object.
+    assert [s["norad_id"] for s in data["satellites"]] == [25544]
+    # fleet carries BOTH, including the group-only one.
+    fleet_ids = {f["norad_id"] for f in data["fleet"]}
+    assert fleet_ids == {25544, 99999}
+    by_id = {f["norad_id"]: f for f in data["fleet"]}
+    # group-only entry keeps its captured name/category + a TLE to propagate.
+    assert by_id[99999]["name"] == "STARLINK-TEST"
+    assert by_id[99999]["category"] == "communications"
+    assert by_id[99999]["line1"] and by_id[99999]["line2"]
+    # maneuver recency is surfaced per entry for the red-highlight logic.
+    assert by_id[25544]["maneuver_count"] == 1
+    assert by_id[25544]["last_maneuver"] == "2026-10-02T00:00:00+00:00"
+    assert by_id[99999]["last_maneuver"] is None
+
+
+def test_fleet_skips_entries_without_a_tle():
+    """An object with no usable TLE can't be propagated, so it must not land
+    in the fleet (it would just be an un-drawable ghost point)."""
+    data = build_site_data(
+        generated_at="2026-10-07T00:00:00+00:00",
+        watchlist=[25544],
+        object_names={},
+        previous_tles={"25544": {"line1": "", "line2": ""}},
+        tle_ages_days={},
+        maneuver_events={},
+        satnogs_healths_by_id={},
+    )
+    assert data["fleet"] == []

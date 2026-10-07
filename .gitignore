@@ -16,3 +16,6 @@ __pycache__/
 # hourly commit on every run.
 docs/data.json
 docs/history.json
+
+# local virtualenv (created for running tests)
+.venv/

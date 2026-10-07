@@ -361,9 +361,40 @@ def build_site_data(
             )
         )
 
+    # Fleet: EVERY object we have a TLE for -- the curated watchlist plus the
+    # hundreds of group-fetched satellites (CelesTrak GROUPs: stations, gps,
+    # starlink, oneweb, iridium, weather, science, ...). The curated
+    # `satellites` array carries the rich per-object detail (instruments,
+    # imagery, conjunctions) and drives the dropdown; this lean `fleet` array
+    # carries just what the God's-eye view needs to draw the whole sky at
+    # once -- a TLE to propagate, a name/category, and whether the object
+    # recently maneuvered -- so the map scales to the full fleet without
+    # bloating every entry with fields it won't use.
+    fleet = []
+    for norad_key in sorted(previous_tles, key=lambda k: int(k)):
+        tle = previous_tles.get(norad_key) or {}
+        if not tle.get("line1") or not tle.get("line2"):
+            continue
+        norad_id = int(norad_key)
+        events = maneuver_events.get(norad_key, [])
+        fleet.append(
+            {
+                "norad_id": norad_id,
+                "name": object_names.get(norad_id, f"NORAD {norad_id}"),
+                "category": categories.get(norad_id, "uncategorized"),
+                "line1": tle["line1"],
+                "line2": tle["line2"],
+                "maneuver_count": len(events),
+                # just the latest timestamp -- the frontend decides "recent"
+                # (within 7 days) itself; keeps fleet entries tiny at scale.
+                "last_maneuver": events[-1]["timestamp"] if events else None,
+            }
+        )
+
     return {
         "generated_at": generated_at,
         "category_labels": CATEGORY_LABELS,
+        "fleet": fleet,
         "satellites": [
             {
                 "norad_id": s.norad_id,

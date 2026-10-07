@@ -20,6 +20,14 @@
   box-sizing: border-box;
 }
 
+/* The [hidden] attribute must actually hide, even on elements that set their
+   own display (e.g. .controls uses display:flex, which otherwise overrides
+   the UA [hidden]{display:none} rule -- that's why the God's-eye controls bar
+   was showing in the default view). */
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
