@@ -47,7 +47,31 @@
 
     <section class="panels">
       <div class="globe-column">
-        <div id="globe" class="globe"></div>
+        <div class="globe-stage" id="globe-stage">
+          <div id="globe" class="globe"></div>
+
+          <!-- Cockpit toolbar (over the globe, top-right) -->
+          <div class="globe-tools" id="globe-tools">
+            <select id="optics-select" title="Sensor / optics mode">
+              <option value="normal">◉ Optical</option>
+              <option value="thermal">▦ Thermal</option>
+              <option value="nvg">◐ Night-Vision</option>
+              <option value="infrared">▧ Infrared</option>
+              <option value="noir">◑ Noir</option>
+            </select>
+            <button type="button" id="hud-toggle" title="Tactical HUD overlay">⊹ HUD</button>
+            <button type="button" id="cockpit-toggle" title="Ride the satellite (orbital POV)">🛰 Cockpit</button>
+          </div>
+
+          <!-- Tactical HUD overlay (real telemetry from SGP4) -->
+          <div class="hud" id="hud-overlay" hidden>
+            <div class="hud-bracket tl"></div><div class="hud-bracket tr"></div>
+            <div class="hud-bracket bl"></div><div class="hud-bracket br"></div>
+            <div class="hud-crosshair"></div>
+            <div class="hud-top" id="hud-top"></div>
+            <div class="hud-readout" id="hud-readout"></div>
+          </div>
+        </div>
 
         <div class="panel time-machine" id="time-machine-panel" hidden>
           <h2>Time Machine</h2>
@@ -89,6 +113,11 @@
         <div class="panel" id="status-panel">
           <h2>Status</h2>
           <div id="status-content">Select a satellite above.</div>
+        </div>
+
+        <div class="panel" id="contacts-panel" hidden>
+          <h2>Nearby Contacts</h2>
+          <div id="contacts-content"></div>
         </div>
 
         <div class="panel" id="instruments-panel">

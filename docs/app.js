@@ -149,6 +149,26 @@ function currentLatLon(satrec, date) {
   };
 }
 
+// Fuller instantaneous state -- position (lat/lng/altitude), speed, and the
+// raw ECI vectors -- all straight from SGP4. Used by the tactical HUD and the
+// nearby-contacts roster. Altitude is the real geodetic height (km); speed is
+// the magnitude of the ECI velocity (km/s).
+function currentState(satrec, date) {
+  const pv = satellite.propagate(satrec, date);
+  if (!pv.position) return null;
+  const gmst = satellite.gstime(date);
+  const geo = satellite.eciToGeodetic(pv.position, gmst);
+  const v = pv.velocity;
+  const speed = v ? Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z) : null;
+  return {
+    lat: satellite.degreesLat(geo.latitude),
+    lng: satellite.degreesLong(geo.longitude),
+    altKm: geo.height,
+    speedKmS: speed,
+    eci: pv.position, // km, ECI frame -- directly comparable between objects
+  };
+}
+
 function groundTrackPoints(satrec, fromDate) {
   // One full orbital period, sampled at ~100 points -- mean motion (rev/day)
   // tells us the period; satrec.no is radians/minute. The track is drawn
@@ -178,17 +198,24 @@ function startTracking(sat) {
   simClock.rafId = null;
   simClock.lastRealMs = null;
   simClock.zoomed = false;
+  simClock.lastContactsMs = 0; // refresh the nearby-contacts roster immediately
 
   const satrec = satrecFor(sat);
   simClock.sat = sat;
   simClock.satrec = satrec;
 
   // Deep-space probes (Voyager/Pioneer) have no Earth-orbit TLE, so there's
-  // nothing for SGP4 to propagate -- the time machine simply doesn't apply
-  // to them. Clear the globe and hide the controls rather than pretend.
+  // nothing for SGP4 to propagate -- the time machine, HUD and nearby-contacts
+  // simply don't apply. Clear the globe and those panels rather than pretend.
   if (!satrec) {
     globeInstance.pointsData([]).ringsData([]).pathsData([]);
     setTimeMachineVisible(false);
+    document.getElementById("contacts-panel").hidden = true;
+    const hudReadout = document.getElementById("hud-readout");
+    if (view.hud && hudReadout) {
+      document.getElementById("hud-top").textContent = "NO ORBITAL TELEMETRY";
+      hudReadout.innerHTML = '<div class="hud-line"><span>TYPE</span><b>deep-space probe (not Earth-orbiting)</b></div>';
+    }
     return;
   }
 
@@ -218,15 +245,22 @@ function simClockFrame(nowRealMs) {
   const pos = currentLatLon(satrec, simDate);
   if (pos) {
     globeInstance.pointsData([pos]).ringsData([pos]);
+    // Cockpit mode drops the camera right down onto the satellite for an
+    // orbital point-of-view ("ride the satellite"); normal mode keeps the
+    // wider tracking altitude.
+    const trackAlt = view.cockpit ? 0.42 : undefined;
     if (!simClock.zoomed) {
-      globeInstance.pointOfView({ lat: pos.lat, lng: pos.lng, altitude: 2.2 }, 1000);
+      globeInstance.pointOfView({ lat: pos.lat, lng: pos.lng, altitude: view.cockpit ? 0.42 : 2.2 }, 1000);
       simClock.zoomed = true;
+      simClock.cockpitApplied = view.cockpit;
+    } else if (view.cockpit !== simClock.cockpitApplied) {
+      // mode just changed -> animate to the new altitude, then resume gentle follow
+      globeInstance.pointOfView({ lat: pos.lat, lng: pos.lng, altitude: view.cockpit ? 0.42 : 2.2 }, 900);
+      simClock.cockpitApplied = view.cockpit;
     } else {
-      // Only steer the camera while it's tracking a moving point; when
-      // paused/live-at-1x the recenter is gentle. Skip the recenter entirely
-      // if the user is likely dragging (we don't get that signal cheaply, so
-      // just recenter slowly).
-      globeInstance.pointOfView({ lat: pos.lat, lng: pos.lng }, 500);
+      globeInstance.pointOfView(trackAlt === undefined
+        ? { lat: pos.lat, lng: pos.lng }
+        : { lat: pos.lat, lng: pos.lng, altitude: trackAlt }, 500);
     }
   }
 
@@ -240,7 +274,15 @@ function simClockFrame(nowRealMs) {
   // Readout + caveat: ~4x/sec.
   if (nowRealMs - simClock.lastUiMs > 250) {
     updateTimeReadout(simDate, satrec);
+    if (view.hud) updateHud(satrec, simDate);
     simClock.lastUiMs = nowRealMs;
+  }
+
+  // Nearby-contacts roster: real work (propagating the whole fleet), so only
+  // ~ every 2.5s.
+  if (nowRealMs - (simClock.lastContactsMs || 0) > 2500) {
+    renderNearbyContacts(simClock.sat, simDate);
+    simClock.lastContactsMs = nowRealMs;
   }
 
   // Keep the URL roughly in sync so a refresh restores the view; ~ every 3s
@@ -503,6 +545,121 @@ function wireTimeMachineControls() {
     scrub.value = "0";
     scrub.addEventListener("input", () => onScrub(Number(scrub.value)));
   }
+}
+
+// --- Cockpit controls: optics (sensor looks), tactical HUD, cockpit POV ---
+// Inspired by "God's Eye View"-style situational displays, but driven entirely
+// by our real SGP4 state and done client-side -- the optics are honest visual
+// filters (clearly labelled), and the HUD numbers are the satellite's actual
+// position/velocity/orbit, not mocked telemetry.
+const view = { optics: "normal", hud: false, cockpit: false };
+
+function applyOptics(mode) {
+  view.optics = mode;
+  const g = document.getElementById("globe");
+  g.classList.remove("optic-normal", "optic-thermal", "optic-nvg", "optic-infrared", "optic-noir");
+  g.classList.add("optic-" + mode);
+  const sel = document.getElementById("optics-select");
+  if (sel && sel.value !== mode) sel.value = mode;
+}
+
+function setHud(on) {
+  view.hud = on;
+  document.getElementById("hud-overlay").hidden = !on;
+  document.getElementById("hud-toggle").classList.toggle("active", on);
+  if (on && simClock.satrec) updateHud(simClock.satrec, new Date(simClock.simTimeMs));
+}
+
+function setCockpit(on) {
+  view.cockpit = on;
+  document.getElementById("cockpit-toggle").classList.toggle("active", on);
+  simClock.cockpitApplied = !on; // force the loop to re-apply altitude next frame
+}
+
+function updateHud(satrec, date) {
+  const topEl = document.getElementById("hud-top");
+  const el = document.getElementById("hud-readout");
+  if (!el) return;
+  const st = currentState(satrec, date);
+  if (!st) {
+    if (topEl) topEl.textContent = "SIGNAL LOST";
+    el.innerHTML = '<div class="hud-line"><span>STATUS</span><b>element set decayed/invalid</b></div>';
+    return;
+  }
+  const inc = satrec.inclo * 180 / Math.PI;
+  const periodMin = (2 * Math.PI) / satrec.no;
+  const name = (simClock.sat && simClock.sat.name) || "TARGET";
+  if (topEl) topEl.textContent = `TRACKING · ${name} · ${view.optics.toUpperCase()}`;
+  const ns = st.lat >= 0 ? "N" : "S";
+  const ew = st.lng >= 0 ? "E" : "W";
+  el.innerHTML = [
+    ["NORAD", simClock.sat ? simClock.sat.norad_id : "—"],
+    ["LAT", `${Math.abs(st.lat).toFixed(3)}° ${ns}`],
+    ["LON", `${Math.abs(st.lng).toFixed(3)}° ${ew}`],
+    ["ALT", `${st.altKm.toFixed(1)} km`],
+    ["VEL", st.speedKmS ? `${st.speedKmS.toFixed(2)} km/s` : "—"],
+    ["INC", `${inc.toFixed(2)}°`],
+    ["PERIOD", `${periodMin.toFixed(1)} min`],
+  ].map(([k, v]) => `<div class="hud-line"><span>${k}</span><b>${v}</b></div>`).join("");
+}
+
+function wireViewControls() {
+  const opt = document.getElementById("optics-select");
+  if (opt) opt.addEventListener("change", () => applyOptics(opt.value));
+  const hud = document.getElementById("hud-toggle");
+  if (hud) hud.addEventListener("click", () => setHud(!view.hud));
+  const cp = document.getElementById("cockpit-toggle");
+  if (cp) cp.addEventListener("click", () => setCockpit(!view.cockpit));
+  applyOptics("normal");
+}
+
+// Nearby contacts: the real closest objects in the fleet to the tracked
+// satellite, by 3D distance between their SGP4 ECI positions right now -- the
+// same geometry conjunction screening uses, so it's genuinely "what's near
+// this satellite", not a decorative list.
+function renderNearbyContacts(sat, date) {
+  const panel = document.getElementById("contacts-panel");
+  const el = document.getElementById("contacts-content");
+  if (!panel || !el) return;
+  if (!sat || !sat.line1 || !sat.line2) { panel.hidden = true; return; }
+  const targetRec = satrecFor(sat);
+  const target = targetRec && currentState(targetRec, date);
+  if (!target) { panel.hidden = true; return; }
+
+  const items = [];
+  for (const e of fleetList()) {
+    if (e.norad_id === sat.norad_id || !e.line1 || !e.line2) continue;
+    const rec = satrecFor(e);
+    if (!rec) continue;
+    const st = currentState(rec, date);
+    if (!st) continue;
+    const dx = st.eci.x - target.eci.x, dy = st.eci.y - target.eci.y, dz = st.eci.z - target.eci.z;
+    items.push({ e, d: Math.sqrt(dx * dx + dy * dy + dz * dz) });
+  }
+  items.sort((a, b) => a.d - b.d);
+  const top = items.slice(0, 8);
+  panel.hidden = false;
+  if (top.length === 0) {
+    el.innerHTML = '<span class="panel-note">No other fleet objects to compare against yet.</span>';
+    return;
+  }
+  const curated = curatedIdSet();
+  const fmt = (d) => d < 1000 ? `${d.toFixed(0)} km` : `${(d / 1000).toFixed(1)}×10³ km`;
+  el.innerHTML =
+    `<p class="panel-note">Closest objects in the ${items.length + 1}-object fleet to this satellite right now — straight-line distance between their live SGP4 positions.</p>` +
+    top.map(({ e, d }) => {
+      const click = curated.has(e.norad_id);
+      return `<div class="status-row contact-row${click ? " contact-click" : ""}" data-norad="${e.norad_id}">` +
+        `<strong>${e.name}</strong> <span class="label">(${e.norad_id})</span>` +
+        `<br><span class="label">${fmt(d)} away${click ? " · click to track" : ""}</span></div>`;
+    }).join("");
+  el.querySelectorAll(".contact-click").forEach((row) => {
+    row.addEventListener("click", () => {
+      const id = Number(row.dataset.norad);
+      document.getElementById("satellite-select").value = String(id);
+      selectSatellite(id);
+    });
+  });
 }
 
 function renderStatus(sat) {
@@ -1577,5 +1734,6 @@ function wireGodEyeToggle() {
 initGlobe();
 wireTimeMachineControls();
 wireGodEyeToggle();
+wireViewControls();
 loadData();
 startBackdropRotation();

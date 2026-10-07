@@ -154,6 +154,24 @@ something you can actually click through instead of reading JSON:
   detail view, and a fleet-wide maneuver feed lists every recorded maneuver
   newest-first. Position updates are throttled and trails build in chunks so
   the page stays smooth with hundreds of objects.
+- **Cockpit mode** — a situational-display layer over the globe, inspired by
+  [God's Eye View](https://github.com/bilawalsidhu/gods-eye-view)-style
+  interfaces (reimplemented from scratch for this static, no-backend,
+  space-only site) but driven entirely by our real SGP4 state:
+  - **Optics / sensor looks** — Thermal, Night-Vision, Infrared, and Noir
+    filters over the real globe (honest CSS filters, clearly labelled as a
+    visualization mode, not a new data source).
+  - **Tactical HUD** — a crosshair + bracket overlay with live telemetry
+    (latitude, longitude, altitude, velocity, inclination, orbital period) —
+    every number computed from the satellite's actual orbital elements, not
+    mocked.
+  - **Cockpit POV** — drop the camera onto the satellite for an orbital
+    point-of-view ("ride the satellite"), Earth rushing past below.
+- **Nearby Contacts** — the real closest objects in the whole fleet to the
+  selected satellite right now, ranked by straight-line distance between their
+  live SGP4 positions (the same geometry conjunction screening uses) — so it's
+  genuinely "what's near this satellite," and curated ones click through to
+  their own detail view.
 - **"What This Satellite Actually Does" panel** — real per-satellite
   instrument/mission info from `instruments.json` (sourced from genuine
   public mission fact sheets, not fabricated): what instruments it carries

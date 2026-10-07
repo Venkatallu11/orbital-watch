@@ -481,3 +481,59 @@ footer {
 footer a {
   color: var(--accent);
 }
+
+/* --- Cockpit: globe stage, optics filters, tactical HUD, contacts --- */
+.globe-stage { position: relative; }
+
+/* Optics / sensor "looks" -- honest CSS filters over the real globe canvas,
+   labelled in the toolbar so they read as a visualization mode, not data. */
+#globe canvas { transition: filter 0.4s ease; }
+#globe.optic-thermal canvas  { filter: sepia(1) saturate(6) hue-rotate(-28deg) contrast(1.25) brightness(1.05); }
+#globe.optic-nvg canvas      { filter: grayscale(1) brightness(1.2) sepia(1) hue-rotate(60deg) saturate(8) contrast(1.1); }
+#globe.optic-infrared canvas { filter: grayscale(1) sepia(1) hue-rotate(200deg) saturate(6) contrast(1.3) brightness(1.1); }
+#globe.optic-noir canvas     { filter: grayscale(1) contrast(1.5) brightness(0.95); }
+
+.globe-tools {
+  position: absolute; top: 8px; right: 8px; z-index: 3;
+  display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; max-width: 95%;
+}
+.globe-tools select, .globe-tools button {
+  background: rgba(13, 17, 23, 0.72); color: var(--text);
+  border: 1px solid var(--border); border-radius: 6px;
+  font-size: 0.75rem; padding: 0.28rem 0.5rem; cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+.globe-tools button.active { color: var(--ok); border-color: var(--ok); }
+
+.hud {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  color: #3fb950; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  text-shadow: 0 0 6px rgba(63, 185, 80, 0.6);
+}
+.hud::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(rgba(63,185,80,0.045) 0 1px, transparent 1px 3px);
+}
+.hud-bracket { position: absolute; width: 26px; height: 26px; border: 2px solid rgba(63,185,80,0.8); }
+.hud-bracket.tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+.hud-bracket.tr { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
+.hud-bracket.bl { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
+.hud-bracket.br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+.hud-crosshair {
+  position: absolute; left: 50%; top: 50%; width: 40px; height: 40px;
+  transform: translate(-50%, -50%); border: 1px solid rgba(63,185,80,0.5); border-radius: 50%;
+}
+.hud-crosshair::before, .hud-crosshair::after { content: ""; position: absolute; background: rgba(63,185,80,0.55); }
+.hud-crosshair::before { left: 50%; top: -12px; width: 1px; height: 64px; transform: translateX(-50%); }
+.hud-crosshair::after { top: 50%; left: -12px; height: 1px; width: 64px; transform: translateY(-50%); }
+.hud-top { position: absolute; top: 12px; left: 0; right: 0; text-align: center; font-size: 0.72rem; letter-spacing: 0.08em; }
+.hud-readout {
+  position: absolute; left: 12px; bottom: 12px; font-size: 0.72rem; line-height: 1.5;
+  background: rgba(13, 17, 23, 0.4); padding: 0.4rem 0.6rem; border-left: 2px solid rgba(63,185,80,0.6);
+}
+.hud-line { display: flex; gap: 0.75rem; justify-content: space-between; min-width: 155px; }
+.hud-line span { opacity: 0.7; }
+.hud-line b { font-weight: 600; }
+
+.contact-click { cursor: pointer; }
+.contact-click:hover { background: rgba(88, 166, 255, 0.08); border-radius: 6px; }
