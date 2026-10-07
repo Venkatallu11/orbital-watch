@@ -18,10 +18,18 @@ checking three different websites and running your own math.
 ## What it does
 
 On each scheduled run (`orbital_watch.cli`):
-1. Fetches the latest TLE for each watched object.
+1. Fetches the latest TLE for each watched object — the curated
+   `watchlist.json` plus whole CelesTrak catalog groups
+   (`--watchlist-groups`: stations, weather, science, comms constellations,
+   etc., one HTTP request per group), taking the fleet from dozens to
+   hundreds of tracked objects.
 2. Propagates the *previous* TLE forward to the new TLE's epoch (SGP4) and
    compares predicted vs. actual state — a large mismatch means the object
    did something SGP4 can't explain from the old elements, i.e. it maneuvered.
+   A second, independent signal compares the Keplerian elements directly
+   (semi-major axis / inclination / eccentricity deltas), catching plane
+   changes and orbit raise/lower events even when the position residual
+   happens to stay small.
 3. Normalizes that residual by the time gap between the two TLEs (km/day,
    not raw km) before comparing it against the object's *own* rolling
    history — published research on this exact technique flags raw km as
@@ -123,8 +131,17 @@ something you can actually click through instead of reading JSON:
   (satellite + simulated time + speed) in the URL hash, so anyone opening the
   link lands on the same moment — reproduced entirely client-side, no backend.
 - **Status panel** — TLE age/freshness, the latest detected maneuver (if
-  any), and SatNOGS observation health, straight from the same
-  `state.json` the scheduled workflow maintains.
+  any), the satellite's full recorded maneuver timeline, and SatNOGS
+  observation health, straight from the same `state.json` the scheduled
+  workflow maintains.
+- **🌍 God's eye view** — one click renders the *entire* tracked fleet on
+  the globe at once (hundreds of satellites, not one): live positions
+  updated every 3 seconds, orbit trails for every object, and any satellite
+  with a maneuver in the last 7 days pulsing red. A fleet-wide maneuver
+  feed lists every recorded maneuver newest-first; clicking a row or a globe
+  point drops into that satellite's full detail view. Position updates are
+  throttled and trails build in chunks so the page stays smooth with
+  hundreds of objects.
 - **"What This Satellite Actually Does" panel** — real per-satellite
   instrument/mission info from `instruments.json` (sourced from genuine
   public mission fact sheets, not fabricated): what instruments it carries
