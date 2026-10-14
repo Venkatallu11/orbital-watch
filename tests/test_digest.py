@@ -31,6 +31,37 @@ def test_unnamed_object_falls_back_to_norad_id():
     assert "NORAD 99999" in digest
 
 
+def test_element_change_only_alert_without_residual_or_sigma_does_not_crash():
+    """An alert raised purely by the element-change detector on a group-fetched
+    object whose residual baseline is still building has residual_km=None and
+    z_score=None. generate_digest must format it, not crash with
+    'unsupported format string passed to NoneType.__format__'
+    (the bug that killed every scheduled run after the fleet grew to ~650)."""
+    alerts = [
+        ManeuverAlert(
+            norad_id=55555,
+            residual_km=None,
+            z_score=None,
+            reason="building baseline (2/10 samples) | element change: inclination +0.0300 deg",
+        )
+    ]
+    digest = generate_digest({55555: "STARLINK-9999"}, alerts, [], [])
+    assert "STARLINK-9999" in digest
+    assert "element change: inclination" in digest
+    assert "sigma" not in digest  # no sigma to report, and no crash
+
+
+def test_element_change_alert_with_residual_but_no_sigma():
+    """Residual present, sigma still None (baseline building) -- show the
+    residual, omit the sigma, don't crash."""
+    alerts = [
+        ManeuverAlert(norad_id=55556, residual_km=3.2, z_score=None, reason="elem change")
+    ]
+    digest = generate_digest({}, alerts, [], [])
+    assert "3.20 km residual" in digest
+    assert "sigma" not in digest
+
+
 def _conjunction(**overrides):
     defaults = dict(
         norad_id_1=25544, name_1="ISS",

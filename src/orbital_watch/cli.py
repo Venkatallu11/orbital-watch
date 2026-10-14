@@ -259,6 +259,14 @@ def main(argv=None) -> int:
             owners = set(json.load(f))
         watchlist = _apply_owner_exclusions(watchlist, owners, args.satcat_file)
 
+    # The curated watchlist, BEFORE it's unioned with the hundreds of
+    # group-fetched fleet objects below. SatNOGS observation-health is fetched
+    # one HTTP request per object and SatNOGS rate-limits hard (HTTP 429), so
+    # querying all ~650 fleet objects every run just gets throttled and wastes
+    # requests -- and SatNOGS health is only surfaced for the curated objects'
+    # detail view anyway. Keep that fetch scoped to the curated set.
+    curated_watchlist = set(watchlist)
+
     object_names: dict[int, str] = {}
     if args.object_names:
         with open(args.object_names) as f:
@@ -437,7 +445,7 @@ def main(argv=None) -> int:
     # that's what makes the fleet-wide Conjunction Watch actually populated.
     fleet_ids = {int(k) for k in previous_tles}
     conjunctions = _fetch_conjunctions_safely(fleet_ids) if args.include_socrates else []
-    satnogs_healths = _fetch_satnogs_health_safely(watchlist) if args.include_satnogs else []
+    satnogs_healths = _fetch_satnogs_health_safely(curated_watchlist) if args.include_satnogs else []
     crew_by_craft = _fetch_crew_safely() if args.include_crew else {}
     deep_space_probes = _fetch_deep_space_probes_safely() if args.include_deep_space else []
     volcano_alerts = _fetch_volcano_status_safely() if args.include_volcano_status else []

@@ -33,8 +33,12 @@ def format_tle_age(age_days: float) -> str:
 @dataclass
 class ManeuverAlert:
     norad_id: int
-    residual_km: float
-    z_score: float
+    # residual_km / z_score are None for an alert raised purely by the
+    # element-change detector on an object whose residual baseline is still
+    # building (e.g. the hundreds of group-fetched fleet objects that only
+    # have a couple of TLEs so far) -- there's no sigma to report yet.
+    residual_km: float | None
+    z_score: float | None
     reason: str
     epoch_gap_days: float | None = None
     residual_km_per_day: float | None = None
@@ -57,15 +61,22 @@ def generate_digest(
         lines.append("Nothing flagged this run.")
     else:
         for alert in maneuver_alerts:
-            gap_bit = (
-                f", {alert.residual_km_per_day:.2f} km/day over {alert.epoch_gap_days:.2f} day(s) between TLEs"
-                if alert.residual_km_per_day is not None
-                else ""
-            )
-            lines.append(
-                f"- **{name_for(alert.norad_id)}**: {alert.reason} "
-                f"({alert.residual_km:.2f} km residual{gap_bit}, {alert.z_score:.1f} sigma)"
-            )
+            # Build the parenthetical from only the metrics that exist, so an
+            # element-change-only alert (no residual/sigma yet) formats cleanly
+            # instead of crashing on None.__format__.
+            details = []
+            if alert.residual_km is not None:
+                residual_bit = f"{alert.residual_km:.2f} km residual"
+                if alert.residual_km_per_day is not None and alert.epoch_gap_days is not None:
+                    residual_bit += (
+                        f", {alert.residual_km_per_day:.2f} km/day over "
+                        f"{alert.epoch_gap_days:.2f} day(s) between TLEs"
+                    )
+                details.append(residual_bit)
+            if alert.z_score is not None:
+                details.append(f"{alert.z_score:.1f} sigma")
+            suffix = f" ({', '.join(details)})" if details else ""
+            lines.append(f"- **{name_for(alert.norad_id)}**: {alert.reason}{suffix}")
     lines.append("")
 
     # Surfaced per research into false-positive causes: SGP4/TLE accuracy
