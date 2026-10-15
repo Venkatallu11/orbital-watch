@@ -1161,8 +1161,8 @@
       "line2": "2 40362  97.0725 285.1263 0002280   9.2833 350.8462 15.51966550656144"
     },
     "40367": {
-      "line1": "1 40367U 14090A   26287.79620600 -.00000295  00000+0  00000+0 0  9994",
-      "line2": "2 40367   5.9355  71.3127 0004044 189.0033 148.9251  1.00261214 43190"
+      "line1": "1 40367U 14090A   26287.88738642 -.00000295  00000+0  00000+0 0  9990",
+      "line2": "2 40367   5.9357  71.3115 0004044 188.9613 181.8796  1.00261181 43206"
     },
     "40376": {
       "line1": "1 40376U 15003A   26287.25940938  .00000359  00000+0  78515-4 0  9990",
@@ -1569,16 +1569,16 @@
       "line2": "2 48269  97.5669   9.1654 0003427 162.1569 197.9798 15.41677508299345"
     },
     "48865": {
-      "line1": "1 48865U 21056A   26287.28872929  .00005047  00000+0  15907-3 0  9997",
-      "line2": "2 48865  67.1410  99.6228 0008335 269.8682  90.1518 15.33841365296985"
+      "line1": "1 48865U 21056A   26287.94080228  .00005194  00000+0  16358-3 0  9997",
+      "line2": "2 48865  67.1413  97.6501 0008378 271.1546  88.8648 15.33830541297086"
     },
     "49008": {
       "line1": "1 49008U 21062A   26287.29044177  .00000187  00000+0  10863-3 0  9997",
       "line2": "2 49008  98.7551 289.4049 0002692  96.5977 263.5505 14.19913513273483"
     },
     "49070": {
-      "line1": "1 49070U 21073E   26287.27911308  .00000300  00000+0  44701-4 0  9991",
-      "line2": "2 49070  97.8954   0.3305 0001305  89.5853 270.5510 14.81672231279005"
+      "line1": "1 49070U 21073E   26287.88690414  .00000891  00000+0  11982-3 0  9999",
+      "line2": "2 49070  97.8953   0.9286 0001309  97.5256 262.6105 14.81672539279090"
     },
     "49260": {
       "line1": "1 49260U 21088A   26287.20135342  .00000303  00000+0  77364-4 0  9991",
@@ -4375,7 +4375,8 @@
     "40367": [
       1.6922248421150121,
       1.2390120994099987,
-      1.951794720840638
+      1.951794720840638,
+      0.548710103033458
     ],
     "40376": [
       0.47899047553989627,
@@ -4861,7 +4862,8 @@
     "48865": [
       8.963750082700418,
       0.33649393481404083,
-      0.38406084170625765
+      0.38406084170625765,
+      3.0401685831185286
     ],
     "49008": [
       1.2218499942757968,
@@ -4871,7 +4873,8 @@
     "49070": [
       8.107185994713884,
       1.802572721979707,
-      1.3228232535883921
+      1.3228232535883921,
+      1.5041181927301166
     ],
     "49260": [
       0.1934621985090686,
@@ -14856,11 +14859,11 @@
       "norad_id": 35932,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 6,
-      "unvetted_count": 19,
+      "bad_count": 7,
+      "unvetted_count": 18,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/6 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/7 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "35933": {
       "norad_id": 35933,
@@ -15798,10 +15801,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Oct-14 22:52:00.0000",
-      "distance_from_earth_km": 25808151896.09625,
-      "distance_from_earth_au": 172.51683981419296,
-      "speed_km_s": 43.41393837652642
+      "epoch": "2026-Oct-15 01:07:00.0000",
+      "distance_from_earth_km": 25808449256.73715,
+      "distance_from_earth_au": 172.5188275473038,
+      "speed_km_s": 43.40665274840116
     },
     {
       "key": "voyager_2",
@@ -15819,10 +15822,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Oct-14 22:52:00.0000",
-      "distance_from_earth_km": 21574598804.18248,
-      "distance_from_earth_au": 144.21728533454643,
-      "speed_km_s": 41.674660425981656
+      "epoch": "2026-Oct-15 01:07:00.0000",
+      "distance_from_earth_km": 21574909850.0456,
+      "distance_from_earth_au": 144.21936454771748,
+      "speed_km_s": 41.6756655575365
     },
     {
       "key": "pioneer_10",
@@ -15834,10 +15837,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Oct-14 22:52:00.0000",
-      "distance_from_earth_km": 21170104795.35685,
-      "distance_from_earth_au": 141.51340989211587,
-      "speed_km_s": 20.231997839552506
+      "epoch": "2026-Oct-15 01:07:00.0000",
+      "distance_from_earth_km": 21169994953.23372,
+      "distance_from_earth_au": 141.51267564287411,
+      "speed_km_s": 20.245981375471025
     },
     {
       "key": "pioneer_11",
@@ -15849,10 +15852,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Oct-14 22:52:00.0000",
-      "distance_from_earth_km": 17675723977.19787,
-      "distance_from_earth_au": 118.15491687474847,
-      "speed_km_s": 40.8169725932335
+      "epoch": "2026-Oct-15 01:07:00.0000",
+      "distance_from_earth_km": 17676046108.37203,
+      "distance_from_earth_au": 118.15707018864694,
+      "speed_km_s": 40.81749248033038
     }
   ],
   "volcano_alerts": [
