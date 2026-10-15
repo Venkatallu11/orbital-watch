@@ -1345,8 +1345,8 @@
       "line2": "2 41891  34.9372 154.4091 0005869 270.7859  89.2196 15.66832395547631"
     },
     "41948": {
-      "line1": "1 41948U 17008A   26287.56843808  .00003719  00000+0  18006-3 0  9996",
-      "line2": "2 41948  97.4701 344.6127 0004431 172.7384 187.3916 15.19176729535700"
+      "line1": "1 41948U 17008A   26288.35885036  .00003428  00000+0  16627-3 0  9997",
+      "line2": "2 41948  97.4880 345.3962 0004427 170.5226 189.6093 15.19167418535828"
     },
     "42063": {
       "line1": "1 42063U 17013A   26287.57812459  .00000229  00000+0  10411-3 0  9995",
@@ -4835,7 +4835,8 @@
       30.79787992771479,
       7.345882381022242,
       0.46737785806658433,
-      0.44677336371004245
+      0.44677336371004245,
+      6.732662980503215
     ],
     "42063": [
       1.0051600731990509,
@@ -13212,6 +13213,18 @@
         "delta_sma_km": 0.4285499273055393,
         "delta_incl_deg": 0.052900000000013506,
         "delta_ecc": -1.4899999999999983e-05
+      },
+      {
+        "timestamp": "2026-10-15T12:18:10.681536+00:00",
+        "residual_km": 5.321579496891141,
+        "residual_km_per_day": 6.732662980503215,
+        "epoch_gap_days": 0.79041228,
+        "z_score": -0.243225406281675,
+        "reason": "within this object's normal drift pattern | element change: inclination +0.0179 deg",
+        "detection": "elements",
+        "delta_sma_km": 0.02813813410284638,
+        "delta_incl_deg": 0.017899999999990236,
+        "delta_ecc": -3.999999999999555e-07
       }
     ],
     "42767": [
@@ -15335,12 +15348,12 @@
     "33591": {
       "norad_id": 33591,
       "total_observations": 25,
-      "good_count": 6,
+      "good_count": 7,
       "bad_count": 10,
-      "unvetted_count": 9,
-      "success_rate": 0.375,
+      "unvetted_count": 8,
+      "success_rate": 0.4117647058823529,
       "is_degraded": true,
-      "reason": "only 6/16 recent vetted observations were good (38%) -- worth checking against the TLE-residual signal"
+      "reason": "only 7/17 recent vetted observations were good (41%) -- worth checking against the TLE-residual signal"
     },
     "37849": {
       "norad_id": 37849,
@@ -15396,21 +15409,21 @@
       "norad_id": 7530,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 5,
-      "unvetted_count": 20,
+      "bad_count": 6,
+      "unvetted_count": 19,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/5 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/6 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "24278": {
       "norad_id": 24278,
       "total_observations": 25,
-      "good_count": 0,
+      "good_count": 1,
       "bad_count": 0,
-      "unvetted_count": 25,
-      "success_rate": null,
+      "unvetted_count": 24,
+      "success_rate": 1.0,
       "is_degraded": false,
-      "reason": "not enough vetted observations yet to judge"
+      "reason": "1/1 recent vetted observations were good (100%)"
     },
     "25867": {
       "norad_id": 25867,
@@ -15446,11 +15459,11 @@
       "norad_id": 26931,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 12,
-      "unvetted_count": 13,
+      "bad_count": 14,
+      "unvetted_count": 11,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/12 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/14 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "28485": {
       "norad_id": 28485,
@@ -15465,12 +15478,12 @@
     "29479": {
       "norad_id": 29479,
       "total_observations": 25,
-      "good_count": 8,
+      "good_count": 9,
       "bad_count": 6,
-      "unvetted_count": 11,
-      "success_rate": 0.5714285714285714,
+      "unvetted_count": 10,
+      "success_rate": 0.6,
       "is_degraded": false,
-      "reason": "8/14 recent vetted observations were good (57%)"
+      "reason": "9/15 recent vetted observations were good (60%)"
     },
     "32275": {
       "norad_id": 32275,
@@ -15506,21 +15519,21 @@
       "norad_id": 35932,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 8,
-      "unvetted_count": 17,
+      "bad_count": 11,
+      "unvetted_count": 14,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/8 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/11 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "35933": {
       "norad_id": 35933,
       "total_observations": 25,
-      "good_count": 4,
-      "bad_count": 10,
-      "unvetted_count": 11,
-      "success_rate": 0.2857142857142857,
+      "good_count": 3,
+      "bad_count": 13,
+      "unvetted_count": 9,
+      "success_rate": 0.1875,
       "is_degraded": true,
-      "reason": "only 4/14 recent vetted observations were good (29%) -- worth checking against the TLE-residual signal"
+      "reason": "only 3/16 recent vetted observations were good (19%) -- worth checking against the TLE-residual signal"
     },
     "36086": {
       "norad_id": 36086,
@@ -15746,11 +15759,11 @@
       "norad_id": 48274,
       "total_observations": 25,
       "good_count": 2,
-      "bad_count": 11,
-      "unvetted_count": 12,
-      "success_rate": 0.15384615384615385,
+      "bad_count": 13,
+      "unvetted_count": 10,
+      "success_rate": 0.13333333333333333,
       "is_degraded": true,
-      "reason": "only 2/13 recent vetted observations were good (15%) -- worth checking against the TLE-residual signal"
+      "reason": "only 2/15 recent vetted observations were good (13%) -- worth checking against the TLE-residual signal"
     },
     "49044": {
       "norad_id": 49044,
@@ -16448,10 +16461,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Oct-15 06:44:00.0000",
-      "distance_from_earth_km": 25809190756.03206,
-      "distance_from_earth_au": 172.5237841639417,
-      "speed_km_s": 43.38835599531183
+      "epoch": "2026-Oct-15 12:18:00.0000",
+      "distance_from_earth_km": 25809924520.62369,
+      "distance_from_earth_au": 172.5286890772817,
+      "speed_km_s": 43.370068421502666
     },
     {
       "key": "voyager_2",
@@ -16469,10 +16482,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Oct-15 06:44:00.0000",
-      "distance_from_earth_km": 21575686283.21601,
-      "distance_from_earth_au": 144.2245546828897,
-      "speed_km_s": 41.67807962558295
+      "epoch": "2026-Oct-15 12:18:00.0000",
+      "distance_from_earth_km": 21576455756.73465,
+      "distance_from_earth_au": 144.22969829566333,
+      "speed_km_s": 41.680338979341556
     },
     {
       "key": "pioneer_10",
@@ -16484,10 +16497,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Oct-15 06:44:00.0000",
-      "distance_from_earth_km": 21169721639.32813,
-      "distance_from_earth_au": 141.51084865226048,
-      "speed_km_s": 20.281011762718432
+      "epoch": "2026-Oct-15 12:18:00.0000",
+      "distance_from_earth_km": 21169452011.70671,
+      "distance_from_earth_au": 141.50904630293454,
+      "speed_km_s": 20.315903405704294
     },
     {
       "key": "pioneer_11",
@@ -16499,10 +16512,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Oct-15 06:44:00.0000",
-      "distance_from_earth_km": 17676850031.14971,
-      "distance_from_earth_au": 118.16244408049394,
-      "speed_km_s": 40.818687602982095
+      "epoch": "2026-Oct-15 12:18:00.0000",
+      "distance_from_earth_km": 17677646490.84172,
+      "distance_from_earth_au": 118.16776808469454,
+      "speed_km_s": 40.819728120699835
     }
   ],
   "volcano_alerts": [
