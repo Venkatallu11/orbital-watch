@@ -921,8 +921,8 @@
       "line2": "2 36605  97.4469 293.5608 0001852  96.3766 263.7679 15.19151155904767"
     },
     "36795": {
-      "line1": "1 36795U 10035A   26288.38706212  .00001049  00000+0  15003-3 0  9999",
-      "line2": "2 36795  97.9812 338.0778 0011889 156.1148 204.0617 14.78674809877610"
+      "line1": "1 36795U 10035A   26288.86076178  .00000032  00000+0  11539-4 0  9995",
+      "line2": "2 36795  97.9814 338.5468 0011895 154.7845 205.3948 14.78630030877684"
     },
     "36834": {
       "line1": "1 36834U 10038A   26288.66793355  .00001654  00000+0  19712-3 0  9994",
@@ -1729,8 +1729,8 @@
       "line2": "2 58647  97.3421 308.3473 0004294 259.7560 100.3196 15.27691772155883"
     },
     "58648": {
-      "line1": "1 58648U 23205D   26288.39755711  .00005248  00000+0  19648-3 0  9996",
-      "line2": "2 58648  97.3361 307.2247 0005019 268.5759  91.4905 15.27712003155854"
+      "line1": "1 58648U 23205D   26288.85608366  .00000341  00000+0  15334-4 0  9998",
+      "line2": "2 58648  97.3360 307.6760 0005573 267.6767  92.3835 15.27587123155924"
     },
     "58660": {
       "line1": "1 58660U 23208A   26288.56790271  .00008300  00000+0  26099-3 0  9992",
@@ -4551,7 +4551,8 @@
       1.0323223027867852,
       1.6228427439710016,
       0.6828321054716217,
-      1.0500027097062994
+      1.0500027097062994,
+      20.412831437398584
     ],
     "36834": [
       1.9977790819700343,
@@ -6054,7 +6055,8 @@
       0.719249080272959,
       0.1912254999459721,
       0.13317534471823328,
-      0.7251581452341127
+      0.7251581452341127,
+      43.514993129923255
     ],
     "58660": [
       5.180048550498922,
@@ -17008,6 +17010,34 @@
         "delta_incl_deg": 0.000399999999991324,
         "delta_ecc": -5.300000000000007e-06
       }
+    ],
+    "36795": [
+      {
+        "timestamp": "2026-10-16T02:19:12.181027+00:00",
+        "residual_km": 9.66955131153302,
+        "residual_km_per_day": 20.412831437398584,
+        "epoch_gap_days": 0.47369966,
+        "z_score": 53.11265383102182,
+        "reason": "residual 20.413 km/day is 53.1 sigma above this object's recent baseline (0.998 km/day avg)",
+        "detection": "residual",
+        "delta_sma_km": 0.141560300538913,
+        "delta_incl_deg": 0.0002000000000020231,
+        "delta_ecc": 6.00000000000123e-07
+      }
+    ],
+    "58648": [
+      {
+        "timestamp": "2026-10-16T02:19:12.183332+00:00",
+        "residual_km": 19.952779673137414,
+        "residual_km_per_day": 43.514993129923255,
+        "epoch_gap_days": 0.45852655000000003,
+        "z_score": 46.751750731134464,
+        "reason": "residual 43.515 km/day is 46.8 sigma above this object's recent baseline (0.804 km/day avg) | element change: semi-major axis +0.37 km",
+        "detection": "residual+elements",
+        "delta_sma_km": 0.37390726703688415,
+        "delta_incl_deg": -0.00010000000000101155,
+        "delta_ecc": 5.5400000000000046e-05
+      }
     ]
   },
   "satnogs_health": {
@@ -17054,12 +17084,12 @@
     "33591": {
       "norad_id": 33591,
       "total_observations": 25,
-      "good_count": 8,
+      "good_count": 9,
       "bad_count": 10,
-      "unvetted_count": 7,
-      "success_rate": 0.4444444444444444,
+      "unvetted_count": 6,
+      "success_rate": 0.47368421052631576,
       "is_degraded": true,
-      "reason": "only 8/18 recent vetted observations were good (44%) -- worth checking against the TLE-residual signal"
+      "reason": "only 9/19 recent vetted observations were good (47%) -- worth checking against the TLE-residual signal"
     },
     "37849": {
       "norad_id": 37849,
@@ -17115,11 +17145,11 @@
       "norad_id": 7530,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 5,
-      "unvetted_count": 20,
+      "bad_count": 2,
+      "unvetted_count": 23,
       "success_rate": 0.0,
-      "is_degraded": true,
-      "reason": "only 0/5 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "is_degraded": false,
+      "reason": "0/2 recent vetted observations were good (0%)"
     },
     "24278": {
       "norad_id": 24278,
@@ -17165,11 +17195,11 @@
       "norad_id": 26931,
       "total_observations": 25,
       "good_count": 1,
-      "bad_count": 16,
-      "unvetted_count": 8,
-      "success_rate": 0.058823529411764705,
+      "bad_count": 15,
+      "unvetted_count": 9,
+      "success_rate": 0.0625,
       "is_degraded": true,
-      "reason": "only 1/17 recent vetted observations were good (6%) -- worth checking against the TLE-residual signal"
+      "reason": "only 1/16 recent vetted observations were good (6%) -- worth checking against the TLE-residual signal"
     },
     "28485": {
       "norad_id": 28485,
@@ -17225,11 +17255,11 @@
       "norad_id": 35932,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 10,
-      "unvetted_count": 15,
+      "bad_count": 11,
+      "unvetted_count": 14,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/10 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/11 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "35933": {
       "norad_id": 35933,
@@ -17325,11 +17355,11 @@
       "norad_id": 38771,
       "total_observations": 25,
       "good_count": 1,
-      "bad_count": 21,
-      "unvetted_count": 3,
-      "success_rate": 0.045454545454545456,
+      "bad_count": 22,
+      "unvetted_count": 2,
+      "success_rate": 0.043478260869565216,
       "is_degraded": true,
-      "reason": "only 1/22 recent vetted observations were good (5%) -- worth checking against the TLE-residual signal"
+      "reason": "only 1/23 recent vetted observations were good (4%) -- worth checking against the TLE-residual signal"
     },
     "39089": {
       "norad_id": 39089,
@@ -17465,11 +17495,11 @@
       "norad_id": 48274,
       "total_observations": 25,
       "good_count": 2,
-      "bad_count": 13,
-      "unvetted_count": 10,
-      "success_rate": 0.13333333333333333,
+      "bad_count": 12,
+      "unvetted_count": 11,
+      "success_rate": 0.14285714285714285,
       "is_degraded": true,
-      "reason": "only 2/15 recent vetted observations were good (13%) -- worth checking against the TLE-residual signal"
+      "reason": "only 2/14 recent vetted observations were good (14%) -- worth checking against the TLE-residual signal"
     },
     "49044": {
       "norad_id": 49044,
@@ -18167,10 +18197,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Oct-15 23:26:00.0000",
-      "distance_from_earth_km": 25811388637.48191,
-      "distance_from_earth_au": 172.53847609397766,
-      "speed_km_s": 43.33303824418779
+      "epoch": "2026-Oct-16 02:19:00.0000",
+      "distance_from_earth_km": 25811767070.76886,
+      "distance_from_earth_au": 172.54100576425424,
+      "speed_km_s": 43.32334994151548
     },
     {
       "key": "voyager_2",
@@ -18188,10 +18218,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Oct-15 23:26:00.0000",
-      "distance_from_earth_km": 21577994530.03882,
-      "distance_from_earth_au": 144.23998435987644,
-      "speed_km_s": 41.68446315523231
+      "epoch": "2026-Oct-16 02:19:00.0000",
+      "distance_from_earth_km": 21578393001.01537,
+      "distance_from_earth_au": 144.2426479738349,
+      "speed_km_s": 41.685446119003494
     },
     {
       "key": "pioneer_10",
@@ -18203,10 +18233,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Oct-15 23:26:00.0000",
-      "distance_from_earth_km": 21168916533.32438,
-      "distance_from_earth_au": 141.50546685103575,
-      "speed_km_s": 20.386200289876932
+      "epoch": "2026-Oct-16 02:19:00.0000",
+      "distance_from_earth_km": 21168778681.4656,
+      "distance_from_earth_au": 141.50454536827576,
+      "speed_km_s": 20.404516914589696
     },
     {
       "key": "pioneer_11",
@@ -18218,10 +18248,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Oct-15 23:26:00.0000",
-      "distance_from_earth_km": 17679238456.76772,
-      "distance_from_earth_au": 118.17840971962256,
-      "speed_km_s": 40.82138259814714
+      "epoch": "2026-Oct-16 02:19:00.0000",
+      "distance_from_earth_km": 17679650532.8536,
+      "distance_from_earth_au": 118.18116427811964,
+      "speed_km_s": 40.82171900376835
     }
   ],
   "volcano_alerts": [
@@ -18254,8 +18284,8 @@
       "observatory": "Northern Mariana Islands",
       "alert_level": "ADVISORY",
       "color_code": "YELLOW",
-      "sent_utc": "2026-10-08 23:31:51",
-      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-NMI-2026-10-08T23:30:10+00:00"
+      "sent_utc": "2026-10-15 23:34:00",
+      "notice_url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-NMI-2026-10-15T23:21:29+00:00"
     }
   ],
   "tle_names": {
