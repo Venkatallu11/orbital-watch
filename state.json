@@ -65,16 +65,16 @@
       "line2": "2 26931  67.0498 272.6582 0006165 275.9916  84.0483 14.31995682308800"
     },
     "28485": {
-      "line1": "1 28485U 04047A   26295.13787255  .00634915  15411-3  10941-2 0  9994",
-      "line2": "2 28485  20.5498 271.7212 0003073 199.8076 160.2257 16.00959327206948"
+      "line1": "1 28485U 04047A   26297.13011626  .00595753  13718-3  88951-3 0  9999",
+      "line2": "2 28485  20.5495 255.5655 0003196 219.1332 140.8890 16.03359771207266"
     },
     "29479": {
       "line1": "1 29479U 06041A   26296.60779361  .00000462  00000+0  87583-4 0  9992",
       "line2": "2 29479  98.0525 310.8673 0016270 238.1561 121.8061 14.68755115 73723"
     },
     "32275": {
-      "line1": "1 32275U 07052A   26295.08442799  .00000004  00000+0  00000+0 0  9992",
-      "line2": "2 32275  65.4995 311.6549 0005900 237.6566 122.3411  2.13104413147765"
+      "line1": "1 32275U 07052A   26296.02294730  .00000004  00000+0  00000+0 0  9997",
+      "line2": "2 32275  65.4994 311.6227 0005895 238.9776 121.0184  2.13104127147784"
     },
     "32382": {
       "line1": "1 32382U 07061A   26296.99417084 -.00000190  00000+0 -56932-4 0  9999",
@@ -1589,8 +1589,8 @@
       "line2": "2 49271  51.6528 334.0425 0938756 212.0257 142.0104 12.45457635241056"
     },
     "51444": {
-      "line1": "1 51444U 22008A   26295.47753288  .00000654  00000+0  88718-4 0  9998",
-      "line2": "2 51444  97.8902 117.2714 0001426  86.0713 274.0663 14.82162590255442"
+      "line1": "1 51444U 22008A   26297.23281705  .00000253  00000+0  38340-4 0  9995",
+      "line2": "2 51444  97.8901 119.0026 0001367  88.4821 271.6548 14.82147355255703"
     },
     "52794": {
       "line1": "1 52794U 22058K   26296.18511279  .00072188  00000+0  51183-3 0  9999",
@@ -4323,7 +4323,6 @@
       0.049359506743886346
     ],
     "28485": [
-      0.39221765938045755,
       4.317379811953753,
       0.4897742016756321,
       1.2412359347995738,
@@ -4332,7 +4331,8 @@
       1.0373894199852678,
       6.687758717322939,
       13.996733597513247,
-      29.752033854045397
+      29.752033854045397,
+      48.99160218928474
     ],
     "29479": [
       0.2619058412832757,
@@ -4683,7 +4683,6 @@
       0.048481184469474484
     ],
     "32275": [
-      0.6713350581938309,
       0.8384180175225937,
       0.6755675632694257,
       4.930839992218773,
@@ -4692,7 +4691,8 @@
       0.16309869186095147,
       2.560278831843626,
       0.14994537812120887,
-      0.4355942904815929
+      0.4355942904815929,
+      2.556759857475957
     ],
     "35933": [
       0.15465076398794197,
@@ -8950,7 +8950,6 @@
       1.1253385651248218
     ],
     "51444": [
-      2.535742108362393,
       1.991729355206558,
       0.8790878980031437,
       0.332627336593268,
@@ -8959,7 +8958,8 @@
       1.268501898807437,
       1.3810686268178114,
       0.41069431745779555,
-      1.5235405849659098
+      1.5235405849659098,
+      7.78074110906229
     ],
     "52794": [
       0.15976606003027438,
@@ -16773,6 +16773,18 @@
         "delta_sma_km": -2.678332664499976,
         "delta_incl_deg": -0.0002999999999998541,
         "delta_ecc": 1.3500000000000003e-05
+      },
+      {
+        "timestamp": "2026-10-24T10:01:24.105136+00:00",
+        "residual_km": 97.60321130442475,
+        "residual_km_per_day": 48.99160218928474,
+        "epoch_gap_days": 1.99224371,
+        "z_score": 4.859051493005879,
+        "reason": "residual 48.992 km/day is 4.9 sigma above this object's recent baseline (6.366 km/day avg) | element change: semi-major axis -6.64 km",
+        "detection": "residual+elements",
+        "delta_sma_km": -6.63884818254337,
+        "delta_incl_deg": -0.00030000000000303466,
+        "delta_ecc": 1.2300000000000028e-05
       }
     ],
     "26931": [
@@ -31891,6 +31903,18 @@
         "delta_sma_km": 0.005038159632931638,
         "delta_incl_deg": 0.0,
         "delta_ecc": -7.999999999999923e-07
+      },
+      {
+        "timestamp": "2026-10-24T10:01:24.107893+00:00",
+        "residual_km": 13.65741169960528,
+        "residual_km_per_day": 7.78074110906229,
+        "epoch_gap_days": 1.75528417,
+        "z_score": 10.122966932218437,
+        "reason": "residual 7.781 km/day is 10.1 sigma above this object's recent baseline (1.327 km/day avg)",
+        "detection": "residual",
+        "delta_sma_km": 0.04797301515736763,
+        "delta_incl_deg": -9.999999998828933e-05,
+        "delta_ecc": -5.900000000000008e-06
       }
     ],
     "58645": [
@@ -35239,11 +35263,11 @@
       "norad_id": 33591,
       "total_observations": 25,
       "good_count": 1,
-      "bad_count": 10,
-      "unvetted_count": 14,
-      "success_rate": 0.09090909090909091,
+      "bad_count": 8,
+      "unvetted_count": 16,
+      "success_rate": 0.1111111111111111,
       "is_degraded": true,
-      "reason": "only 1/11 recent vetted observations were good (9%) -- worth checking against the TLE-residual signal"
+      "reason": "only 1/9 recent vetted observations were good (11%) -- worth checking against the TLE-residual signal"
     },
     "37849": {
       "norad_id": 37849,
@@ -35308,12 +35332,12 @@
     "24278": {
       "norad_id": 24278,
       "total_observations": 25,
-      "good_count": 2,
-      "bad_count": 0,
-      "unvetted_count": 23,
-      "success_rate": 1.0,
+      "good_count": 7,
+      "bad_count": 1,
+      "unvetted_count": 17,
+      "success_rate": 0.875,
       "is_degraded": false,
-      "reason": "2/2 recent vetted observations were good (100%)"
+      "reason": "7/8 recent vetted observations were good (88%)"
     },
     "25867": {
       "norad_id": 25867,
@@ -35368,12 +35392,12 @@
     "29479": {
       "norad_id": 29479,
       "total_observations": 25,
-      "good_count": 19,
+      "good_count": 18,
       "bad_count": 2,
-      "unvetted_count": 4,
-      "success_rate": 0.9047619047619048,
+      "unvetted_count": 5,
+      "success_rate": 0.9,
       "is_degraded": false,
-      "reason": "19/21 recent vetted observations were good (90%)"
+      "reason": "18/20 recent vetted observations were good (90%)"
     },
     "32275": {
       "norad_id": 32275,
@@ -35409,11 +35433,11 @@
       "norad_id": 35932,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 8,
-      "unvetted_count": 17,
+      "bad_count": 9,
+      "unvetted_count": 16,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/8 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/9 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "35933": {
       "norad_id": 35933,
@@ -35649,11 +35673,11 @@
       "norad_id": 48274,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 8,
-      "unvetted_count": 17,
+      "bad_count": 9,
+      "unvetted_count": 16,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/8 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/9 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "49044": {
       "norad_id": 49044,
@@ -36351,10 +36375,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Oct-24 05:14:00.0000",
-      "distance_from_earth_km": 25836589532.56096,
-      "distance_from_earth_au": 172.7069336726927,
-      "speed_km_s": 42.58284908452188
+      "epoch": "2026-Oct-24 10:02:00.0000",
+      "distance_from_earth_km": 25837180819.95247,
+      "distance_from_earth_au": 172.71088618477557,
+      "speed_km_s": 42.56271126886618
     },
     {
       "key": "voyager_2",
@@ -36372,10 +36396,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Oct-24 05:14:00.0000",
-      "distance_from_earth_km": 21605229784.31206,
-      "distance_from_earth_au": 144.42204078986308,
-      "speed_km_s": 41.67768413589937
+      "epoch": "2026-Oct-24 10:02:00.0000",
+      "distance_from_earth_km": 21605886794.88382,
+      "distance_from_earth_au": 144.42643263427024,
+      "speed_km_s": 41.6758540563791
     },
     {
       "key": "pioneer_10",
@@ -36387,10 +36411,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Oct-24 05:14:00.0000",
-      "distance_from_earth_km": 21160311656.21441,
-      "distance_from_earth_au": 141.44794680031774,
-      "speed_km_s": 21.742783412124776
+      "epoch": "2026-Oct-24 10:02:00.0000",
+      "distance_from_earth_km": 21160125764.82439,
+      "distance_from_earth_au": 141.44670419312587,
+      "speed_km_s": 21.77813886054988
     },
     {
       "key": "pioneer_11",
@@ -36402,10 +36426,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Oct-24 05:14:00.0000",
-      "distance_from_earth_km": 17707231039.09155,
-      "distance_from_earth_au": 118.36552857494348,
-      "speed_km_s": 40.76377979992294
+      "epoch": "2026-Oct-24 10:02:00.0000",
+      "distance_from_earth_km": 17707901688.20655,
+      "distance_from_earth_au": 118.37001158738119,
+      "speed_km_s": 40.76055923450425
     }
   ],
   "volcano_alerts": [
