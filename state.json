@@ -65,8 +65,8 @@
       "line2": "2 26931  67.0502 256.5787 0006197 276.5974  83.4422 14.31997465309695"
     },
     "28485": {
-      "line1": "1 28485U 04047A   26302.90199659  .00904510  43383-3  79866-3 0  9995",
-      "line2": "2 28485  20.5474 208.4218 0004656 275.7393  84.2530 16.11689947208197"
+      "line1": "1 28485U 04047A   26303.02576197  .00807659  33231-3  70157-3 0  9996",
+      "line2": "2 28485  20.5476 207.3998 0004842 262.9673  97.0231 16.11889823208216"
     },
     "29479": {
       "line1": "1 29479U 06041A   26302.33035676  .00000272  00000+0  54959-4 0  9994",
@@ -1081,8 +1081,8 @@
       "line2": "2 39766  97.9240  38.1665 0001473  93.2052 266.9328 14.79486381671505"
     },
     "40010": {
-      "line1": "1 40010U 14033A   26302.94452057  .00000160  00000+0  24265-4 0  9994",
-      "line2": "2 40010  97.5309 135.4142 0007453 230.3878 129.6681 14.85664066668964"
+      "line1": "1 40010U 14033A   26303.01186420  .00000294  00000+0  39679-4 0  9994",
+      "line2": "2 40010  97.5305 135.4789 0008221 230.5867 129.4622 14.85711877668978"
     },
     "40011": {
       "line1": "1 40011U 14033B   26302.97259005  .00000630  00000+0  73306-4 0  9998",
@@ -1249,8 +1249,8 @@
       "line2": "2 41556  97.3718  16.0472 0013204 187.9524 172.1505 15.21209708578471"
     },
     "41599": {
-      "line1": "1 41599U 16040A   26302.94996294  .00001257  00000+0  62871-4 0  9996",
-      "line2": "2 41599  97.4318   0.9366 0009560  32.9475 327.2353 15.19229998574170"
+      "line1": "1 41599U 16040A   26303.08169503  .00002047  00000+0  10033-3 0  9997",
+      "line2": "2 41599  97.4301   1.0706 0009475  35.2678 324.9182 15.19225664574190"
     },
     "41601": {
       "line1": "1 41601U 16040C   26302.50137288  .00005326  00000+0  14338-3 0  9997",
@@ -1313,8 +1313,8 @@
       "line2": "2 41877  98.7410  15.3078 0003128  65.3662 294.7841 14.21605579513457"
     },
     "41882": {
-      "line1": "1 41882U 16077A   26302.93093410 -.00000354  00000+0  00000+0 0  9997",
-      "line2": "2 41882   2.6570  78.5488 0008866 169.2814 249.2159  1.00279398 36284"
+      "line1": "1 41882U 16077A   26302.99350179 -.00000354  00000+0  00000+0 0  9991",
+      "line2": "2 41882   2.6584  78.5568 0008910 170.0877 270.9898  1.00280087 36285"
     },
     "41884": {
       "line1": "1 41884U 16078A   26302.72630292  .00021726  00000+0  23190-3 0  9996",
@@ -1569,8 +1569,8 @@
       "line2": "2 48269  97.5657  25.5202 0003744 129.6871 230.4707 15.43001660301775"
     },
     "48865": {
-      "line1": "1 48865U 21056A   26302.93854100  .00003022  00000+0  97611-4 0  9992",
-      "line2": "2 48865  67.1431  52.2814 0008415 269.8053  90.2138 15.33845344299382"
+      "line1": "1 48865U 21056A   26303.06895497  .00003034  00000+0  97964-4 0  9995",
+      "line2": "2 48865  67.1431  51.8869 0008414 269.7670  90.2520 15.33846184299401"
     },
     "49008": {
       "line1": "1 49008U 21062A   26303.00445918 -.00000219  00000+0 -82465-4 0  9999",
@@ -4327,7 +4327,6 @@
       0.054357604126259944
     ],
     "28485": [
-      7.052777298910433,
       4.156831542699718,
       6.522612626323944,
       8.470087995688703,
@@ -4336,7 +4335,8 @@
       4.039146010503337,
       14.620876082786038,
       3.7792307327468384,
-      28.78166442600622
+      28.78166442600622,
+      13.910695334392123
     ],
     "29479": [
       0.18417372679116936,
@@ -7445,7 +7445,6 @@
       3.089521048668432
     ],
     "40010": [
-      0.8387352906224609,
       10.53234583242517,
       0.8046988005000105,
       5.197215720300176,
@@ -7454,7 +7453,8 @@
       1.2547938595736297,
       5.127191632401512,
       4.996609069017329,
-      1.8760165146289776
+      1.8760165146289776,
+      77.16761663775989
     ],
     "40011": [
       0.3102214124995321,
@@ -7949,7 +7949,6 @@
       0.9312481791507787
     ],
     "41599": [
-      1.158401484068944,
       2.2181461327730143,
       2.2069275730840943,
       1.1472406094708174,
@@ -7958,7 +7957,8 @@
       1.9398503625269392,
       3.4740323993283844,
       2.134661320800345,
-      25.052293259393544
+      25.052293259393544,
+      13.888459789588191
     ],
     "41601": [
       1.234593317598148,
@@ -8141,7 +8141,6 @@
       3.705715342685446
     ],
     "41882": [
-      5.394900531487977,
       1.1253098300158724,
       12.243421770858674,
       12.406047896290643,
@@ -8150,7 +8149,8 @@
       2.4791042585412906,
       11.48451296705435,
       1.3355869452440337,
-      1.5527922510433683
+      1.5527922510433683,
+      14.692900976921097
     ],
     "41884": [
       0.8408264832176349,
@@ -8907,7 +8907,6 @@
       0.6582739228016581
     ],
     "48865": [
-      0.15316676140473748,
       1.1827198316690488,
       0.14695966918543524,
       0.2532449474409254,
@@ -8916,7 +8915,8 @@
       1.4311575153957345,
       4.08030012860935,
       0.7572218025317069,
-      0.6349015920787993
+      0.6349015920787993,
+      0.3445109299587541
     ],
     "49008": [
       0.19793720660611297,
@@ -17158,6 +17158,18 @@
         "delta_sma_km": -4.135044242049844,
         "delta_incl_deg": -0.0004000000000008657,
         "delta_ecc": 1.8599999999999964e-05
+      },
+      {
+        "timestamp": "2026-10-30T10:35:52.106065+00:00",
+        "residual_km": 1.7216624941252687,
+        "residual_km_per_day": 13.910695334392123,
+        "epoch_gap_days": 0.12376538000000004,
+        "z_score": 0.47100925938838306,
+        "reason": "within this object's normal drift pattern | element change: semi-major axis -0.55 km",
+        "detection": "elements",
+        "delta_sma_km": -0.547297994159635,
+        "delta_incl_deg": 0.00019999999999884257,
+        "delta_ecc": 1.860000000000002e-05
       }
     ],
     "26931": [
@@ -37900,6 +37912,18 @@
         "delta_sma_km": -0.06839530471279431,
         "delta_incl_deg": 0.00030000000000303466,
         "delta_ecc": 1.810000000000006e-05
+      },
+      {
+        "timestamp": "2026-10-30T10:35:52.107119+00:00",
+        "residual_km": 5.196747422835145,
+        "residual_km_per_day": 77.16761663775989,
+        "epoch_gap_days": 0.06734362999999999,
+        "z_score": 21.89481266332164,
+        "reason": "residual 77.168 km/day is 21.9 sigma above this object's recent baseline (3.983 km/day avg)",
+        "detection": "residual",
+        "delta_sma_km": -0.1499543485160757,
+        "delta_incl_deg": -0.000399999999991324,
+        "delta_ecc": 7.680000000000002e-05
       }
     ],
     "43641": [
@@ -39683,12 +39707,12 @@
     "24278": {
       "norad_id": 24278,
       "total_observations": 25,
-      "good_count": 0,
+      "good_count": 5,
       "bad_count": 0,
-      "unvetted_count": 25,
-      "success_rate": null,
+      "unvetted_count": 20,
+      "success_rate": 1.0,
       "is_degraded": false,
-      "reason": "not enough vetted observations yet to judge"
+      "reason": "5/5 recent vetted observations were good (100%)"
     },
     "25867": {
       "norad_id": 25867,
@@ -39723,12 +39747,12 @@
     "26931": {
       "norad_id": 26931,
       "total_observations": 25,
-      "good_count": 1,
-      "bad_count": 5,
-      "unvetted_count": 19,
-      "success_rate": 0.16666666666666666,
-      "is_degraded": true,
-      "reason": "only 1/6 recent vetted observations were good (17%) -- worth checking against the TLE-residual signal"
+      "good_count": 0,
+      "bad_count": 2,
+      "unvetted_count": 23,
+      "success_rate": 0.0,
+      "is_degraded": false,
+      "reason": "0/2 recent vetted observations were good (0%)"
     },
     "28485": {
       "norad_id": 28485,
@@ -39743,12 +39767,12 @@
     "29479": {
       "norad_id": 29479,
       "total_observations": 25,
-      "good_count": 19,
+      "good_count": 18,
       "bad_count": 0,
-      "unvetted_count": 6,
+      "unvetted_count": 7,
       "success_rate": 1.0,
       "is_degraded": false,
-      "reason": "19/19 recent vetted observations were good (100%)"
+      "reason": "18/18 recent vetted observations were good (100%)"
     },
     "32275": {
       "norad_id": 32275,
@@ -39794,11 +39818,11 @@
       "norad_id": 35933,
       "total_observations": 25,
       "good_count": 8,
-      "bad_count": 6,
-      "unvetted_count": 11,
-      "success_rate": 0.5714285714285714,
+      "bad_count": 5,
+      "unvetted_count": 12,
+      "success_rate": 0.6153846153846154,
       "is_degraded": false,
-      "reason": "8/14 recent vetted observations were good (57%)"
+      "reason": "8/13 recent vetted observations were good (62%)"
     },
     "36086": {
       "norad_id": 36086,
@@ -40726,10 +40750,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Oct-30 03:38:00.0000",
-      "distance_from_earth_km": 25853688166.28947,
-      "distance_from_earth_au": 172.8212309795227,
-      "speed_km_s": 41.95251840056428
+      "epoch": "2026-Oct-30 10:36:00.0000",
+      "distance_from_earth_km": 25854500404.84302,
+      "distance_from_earth_au": 172.82666045889798,
+      "speed_km_s": 41.9198410908533
     },
     {
       "key": "voyager_2",
@@ -40747,10 +40771,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Oct-30 03:38:00.0000",
-      "distance_from_earth_km": 21624597370.59245,
-      "distance_from_earth_au": 144.55150510770238,
-      "speed_km_s": 41.59615147922441
+      "epoch": "2026-Oct-30 10:36:00.0000",
+      "distance_from_earth_km": 21625537326.78193,
+      "distance_from_earth_au": 144.55778832674207,
+      "speed_km_s": 41.590644399851335
     },
     {
       "key": "pioneer_10",
@@ -40762,10 +40786,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Oct-30 03:38:00.0000",
-      "distance_from_earth_km": 21155304637.2467,
-      "distance_from_earth_au": 141.41447694580523,
-      "speed_km_s": 22.840173549345867
+      "epoch": "2026-Oct-30 10:36:00.0000",
+      "distance_from_earth_km": 21155087656.24178,
+      "distance_from_earth_au": 141.41302651737396,
+      "speed_km_s": 22.896308705162014
     },
     {
       "key": "pioneer_11",
@@ -40777,10 +40801,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Oct-30 03:38:00.0000",
-      "distance_from_earth_km": 17726898165.9798,
-      "distance_from_earth_au": 118.49699519807271,
-      "speed_km_s": 40.638157166577024
+      "epoch": "2026-Oct-30 10:36:00.0000",
+      "distance_from_earth_km": 17727846990.97508,
+      "distance_from_earth_au": 118.50333770141744,
+      "speed_km_s": 40.63034717814917
     }
   ],
   "volcano_alerts": [
