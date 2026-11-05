@@ -4909,8 +4909,8 @@
       "line2": "2 37843   0.0167 261.3068 0002045 323.1086 240.6614  1.00270170 48712"
     },
     "37847": {
-      "line1": "1 37847U 11060B   26305.03053606 -.00000072  00000+0  00000+0 0  9994",
-      "line2": "2 37847  56.9392 338.0454 0003677 305.6010  51.8611  1.70475816 93452"
+      "line1": "1 37847U 11060B   26308.55631909 -.00000079  00000+0  00000+0 0  9999",
+      "line2": "2 37847  56.9378 337.9492 0003734 306.2669  55.0492  1.70475915 93528"
     },
     "37933": {
       "line1": "1 37933U 11069A   26306.49084549 -.00000342  00000+0  00000+0 0  9990",
@@ -5013,8 +5013,8 @@
       "line2": "2 38833  53.6087 137.9498 0188040  68.3980 293.6536  2.00557534102202"
     },
     "38857": {
-      "line1": "1 38857U 12055A   26306.32364315  .00000044  00000+0  00000+0 0  9994",
-      "line2": "2 38857  55.8983  97.7541 0001599 283.1055  76.8731  1.70473206 87368"
+      "line1": "1 38857U 12055A   26306.91023188  .00000043  00000+0  00000+0 0  9998",
+      "line2": "2 38857  55.8988  97.7380 0001559 287.0285  72.9508  1.70473218 87371"
     },
     "38867": {
       "line1": "1 38867U 12057A   26306.45947198 -.00000292  00000+0  00000+0 0  9993",
@@ -5237,8 +5237,8 @@
       "line2": "2 40107   0.0480  73.5666 0001765 157.5505  92.6784  1.00270669103535"
     },
     "40129": {
-      "line1": "1 40129U 14050B   26305.57426595 -.00000038  00000+0  00000+0 0  9995",
-      "line2": "2 40129  48.7485 266.8740 1694624 185.3493 172.5994  1.85520221 83039"
+      "line1": "1 40129U 14050B   26308.80815842 -.00000077  00000+0  00000+0 0  9994",
+      "line2": "2 40129  48.7449 266.7408 1695081 185.4703 172.4236  1.85520240 83097"
     },
     "40141": {
       "line1": "1 40141U 14052A   26306.50722813 -.00000370  00000+0  00000+0 0  9996",
@@ -5313,12 +5313,12 @@
       "line2": "2 40534  53.1482 198.5372 0115541  42.3167 318.6377  2.00568098 84562"
     },
     "40544": {
-      "line1": "1 40544U 15017A   26303.71336698 -.00000069  00000+0  00000+0 0  9992",
-      "line2": "2 40544  56.7306 337.8963 0006146 266.1776  93.8065  1.70475978 71510"
+      "line1": "1 40544U 15017A   26307.81944888 -.00000078  00000+0  00000+0 0  9993",
+      "line2": "2 40544  56.7288 337.7837 0006068 265.9227  94.0596  1.70475923 71588"
     },
     "40545": {
-      "line1": "1 40545U 15017B   26303.38298077 -.00000068  00000+0  00000+0 0  9993",
-      "line2": "2 40545  56.7377 337.9247 0005955 254.4128 105.5768  1.70475560 34554"
+      "line1": "1 40545U 15017B   26307.48906496 -.00000078  00000+0  00000+0 0  9990",
+      "line2": "2 40545  56.7361 337.8122 0006020 256.0499 103.9346  1.70475603 34621"
     },
     "40549": {
       "line1": "1 40549U 15019A   26306.41830510 -.00000186  00000+0  00000+0 0  9991",
@@ -5373,8 +5373,8 @@
       "line2": "2 40887   4.5936  42.8464 0051540   0.9322 221.7695  1.00271547 40941"
     },
     "40890": {
-      "line1": "1 40890U 15045B   26304.54503776 -.00000007  00000+0  00000+0 0  9994",
-      "line2": "2 40890  54.9087 217.8432 0003353  20.3547 339.7003  1.70472847 69367"
+      "line1": "1 40890U 15045B   26306.30478684 -.00000022  00000+0  00000+0 0  9996",
+      "line2": "2 40890  54.9081 217.7946 0003403  21.2477 338.8007  1.70472856 69395"
     },
     "40892": {
       "line1": "1 40892U 15046A   26306.54033037 -.00000163  00000+0  00000+0 0  9990",
@@ -6559,6 +6559,98 @@
     "69235": {
       "line1": "1 69235U 26116A   26306.48789881 -.00000238  00000+0  00000+0 0  9993",
       "line2": "2 69235   0.3602  86.5659 0002729 200.4301  20.7201  1.00268917  1611"
+    },
+    "41175": {
+      "line1": "1 41175U 15079B   26303.17396495  .00000043  00000+0  00000+0 0  9993",
+      "line2": "2 41175  55.9162  97.5552 0002584  34.4945 325.5127  1.70473886 67494"
+    },
+    "41549": {
+      "line1": "1 41549U 16030A   26307.99030488 -.00000026  00000+0  00000+0 0  9999",
+      "line2": "2 41549  55.0580 217.8538 0004083   2.1397 357.8925  1.70472852 65050"
+    },
+    "41550": {
+      "line1": "1 41550U 16030B   26308.24727845 -.00000026  00000+0  00000+0 0  9990",
+      "line2": "2 41550  55.0571 217.8447 0001734 261.4428  98.5681  1.70473221 65055"
+    },
+    "41859": {
+      "line1": "1 41859U 16069A   26306.17964740  .00000043  00000+0  00000+0 0  9999",
+      "line2": "2 41859  55.5923  97.2673 0002149 356.6316   3.3629  1.70473974 61752"
+    },
+    "41860": {
+      "line1": "1 41860U 16069B   26307.79267889  .00000039  00000+0  00000+0 0  9995",
+      "line2": "2 41860  55.5918  97.2175 0003177  48.6709 311.3509  1.70474219 62035"
+    },
+    "41861": {
+      "line1": "1 41861U 16069C   26306.39984595  .00000043  00000+0  00000+0 0  9996",
+      "line2": "2 41861  55.5926  97.2641 0001430 315.9636  44.0211  1.70474504 61870"
+    },
+    "41862": {
+      "line1": "1 41862U 16069D   26308.30606248  .00000036  00000+0  00000+0 0  9998",
+      "line2": "2 41862  55.5924  97.2040 0000866 340.1215  19.8679  1.70474311 62030"
+    },
+    "43055": {
+      "line1": "1 43055U 17079A   26308.20882987 -.00000026  00000+0  00000+0 0  9991",
+      "line2": "2 43055  55.0362 217.6577 0002083 310.2708  49.7419  1.70473686 55375"
+    },
+    "43056": {
+      "line1": "1 43056U 17079B   26307.91331587 -.00000026  00000+0  00000+0 0  9994",
+      "line2": "2 43056  55.0366 217.6659 0003401 309.5922  50.4086  1.70473769 55387"
+    },
+    "43057": {
+      "line1": "1 43057U 17079C   26306.96099642 -.00000025  00000+0  00000+0 0  9991",
+      "line2": "2 43057  55.0349 217.6896 0003383 327.8596  32.1520  1.70473689 55359"
+    },
+    "43058": {
+      "line1": "1 43058U 17079D   26306.00790135 -.00000019  00000+0  00000+0 0  9995",
+      "line2": "2 43058  55.0356 217.7135 0003770 300.5324  59.4660  1.70473717 55362"
+    },
+    "43564": {
+      "line1": "1 43564U 18060A   26306.49866543 -.00000075  00000+0  00000+0 0  9990",
+      "line2": "2 43564  57.1132 338.0401 0006053 278.0039  81.9790  1.70475911 51527"
+    },
+    "43565": {
+      "line1": "1 43565U 18060B   26308.47826928 -.00000079  00000+0  00000+0 0  9998",
+      "line2": "2 43565  57.1158 337.9902 0005972 257.2570 102.7288  1.70475708 51605"
+    },
+    "43566": {
+      "line1": "1 43566U 18060C   26307.52581475 -.00000077  00000+0  00000+0 0  9997",
+      "line2": "2 43566  57.1156 338.0175 0005090 281.7275  78.2675  1.70475912 51562"
+    },
+    "43567": {
+      "line1": "1 43567U 18060D   26306.57373980 -.00000075  00000+0  00000+0 0  9990",
+      "line2": "2 43567  57.1156 338.0428 0005422 278.5389  81.4513  1.70475649 51534"
+    },
+    "49809": {
+      "line1": "1 49809U 21116A   26306.12808590 -.00000074  00000+0  00000+0 0  9991",
+      "line2": "2 49809  57.1041 337.9433 0004661 241.5363 295.8843  1.70475786 30538"
+    },
+    "49810": {
+      "line1": "1 49810U 21116B   26308.10060513 -.00000078  00000+0  00000+0 0  9992",
+      "line2": "2 49810  57.1043 337.8885 0003887 243.5632 177.0939  1.70475959 30597"
+    },
+    "59598": {
+      "line1": "1 59598U 24079A   26306.24993987  .00000042  00000+0  00000+0 0  9990",
+      "line2": "2 59598  55.2149  97.2214 0001879 148.5673 209.4546  1.70474201 15662"
+    },
+    "59600": {
+      "line1": "1 59600U 24079C   26308.19637164  .00000036  00000+0  00000+0 0  9995",
+      "line2": "2 59600  55.2097  97.1654 0003995 107.3214 252.7156  1.70474405 15754"
+    },
+    "61182": {
+      "line1": "1 61182U 24167A   26308.72938446 -.00000024  00000+0  00000+0 0  9995",
+      "line2": "2 61182  55.1480 217.4623 0003863 230.2450 312.3752  1.70473295 13278"
+    },
+    "61183": {
+      "line1": "1 61183U 24167B   26307.15865240 -.00000025  00000+0  00000+0 0  9994",
+      "line2": "2 61183  55.1472 217.5125 0000653 243.3886 146.5700  1.70473216 13228"
+    },
+    "67160": {
+      "line1": "1 67160U 25302A   26308.71136656  .00000033  00000+0  00000+0 0  9990",
+      "line2": "2 67160  54.4327  98.1269 0003450 150.9863 208.7666  1.70474362  5516"
+    },
+    "67162": {
+      "line1": "1 67162U 25302C   26307.24828220  .00000040  00000+0  00000+0 0  9992",
+      "line2": "2 67162  54.4331  98.1676 0000573 160.2959 201.6196  1.70474250  5558"
     }
   },
   "baseline_history": {
@@ -14671,6 +14763,24 @@
     ],
     "43700": [
       7.487644151586522
+    ],
+    "37847": [
+      0.27944243584613143
+    ],
+    "38857": [
+      0.6815463035666011
+    ],
+    "40129": [
+      0.053640430845279474
+    ],
+    "40544": [
+      0.2025723805604078
+    ],
+    "40545": [
+      0.28843172433690845
+    ],
+    "40890": [
+      0.1493906776931291
     ]
   },
   "maneuver_events": {
@@ -53052,11 +53162,11 @@
       "norad_id": 43013,
       "total_observations": 25,
       "good_count": 1,
-      "bad_count": 19,
-      "unvetted_count": 5,
-      "success_rate": 0.05,
+      "bad_count": 20,
+      "unvetted_count": 4,
+      "success_rate": 0.047619047619047616,
       "is_degraded": true,
-      "reason": "only 1/20 recent vetted observations were good (5%) -- worth checking against the TLE-residual signal"
+      "reason": "only 1/21 recent vetted observations were good (5%) -- worth checking against the TLE-residual signal"
     },
     "46052": {
       "norad_id": 46052,
@@ -53091,12 +53201,12 @@
     "24278": {
       "norad_id": 24278,
       "total_observations": 25,
-      "good_count": 1,
+      "good_count": 2,
       "bad_count": 0,
-      "unvetted_count": 24,
+      "unvetted_count": 23,
       "success_rate": 1.0,
       "is_degraded": false,
-      "reason": "1/1 recent vetted observations were good (100%)"
+      "reason": "2/2 recent vetted observations were good (100%)"
     },
     "25867": {
       "norad_id": 25867,
@@ -53132,11 +53242,11 @@
       "norad_id": 26931,
       "total_observations": 25,
       "good_count": 1,
-      "bad_count": 14,
-      "unvetted_count": 10,
-      "success_rate": 0.06666666666666667,
+      "bad_count": 13,
+      "unvetted_count": 11,
+      "success_rate": 0.07142857142857142,
       "is_degraded": true,
-      "reason": "only 1/15 recent vetted observations were good (7%) -- worth checking against the TLE-residual signal"
+      "reason": "only 1/14 recent vetted observations were good (7%) -- worth checking against the TLE-residual signal"
     },
     "28485": {
       "norad_id": 28485,
@@ -53201,12 +53311,12 @@
     "35933": {
       "norad_id": 35933,
       "total_observations": 25,
-      "good_count": 5,
-      "bad_count": 5,
-      "unvetted_count": 15,
+      "good_count": 3,
+      "bad_count": 3,
+      "unvetted_count": 19,
       "success_rate": 0.5,
       "is_degraded": false,
-      "reason": "5/10 recent vetted observations were good (50%)"
+      "reason": "3/6 recent vetted observations were good (50%)"
     },
     "36086": {
       "norad_id": 36086,
@@ -53432,11 +53542,11 @@
       "norad_id": 48274,
       "total_observations": 25,
       "good_count": 0,
-      "bad_count": 13,
-      "unvetted_count": 12,
+      "bad_count": 14,
+      "unvetted_count": 11,
       "success_rate": 0.0,
       "is_degraded": true,
-      "reason": "only 0/13 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
+      "reason": "only 0/14 recent vetted observations were good (0%) -- worth checking against the TLE-residual signal"
     },
     "49044": {
       "norad_id": 49044,
@@ -54134,10 +54244,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Voyager 1's cameras were switched off in 1990 after its 'Pale Blue Dot' photo, and NASA has been shutting down its remaining science instruments one by one to conserve its dwindling power supply -- the cosmic ray subsystem was turned off in February 2026 and the low-energy charged particle instrument in April 2026. As of mid-2026, only the magnetometer and Plasma Wave Subsystem are still switched on.",
-      "epoch": "2026-Nov-05 07:34:00.0000",
-      "distance_from_earth_km": 25870417334.87922,
-      "distance_from_earth_au": 172.933058564444,
-      "speed_km_s": 41.21199408564546
+      "epoch": "2026-Nov-05 15:59:00.0000",
+      "distance_from_earth_km": 25871335401.25515,
+      "distance_from_earth_au": 172.93919545911794,
+      "speed_km_s": 41.16665962400752
     },
     {
       "key": "voyager_2",
@@ -54155,10 +54265,10 @@
         "plasma wave measurements from interstellar space"
       ],
       "description": "Like its twin, Voyager 2's cameras were switched off in 1990. Its plasma science instrument was switched off in October 2024, and its cosmic ray subsystem is scheduled for shutdown in 2026, as NASA conserves its dwindling power supply. Its magnetometer and Plasma Wave Subsystem are still returning real data from interstellar space.",
-      "epoch": "2026-Nov-05 07:34:00.0000",
-      "distance_from_earth_km": 21644362984.03523,
-      "distance_from_earth_au": 144.68363007278572,
-      "speed_km_s": 41.43865580318331
+      "epoch": "2026-Nov-05 15:59:00.0000",
+      "distance_from_earth_km": 21645473875.92094,
+      "distance_from_earth_au": 144.6910559263792,
+      "speed_km_s": 41.42682351785239
     },
     {
       "key": "pioneer_10",
@@ -54170,10 +54280,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Contact with Pioneer 10 was lost in January 2003 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Nov-05 07:34:00.0000",
-      "distance_from_earth_km": 21151300231.00878,
-      "distance_from_earth_au": 141.3877091434349,
-      "speed_km_s": 24.067377376364526
+      "epoch": "2026-Nov-05 15:59:00.0000",
+      "distance_from_earth_km": 21151111852.63077,
+      "distance_from_earth_au": 141.38644991175514,
+      "speed_km_s": 24.138875434012643
     },
     {
       "key": "pioneer_11",
@@ -54185,10 +54295,10 @@
       "instruments": [],
       "data_products": [],
       "description": "Last contact with Pioneer 11 was in 1995 -- none of its instruments have reported data since. The distance/speed shown here is NASA/JPL's tracking-based estimate of where it physically is, not something the spacecraft itself is transmitting.",
-      "epoch": "2026-Nov-05 07:34:00.0000",
-      "distance_from_earth_km": 17746727813.71237,
-      "distance_from_earth_au": 118.62954820594497,
-      "speed_km_s": 40.42871700965766
+      "epoch": "2026-Nov-05 15:59:00.0000",
+      "distance_from_earth_km": 17747834234.79362,
+      "distance_from_earth_au": 118.6369441740565,
+      "speed_km_s": 40.41372768600972
     }
   ],
   "volcano_alerts": [
@@ -55855,7 +55965,30 @@
     "40544": "GSAT0203 (GALILEO 7)",
     "40545": "GSAT0204 (GALILEO 8)",
     "40890": "GSAT0206 (GALILEO 10)",
-    "41174": "GSAT0209 (GALILEO 12)"
+    "41174": "GSAT0209 (GALILEO 12)",
+    "41175": "GSAT0208 (GALILEO 11)",
+    "41549": "GSAT0211 (GALILEO 14)",
+    "41550": "GSAT0210 (GALILEO 13)",
+    "41859": "GSAT0207 (GALILEO 15)",
+    "41860": "GSAT0212 (GALILEO 16)",
+    "41861": "GSAT0213 (GALILEO 17)",
+    "41862": "GSAT0214 (GALILEO 18)",
+    "43055": "GSAT0215 (GALILEO 19)",
+    "43056": "GSAT0216 (GALILEO 20)",
+    "43057": "GSAT0217 (GALILEO 21)",
+    "43058": "GSAT0218 (GALILEO 22)",
+    "43564": "GSAT0221 (GALILEO 25)",
+    "43565": "GSAT0222 (GALILEO 26)",
+    "43566": "GSAT0219 (GALILEO 23)",
+    "43567": "GSAT0220 (GALILEO 24)",
+    "49809": "GSAT0223 (GALILEO 27)",
+    "49810": "GSAT0224 (GALILEO 28)",
+    "59598": "GSAT0225 (GALILEO 29)",
+    "59600": "GSAT0227 (GALILEO 30)",
+    "61182": "GSAT0232 (GALILEO 32)",
+    "61183": "GSAT0226 (GALILEO 31)",
+    "67160": "GSAT0233 (GALILEO 33)",
+    "67162": "GSAT0234 (GALILEO 34)"
   },
   "group_categories": {
     "25544": "space_stations",
@@ -57487,6 +57620,29 @@
     "40544": "navigation",
     "40545": "navigation",
     "40890": "navigation",
-    "41174": "navigation"
+    "41174": "navigation",
+    "41175": "navigation",
+    "41549": "navigation",
+    "41550": "navigation",
+    "41859": "navigation",
+    "41860": "navigation",
+    "41861": "navigation",
+    "41862": "navigation",
+    "43055": "navigation",
+    "43056": "navigation",
+    "43057": "navigation",
+    "43058": "navigation",
+    "43564": "navigation",
+    "43565": "navigation",
+    "43566": "navigation",
+    "43567": "navigation",
+    "49809": "navigation",
+    "49810": "navigation",
+    "59598": "navigation",
+    "59600": "navigation",
+    "61182": "navigation",
+    "61183": "navigation",
+    "67160": "navigation",
+    "67162": "navigation"
   }
 }
